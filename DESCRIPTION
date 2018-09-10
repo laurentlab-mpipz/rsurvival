@@ -1,0 +1,15 @@
+Package: rsurvival
+Title: Process genotype data from survival experiment
+Version: 0.0.0.9000
+Authors@R: person("Samuel", "Badion", email = "samuel.badion@reseau.eseo.fr", role = c("aut", "cre"))
+Description: This package can be used to help you identify the snps in a genotype which are subjects to positive selection. You will have to provide a VCF file and a survival vector to get started with this package.
+Depends: R (>= 3.5.0)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.0.9000
+Imports: vcfR,
+    stringr,
+    BiasedUrn,
+    stats
+Suggests: testthat
