@@ -9,3 +9,5 @@ This package is developped by the Max Planck Institute for Plant Breeding Resear
 ## Dependencies
 This package needs vcfR, stringr and BiasedUrn packages to work properly.
 Unit testing is done using testthat package.
+
+Let me change that

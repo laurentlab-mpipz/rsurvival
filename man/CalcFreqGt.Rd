@@ -14,6 +14,9 @@ CalcFreqGt(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 \item{genotypic}{If TRUE (default), include frequencies of genotypes in the
 result}
 
+\item{allelic}{If TRUE, include frequencies of alles in the result,
+default set to FALSE}
+
 \item{absolute}{If TRUE (default), occurences will be shown instead of
 relative frequencies}
 
@@ -33,9 +36,6 @@ condition will be omitted. Default is NULL (disabled).}
 allele in a variant of \code{gt}. Variants which does not fulfill this
 condition will be omitted. Default is 0.1, set it to NULL to disable this
 feature.}
-
-\item{genotypic}{If TRUE, include frequencies of alles in the result,
-default set to FALSE}
 }
 \value{
 A data frame of frequencies.

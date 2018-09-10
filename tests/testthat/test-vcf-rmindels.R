@@ -1,9 +1,7 @@
 context("Remove Indels")
 
 vcf <- readRDS('res-rmindels\\vcf.rds')
-vcf.list <- list("alive" = vcf, "dead" = vcf)
 cleared.vcf <- RmIndels(vcf, verbose = FALSE)
-cleared.vcf.list <- RmIndels(vcf.list, verbose = FALSE)
 
 test_that("RmIndels returns a vcfR object", {
   expect_is(cleared.vcf, "vcfR")
@@ -24,10 +22,15 @@ test_that("the returned vcfR object contains no indels", {
 })
 
 test_that("lists of vcfR objects are correctly handled", {
+
+  vcf.list <- list("alive" = vcf, "dead" = vcf)
+  cleared.vcf.list <- RmIndels(vcf.list, verbose = FALSE)
+
   expect_is(cleared.vcf.list$alive, "vcfR")
   expect_is(cleared.vcf.list$dead, "vcfR")
   expect_true(nrow(cleared.vcf.list$alive) == 135)
   expect_true(nrow(cleared.vcf.list$dead) == 135)
   expect_equal(vcfR::extract.indels(vcf.list$alive), cleared.vcf.list$alive)
   expect_equal(vcfR::extract.indels(vcf.list$dead), cleared.vcf.list$dead)
+
 })

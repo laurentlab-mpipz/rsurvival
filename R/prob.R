@@ -12,12 +12,14 @@
 #' A data frame of frequencies and probabilities from your experiment.
 #'
 #' @seealso For more information, see \code{\link{CalcProbsSelection}} and
-#' \code{\link{FreqGt}} which this function bind. 
+#' \code{\link{CalcFreqGt}} which this function bind. 
 #'
 #' @export
 #'
 #' @examples
-#' Analyse 
+#' AnalyseExpt(gt.alive, gt.dead)
+#' AnalyseExpt(gt.alive, gt.dead, p.values = FALSE)
+#' AnalyseExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
 AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
                               backup.path = NULL){
@@ -60,7 +62,7 @@ AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
   result <- freqs
 
   if (is.character(backup.path)) {
-    write.csv(result, backup.path) # write to file
+    utils::write.csv(result, backup.path) # write to file
   }
 
   return(result)
@@ -115,7 +117,7 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
                                               odds = c(1,1,1))
 
     lrt <- 2 * log(prob.sel / prob.neutral)
-    p.value <- 1 - pchisq(q = lrt, df = 2)
+    p.value <- 1 - stats::pchisq(q = lrt, df = 2)
 
     result <- c(round(prob.neutral, 4), round(prob.sel, 4),
                 toString(round(sel.weights, 4)), round(lrt,4),
@@ -137,7 +139,7 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 #'
 #' @param freq.dead An vector of observed absolute frequencies for the three
 #' genotypes in the dead population
-#' @param freq.dead An vector of observed absolute frequencies for the three
+#' @param freq.all An vector of observed absolute frequencies for the three
 #' genotypes in the population before selection
 #'
 #' @return 

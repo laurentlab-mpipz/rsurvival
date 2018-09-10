@@ -3,7 +3,7 @@
 #' @param gt The genotype matrix to analyse
 #' @param genotypic If TRUE (default), include frequencies of genotypes in the
 #' result
-#' @param genotypic If TRUE, include frequencies of alles in the result,
+#' @param allelic If TRUE, include frequencies of alles in the result,
 #' default set to FALSE
 #' @param absolute If TRUE (default), occurences will be shown instead of
 #' relative frequencies
@@ -71,7 +71,7 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
   result <- t(result) # reverse for a better display
 
   if(is.character(backup.path)){
-    write.csv(result, backup.path) # write to file
+    utils::write.csv(result, backup.path) # write to file
   }
 
   return(result)
@@ -84,7 +84,7 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 #' @param variant The genotype matrix to analyse
 #' @param genotypic If TRUE (default), include frequencies of genotypes in the
 #' result
-#' @param genotypic If TRUE, include frequencies of alles in the result,
+#' @param allelic If TRUE, include frequencies of alles in the result,
 #' default set to FALSE
 #' @param absolute If TRUE (default), occurences will be shown instead of
 #' relative frequencies

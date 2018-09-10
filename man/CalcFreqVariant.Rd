@@ -14,6 +14,9 @@ CalcFreqVariant(variant, genotypic = TRUE, allelic = FALSE,
 \item{genotypic}{If TRUE (default), include frequencies of genotypes in the
 result}
 
+\item{allelic}{If TRUE, include frequencies of alles in the result,
+default set to FALSE}
+
 \item{absolute}{If TRUE (default), occurences will be shown instead of
 relative frequencies}
 
@@ -30,9 +33,6 @@ condition, return NULL. Default is NULL (disabled).}
 allele in a \code{variant}. If \code{variant} does not fulfill this
 condition, return NULL. Default is 0.1, set it to NULL to disable this
 feature.}
-
-\item{genotypic}{If TRUE, include frequencies of alles in the result,
-default set to FALSE}
 }
 \value{
 A vector of frequencies.

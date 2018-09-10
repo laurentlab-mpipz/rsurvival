@@ -11,7 +11,7 @@ CalcWeightsSelection(freq.dead, freq.all)
 \item{freq.dead}{An vector of observed absolute frequencies for the three
 genotypes in the dead population}
 
-\item{freq.dead}{An vector of observed absolute frequencies for the three
+\item{freq.all}{An vector of observed absolute frequencies for the three
 genotypes in the population before selection}
 }
 \value{

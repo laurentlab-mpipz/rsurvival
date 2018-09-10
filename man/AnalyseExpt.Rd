@@ -27,9 +27,11 @@ of genotype and probabilities that they are due to random picking and
 positive selection.
 }
 \examples{
-Analyse 
+AnalyseExpt(gt.alive, gt.dead)
+AnalyseExpt(gt.alive, gt.dead, p.values = FALSE)
+AnalyseExpt(gt.alive, gt.dead, backup.path = "example.csv")
 }
 \seealso{
 For more information, see \code{\link{CalcProbsSelection}} and
-\code{\link{FreqGt}} which this function bind.
+\code{\link{CalcFreqGt}} which this function bind.
 }
