@@ -5,13 +5,13 @@
 \title{A function to get a filtered (and possibly splitted) vcfR::VCF object from
 a VCF file.}
 \usage{
-LoadVcf(file.path, survivals = NULL, only.biallelic = TRUE,
+LoadVcf(file.path, survival = NULL, only.biallelic = TRUE,
   only.snp = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{file.path}{The path to the VCF file you want to load}
 
-\item{survivals}{Optional. A logical vector for splitting the data into two
+\item{survival}{Optional. A logical vector for splitting the data into two
 vcfR::VCF objects. The length of the vector must match the number of samples
 in the VCF file.}
 
@@ -25,10 +25,10 @@ omited.}
 along the execution.}
 }
 \value{
-A vcR:VCF object or a list of vcfR:VCF objects if a survivals vector was
+A vcR:VCF object or a list of vcfR:VCF objects if a survival vector was
 provided. 
 If a list is returned, list$alive is the vcfR::VCF object containing the
-samples which the position corresponded with a TRUE in the survivals vector.
+samples which the position corresponded with a TRUE in the survival vector.
 The other samples are contained in list$dead as an other vcfR::VCF object.
 }
 \description{
@@ -37,8 +37,8 @@ a VCF file.
 }
 \examples{
 LoadVCF("example.vcf")
-LoadVCF("example.vcf", survivals = c(TRUE, FALSE, FALSE, TRUE, ...))
-LoadVCF("example.vcf", survivals = mySurvVector, verbose = FALSE)
+LoadVCF("example.vcf", survival = c(TRUE, FALSE, FALSE, TRUE, ...))
+LoadVCF("example.vcf", survival = mySurvVector, verbose = FALSE)
 LoadVCF("example.vcf", only.biallelic = FALSE, only.snp = FALSE)
 }
 \seealso{

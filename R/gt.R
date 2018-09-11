@@ -21,8 +21,8 @@
 #' ExtractGt(vcf, min.sample.qual = 0.65, min.variant.qual = 0.4)
 #' ExtractGt(vcf, min.depth = 4, verbose = FALSE)
 
-ExtractGt <- function(vcf, min.depth=NULL, min.sample.qual=NULL,
-                      min.variant.qual=NULL, verbose=TRUE) {
+ExtractGt <- function(vcf, min.depth = NULL, min.sample.qual = NULL,
+                      min.variant.qual = NULL, verbose = TRUE) {
 
   # A data.frame of strings (e.g. "1/0") or NA.
   gt <- vcfR::extract.gt(vcf, element = "GT")
@@ -211,6 +211,68 @@ OmitPoorVariants <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
   if (verbose) {
     message(paste(sum(!filter, na.rm = TRUE), " variants omitted."))
   }
+
+  return(result)
+
+}
+
+
+#' A function to split a genotype matrix two genotype matrix according to a
+#' logical vector
+#'
+#' @param gt The original genotype matrix to split
+#' @param survival A logical vector for splitting the data into two gt matrix.
+#' The length of the vector must match the number of samples in the gt matrix.
+#' @param verbose Logical. If TRUE (default), report status of the process
+#' along the execution.
+#'
+#' @return 
+#' A list of genotype matrix list.
+#' \code{list$alive} is the gt matrix containing the samples which position
+#' corresponds with a TRUE in the \code{survival} vector.
+#' The other samples are contained in \code{list$dead} as an other gt matrix
+#'
+#' @export
+#'
+#' @examples
+#' SplitGt(gt, c(TRUE, TRUE, FALSE, ...))
+#' SplitGt(gt, survival.vector, verbose = FALSE)
+
+SplitGt <- function(gt, survival, verbose = TRUE){
+
+  alive <- NULL
+  dead  <- NULL
+
+  if (!is.logical(survival)) {
+    stop("Parameter survival must be a logical vector")
+  }
+  if (class(gt) == "list") {
+    return(lapply(gt, FUN = function(x){ SplitGt(x, survival) }))
+  }
+  if (class(gt) != "matrix" ) {
+    stop("Parameter gt must be a matrix")
+  }
+
+  # number of alive samples
+  len.survival <- length(survival)
+  # number of samples in the gt object
+  len.gt <- ncol(gt)
+
+  if (len.survival < len.gt){
+    if (verbose) {
+      warning(paste("Parameter surivals is shorter than parameter gt (",
+                    len.survival, " versus ", len.gt, ")"))
+    }
+  } else if (len.survival > len.gt) {
+    stop(paste("Parameter surivals is longer than parameter gt (",
+                    len.survival, " versus ", len.gt, ")"))
+  }
+
+  alive <- gt[, survival]
+  dead <- gt[, !survival]
+
+  # $alive items correspond to a TRUE in the survival vector
+  result <- list("alive" = alive, "dead" = dead) 
 
   return(result)
 

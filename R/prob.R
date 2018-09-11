@@ -128,7 +128,7 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 
   }
 
-  names(result) <- c("p_neutral", "p_select", "weigths",  "lrt", "p_value")
+  names(result) <- c("p.neutral", "p.select", "weigths",  "lrt", "p.value")
   return(result)
 
 }

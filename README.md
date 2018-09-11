@@ -7,7 +7,7 @@ You will have to provide a VCF file and a survival vector to get started with th
 This package is developped by the Max Planck Institute for Plant Breeding Research.
 
 ## Dependencies
-This package needs vcfR, stringr and BiasedUrn packages to work properly.
+This package needs vcfR, BiasedUrn, stringr and lubridate packages to work properly.
 Unit testing is done using testthat package.
 
 Let me change that

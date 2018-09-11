@@ -5,12 +5,12 @@
 \title{A function to split a vcfR::VCF object in two vcfR::VCF object according to
 a logical vector}
 \usage{
-SplitVcf(vcf, survivals, verbose = TRUE)
+SplitVcf(vcf, survival, verbose = TRUE)
 }
 \arguments{
 \item{vcf}{The original vcfR::VCF object to split}
 
-\item{survivals}{A logical vector for splitting the data into two vcfR::VCF
+\item{survival}{A logical vector for splitting the data into two vcfR::VCF
 objects.
 The length of the vector must match the number of samples in the VCF file.}
 
@@ -19,8 +19,8 @@ along the execution.}
 }
 \value{
 A list of vcfR:VCF objects.
-\code{list$alive} is the vcfR::VCF object contains the samples which the position
-corresponded with a TRUE in the \code{survivals} vector.
+\code{list$alive} is the vcfR::VCF object containing the samples which position
+corresponds with a TRUE in the \code{survival} vector.
 The other samples are contained in \code{list$dead} as an other vcfR::VCF object.
 }
 \description{
@@ -29,5 +29,5 @@ a logical vector
 }
 \examples{
 SplitVcf(vcf, c(TRUE, TRUE, FALSE, ...))
-SplitVcf(vcf, survivals.vector, verbose = FALSE)
+SplitVcf(vcf, survival.vector, verbose = FALSE)
 }

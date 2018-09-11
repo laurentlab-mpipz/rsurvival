@@ -27,8 +27,8 @@ test_that("error is thrown when parameter vcf is not a vcfR object", {
 })
 
 test_that("error is thrown when parameter survivals is not a logical vector", {
-  expect_error(SplitVcf(vcf, 42), "survivals")
-  expect_error(SplitVcf(vcf, "brownie"), "survivals")
+  expect_error(SplitVcf(vcf, 42), "survival")
+  expect_error(SplitVcf(vcf, "brownie"), "survival")
 })
 
 test_that("warning is thrown if survivals vector is too short", {

@@ -2,7 +2,7 @@
 #' a VCF file.
 #'
 #' @param file.path The path to the VCF file you want to load
-#' @param survivals Optional. A logical vector for splitting the data into two
+#' @param survival Optional. A logical vector for splitting the data into two
 #' vcfR::VCF objects. The length of the vector must match the number of samples
 #' in the VCF file.
 #' @param only.biallelic Logical. If TRUE (default), only biallelic variants
@@ -13,10 +13,10 @@
 #' along the execution.
 #'
 #' @return 
-#' A vcR:VCF object or a list of vcfR:VCF objects if a survivals vector was
+#' A vcR:VCF object or a list of vcfR:VCF objects if a survival vector was
 #' provided. 
 #' If a list is returned, list$alive is the vcfR::VCF object containing the
-#' samples which the position corresponded with a TRUE in the survivals vector.
+#' samples which the position corresponded with a TRUE in the survival vector.
 #' The other samples are contained in list$dead as an other vcfR::VCF object. 
 #'
 #' @export
@@ -27,11 +27,11 @@
 #'
 #' @examples
 #' LoadVCF("example.vcf")
-#' LoadVCF("example.vcf", survivals = c(TRUE, FALSE, FALSE, TRUE, ...))
-#' LoadVCF("example.vcf", survivals = mySurvVector, verbose = FALSE)
+#' LoadVCF("example.vcf", survival = c(TRUE, FALSE, FALSE, TRUE, ...))
+#' LoadVCF("example.vcf", survival = mySurvVector, verbose = FALSE)
 #' LoadVCF("example.vcf", only.biallelic = FALSE, only.snp = FALSE)
 
-LoadVcf <- function(file.path, survivals = NULL, only.biallelic = TRUE,
+LoadVcf <- function(file.path, survival = NULL, only.biallelic = TRUE,
                     only.snp = TRUE, verbose = TRUE) {
 
   vcf <- NULL
@@ -50,8 +50,8 @@ LoadVcf <- function(file.path, survivals = NULL, only.biallelic = TRUE,
     
     vcf <- vcfR::read.vcfR(file.path, verbose = verbose)
 
-    if (is.logical(survivals) && !is.na(survivals)) {
-      vcf <- SplitVcf(vcf, survivals, verbose = verbose)
+    if (is.logical(survival) && !is.na(survival)) {
+      vcf <- SplitVcf(vcf, survival, verbose = verbose)
     }
     if (only.biallelic) {
       vcf <- RmNonBiallelics(vcf, verbose = verbose)
@@ -75,7 +75,7 @@ LoadVcf <- function(file.path, survivals = NULL, only.biallelic = TRUE,
 #' a logical vector
 #'
 #' @param vcf The original vcfR::VCF object to split
-#' @param survivals A logical vector for splitting the data into two vcfR::VCF
+#' @param survival A logical vector for splitting the data into two vcfR::VCF
 #' objects.
 #' The length of the vector must match the number of samples in the VCF file.
 #' @param verbose Logical. If TRUE (default), report status of the process
@@ -83,48 +83,48 @@ LoadVcf <- function(file.path, survivals = NULL, only.biallelic = TRUE,
 #'
 #' @return 
 #' A list of vcfR:VCF objects.
-#' \code{list$alive} is the vcfR::VCF object contains the samples which the position
-#' corresponded with a TRUE in the \code{survivals} vector.
+#' \code{list$alive} is the vcfR::VCF object containing the samples which position
+#' corresponds with a TRUE in the \code{survival} vector.
 #' The other samples are contained in \code{list$dead} as an other vcfR::VCF object.
 #'
 #' @export
 #'
 #' @examples
 #' SplitVcf(vcf, c(TRUE, TRUE, FALSE, ...))
-#' SplitVcf(vcf, survivals.vector, verbose = FALSE)
+#' SplitVcf(vcf, survival.vector, verbose = FALSE)
 
-SplitVcf <- function(vcf, survivals, verbose=TRUE){
+SplitVcf <- function(vcf, survival, verbose = TRUE){
 
   alive <- NULL
   dead  <- NULL
 
-  if (!is.logical(survivals)) {
-    stop("Parameter survivals must be a logical vector")
+  if (!is.logical(survival)) {
+    stop("Parameter survival must be a logical vector")
   }
   if (class(vcf) != "vcfR" ) {
     stop("Parameter vcf must be a vcfR object")
   }
 
   # number of alive samples
-  len.survival <- length(survivals)
+  len.survival <- length(survival)
   # number of samples in th VCF file, "-1" uncount the FORMAT column
   len.vcf <- length(vcf[1, ]@gt) - 1 
 
   if (len.survival < len.vcf){
     if (verbose) {
-      warning(paste("Parameter surivals is shorter than parameter vcf  (",
+      warning(paste("Parameter surival is shorter than parameter vcf (",
                     len.survival, " versus ", len.vcf, ")"))
     }
   } else if (len.survival > len.vcf) {
-    stop(paste("Parameter surivals is longer than parameter vcf  (",
+    stop(paste("Parameter surival is longer than parameter vcf (",
                     len.survival, " versus ", len.vcf, ")"))
   }
 
   # add TRUE at the beggining to include the FORMAT column as well
-  alive <- vcf[, c(TRUE, survivals)]
-  dead <- vcf[, c(TRUE, !survivals)]
+  alive <- vcf[, c(TRUE, survival)]
+  dead <- vcf[, c(TRUE, !survival)]
 
-  # $alive items correspond to a TRUE in the survivals vector
+  # $alive items correspond to a TRUE in the survival vector
   result <- list("alive" = alive, "dead" = dead) 
 
   return(result)
