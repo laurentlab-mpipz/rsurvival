@@ -5,7 +5,7 @@
 \title{A function to extract a genotype from a vcfR::VCF object.}
 \usage{
 ExtractGt(vcf, min.depth = NULL, min.sample.qual = NULL,
-  min.variant.qual = NULL, verbose = TRUE)
+  min.variant.qual = NULL, include.depth = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{vcf}{A vcfR::VCF object}
@@ -19,12 +19,14 @@ with too much missing data will be removed (from 0 to 1)}
 \item{min.variant.qual}{Optional. A threshold ratio under which the variants
 with too much missing data will be removed (from 0 to 1)}
 
+\item{include.depth}{If TRUE, will return a list of matrix including the
+genotype as \code{list$gt} and the depth as \code{list$dp}}
+
 \item{verbose}{Logical. If TRUE (default), report status of the process
 along the execution}
 }
 \value{
-A list of dataframes. \code{list$gt} is the genotype dataframe, \code{list$dp} is the
-depth dataframe.
+A genotype matrix from the vcfR object.
 }
 \description{
 A function to extract a genotype from a vcfR::VCF object.

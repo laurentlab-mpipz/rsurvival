@@ -56,19 +56,21 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
                   }
             )
 
+  result <- t(result)
+
   if (!is.null(min.freq.gt) || !is.null(min.freq.al)) {
     # filter the variants without NA frequencies
     # this appends when a freq is lower than min.freq.al or min.freq.gt
-    filter <- apply(result, MARGIN = 2,
+    filter <- apply(result, MARGIN = 1,
                     FUN = function(x) {
                       return(!as.logical(sum(is.na(x))))
                     }
               )
-    result <- result[, filter]
+    if (sum(!filter) != 0){
+      result <- result[filter, ]
+    }
     #result <- result[!as.logical(sum(is.na(result[, 1])))]
   }
-
-  result <- t(result) # reverse for a better display
 
   if(is.character(backup.path)){
     utils::write.csv(result, backup.path) # write to file
@@ -130,6 +132,21 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   result    <- NULL 
   return.na <- FALSE
 
+  # handle lists --------------------------------------------------------------
+
+  if (typeof(variant) == "list") {
+    result <- lapply(variant,
+                     FUN = function(x){
+                       CalcFreqVariant(x, genotypic = genotypic,
+                                       allelic = allelic, absolute = absolute,
+                                       percentage = percentage, totals = totals,
+                                       min.freq.gt = min.freq.gt,
+                                       min.freq.al = min.freq.al)
+                     }
+                   )
+    return(result)
+  }
+
   # actual counting using regex -----------------------------------------------
 
   counts <- c(sum(grepl("0.*0",variant)), sum(grepl("0.*1|1.*0",variant)),
@@ -189,13 +206,13 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   # build titles for each frequencies returned --------------------------------
 
   names(result.al) <- paste(prefix,
-                            c("al_REF", "al_ALT", "al_MissVal"), sep="_")
+                            c("al.REF", "al.ALT", "al.MISSVAL"), sep=".")
   names(result.gt) <- paste(prefix,
-                            c("gt_HomoREF", "gt_Hetero", "gt_HomoALT",
-                              "gt_MissVal"),
-                            sep="_")
-  names(total.al)  <- c("count_al_Total")
-  names(total.gt)  <- c("count_gt_Total")
+                            c("gt.HOMOREF", "gt.HETERO", "gt.HOMOALT",
+                              "gt.MISSVAL"),
+                            sep=".")
+  names(total.al)  <- c("count.al.TOTAL")
+  names(total.gt)  <- c("count.gt.TOTAL")
 
   # concatenate results if needed ---------------------------------------------
 

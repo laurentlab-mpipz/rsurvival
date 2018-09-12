@@ -31,15 +31,22 @@ AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
                         absolute = TRUE)
 
   # only keep rows in common
-  freq.alive <- freq.alive[rownames(freq.alive) %in% rownames(freq.dead), ]
-  freq.dead  <- freq.dead[rownames(freq.dead) %in% rownames(freq.alive), ]
+  filter.alive <- rownames(freq.alive) %in% rownames(freq.dead)
+  if (sum(!filter.alive) > 0) {
+    freq.alive <- freq.alive[filter.alive, ]
+  }
+  filter.dead <- rownames(freq.dead) %in% rownames(freq.alive)
+  if (sum(!filter.dead) > 0) {
+    freq.dead <- freq.dead[filter.dead, ]
+  }
+
   freq.all   <- freq.alive + freq.dead
   freqs      <- cbind(freq.alive, freq.all)
 
   # modify frequencies column names
-  colnames.surv   <- paste("SURVIVERS", colnames(freq.alive), sep = "_")
-  colnames.all    <- paste("ALL", colnames(freq.alive), sep = "_")
-  colnames(freqs) <- c(colnames.surv, colnames.all)
+  colnames.alive   <- paste("SURVIVERS", colnames(freq.alive), sep = ".")
+  colnames.all    <- paste("ALL", colnames(freq.alive), sep = ".")
+  colnames(freqs) <- c(colnames.alive, colnames.all)
 
   if (p.values) {
 
@@ -89,7 +96,7 @@ AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
 #' \code{p_neutral}, \code{p_value} is the probability that the distribution
 #' is due to positive selection.
 #'
-#' @seealso For more information, see \code{\link{CalcWeightsSelection}} wich
+#' @seealso For more information, see \code{\link{CalcWeightsSurvival}} wich
 #' this function bind.
 #'
 #' @export
@@ -102,33 +109,34 @@ AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
 
 CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 
-  sel.weights <- CalcWeightsSelection(freq.dead, freq.all)
+  sel.weights <- CalcWeightsSurvival(freq.alive, freq.all)
 
   if ((sum(is.na(sel.weights)) == 0) && (sum(sel.weights <= 0) == 0) 
       && (sum(is.infinite(sel.weights)) == 0)) {
 
+    geno.freq.id <- c("count.gt.HOMOREF", "count.gt.HETERO", "count.gt.HOMOALT")
     x <- freq.alive[1:3] # distribution in alive population
     m <- freq.all[1:3] # distribution in aliveoriginal population
-    n <- freq.alive[5] - freq.alive[4] # nb of alive samples with valid data
+    # nb of alive samples with valid data
+    n <- freq.alive['count.gt.TOTAL'] - freq.alive['count.gt.MISSVAL']
 
     prob.sel <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
-                                          odds = (1 / sel.weights))
+                                          odds = sel.weights)
     prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
                                               odds = c(1,1,1))
 
     lrt <- 2 * log(prob.sel / prob.neutral)
     p.value <- 1 - stats::pchisq(q = lrt, df = 2)
 
-    result <- c(round(prob.neutral, 4), round(prob.sel, 4),
-                toString(round(sel.weights, 4)), round(lrt,4),
-                round(p.value,4))
+    result <- c(sel.weights, prob.neutral, prob.sel, lrt, p.value)
 
   } else {
-    result <- rep(NA, 5)
-
+    result <- rep(NA, 7) # to ensure that the result always has the same length
   }
 
-  names(result) <- c("p.neutral", "p.select", "weigths",  "lrt", "p.value")
+  names(result) <- c("weight.gt.HOMOREF", "weight.gt.HETERO",
+                      "weight.gt.HOMOALT", "p.neutral", "p.select",  "lrt",
+                      "p.value")
   return(result)
 
 }
@@ -137,8 +145,8 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 #' A function to calculate odds for positive selection from observed selection
 #' frequencies using MWNCHHypergeo model. 
 #'
-#' @param freq.dead An vector of observed absolute frequencies for the three
-#' genotypes in the dead population
+#' @param freq.alive A vector of observed absolute frequencies for the three
+#' genotypes in the alive population
 #' @param freq.all An vector of observed absolute frequencies for the three
 #' genotypes in the population before selection
 #'
@@ -148,20 +156,21 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 #' @export
 #'
 #' @examples
-#' f.dead <- c(17, 3, 15, 1, 36)
+#' f.alive <- c(17, 3, 15, 1, 36)
 #' f.all  <- c(24, 5, 22, 2, 53)
-#' CalcWeightsSelection(f.dead, f.all)
+#' CalcWeightsSurvival(f.alive, f.all)
 
-CalcWeightsSelection <- function(freq.dead, freq.all){
+CalcWeightsSurvival <- function(freq.alive, freq.all){
     
-    mu <- freq.dead[1:3] # distribution of dead samples
+    # index of the frequencies of the genotypes
+    geno.freq.id <- c("count.gt.HOMOREF", "count.gt.HETERO", "count.gt.HOMOALT")
+    mu <- freq.alive[1:3] # distribution of alive samples
     m  <- freq.all[1:3] # distribution of original population
-    n  <- freq.dead[5] - freq.dead[4] # number of dead samples with valid data
-
+    # number of alive samples with valid data
+    n  <- freq.alive[5] - freq.alive[4]
     # calculate odds
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
                                                             m = m, n = n))
-
     return(result)
 
 }

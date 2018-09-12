@@ -7,12 +7,13 @@
 #' with too much missing data will be removed (from 0 to 1)
 #' @param min.variant.qual Optional. A threshold ratio under which the variants
 #' with too much missing data will be removed (from 0 to 1)
+#' @param include.depth If TRUE, will return a list of matrix including the
+#' genotype as \code{list$gt} and the depth as \code{list$dp}
 #' @param verbose Logical. If TRUE (default), report status of the process
 #' along the execution
 #'
 #' @return 
-#' A list of dataframes. \code{list$gt} is the genotype dataframe, \code{list$dp} is the
-#' depth dataframe.
+#' A genotype matrix from the vcfR object.
 #'
 #' @export
 #'
@@ -22,7 +23,8 @@
 #' ExtractGt(vcf, min.depth = 4, verbose = FALSE)
 
 ExtractGt <- function(vcf, min.depth = NULL, min.sample.qual = NULL,
-                      min.variant.qual = NULL, verbose = TRUE) {
+                      min.variant.qual = NULL, include.depth = FALSE,
+                      verbose = TRUE) {
 
   # A data.frame of strings (e.g. "1/0") or NA.
   gt <- vcfR::extract.gt(vcf, element = "GT")
@@ -31,31 +33,35 @@ ExtractGt <- function(vcf, min.depth = NULL, min.sample.qual = NULL,
   dp <- vcfR::extract.gt(vcf, element = "DP", as.numeric = TRUE)
 
   if (is.numeric(min.depth)) {
-
     censored <- CensorLowDepth(gt, dp, min.depth, verbose = verbose)
     gt <- censored$gt
-    dp <- censored$dp
-
+    if (include.depth) {
+      dp <- censored$dp
+    }
   }
 
   if (is.numeric(min.variant.qual)) {
-
     omitted <- OmitPoorVariants(gt, min.variant.qual, dp = dp,
                                 verbose = verbose)
     gt <- omitted$gt
-    dp <- omitted$dp
-
+    if (include.depth) {
+      dp <- omitted$dp
+    }
   }
 
   if (is.numeric(min.sample.qual)) {
-
     omitted <- OmitPoorSamples(gt, min.sample.qual, dp = dp, verbose = verbose)
     gt <- omitted$gt
-    dp <- omitted$dp
-
+    if (include.depth) {
+      dp <- omitted$dp
+    }
   }
 
-  result <- list("gt" = gt, "dp" = dp)
+  if (include.depth) {
+    result <- list("gt" = gt, "dp" = dp)
+  } else {
+    result <- gt
+  }
 
   return(result)
 
@@ -227,7 +233,7 @@ OmitPoorVariants <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 #' along the execution.
 #'
 #' @return 
-#' A list of genotype matrix list.
+#' A list of genotype matrix.
 #' \code{list$alive} is the gt matrix containing the samples which position
 #' corresponds with a TRUE in the \code{survival} vector.
 #' The other samples are contained in \code{list$dead} as an other gt matrix

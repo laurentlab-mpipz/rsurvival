@@ -83,3 +83,39 @@ IsAtLeastNARatio <- function(vect, min.ratio) {
   return(result)
 
 }
+
+
+#' A function to split a vector into two vectors according to a survival 
+#' logical vector
+#'
+#' @param vect The original vector to split
+#' @param survival A logical vector for splitting the data into two vectors.
+#' The length of \code{survival} must match the length of \code{vector}
+#' @param verbose Logical. If TRUE (default), report status of the process
+#' along the execution.
+#'
+#' @return 
+#' A list of vectors.
+#' \code{list$alive} is the vector containing the samples which position
+#' corresponds with a TRUE in the \code{survival} vector.
+#' The other samples are contained in \code{list$dead} as an other vector
+#'
+#' @export
+#'
+#' @examples
+#' SplitGt(gt, c(TRUE, TRUE, FALSE, ...))
+#' SplitGt(gt, survival.vector, verbose = FALSE)
+
+SplitVect <- function(vect, survival){
+
+  if (length(ve) != length(survival)) {
+    warning("Both parameter should have the same length")
+  }
+
+  alive <- vect[survival]
+  dead <- vect[!survival]
+
+  result <- list("alive" = alive, "dead" = dead)
+  return(result)
+
+}

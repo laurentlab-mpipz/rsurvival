@@ -4,7 +4,11 @@
 #'
 #' @param gt A genotype matrix
 #' @param survival A survival vector to shuffle
-#' @param odds Optional. Not used yet.
+#' @param odded.deaths Optional. A vector containing a number of death for each
+#' categories of \code{odded.samples} (e.g. c("HETERO" = 32, "HOMOREF" = 18, 
+#' ... ))
+#' @param odded.samples Optional. A list of vectors containing index for each
+#' odded sample categories. (e.g. list$HETERO could be c(1,3,7,45,141))
 #' @param verbose Logical. If TRUE (default), report status of the process
 #' along the execution.
 #'
@@ -19,14 +23,31 @@
 #' @examples
 #' PermutSurv(gt, c(TRUE, TRUE, FALSE, ...))
 #' PermutSurv(gt, survival, verbose = FALSE)
+#' PermutSurv(gt, survival, odded.deaths = c("HETERO" = 32, "HOMOREF" = 18, ...
+#' ), odded.samples = list("HETERO" = c(1,3,7,45,141), ...)))
 
-PermutSurv <- function(gt, survival, odds = NULL, verbose = TRUE){
+PermutRandSurv <- function(gt, survival, odded.deaths = NULL,
+                            odded.samples = NULL, verbose = TRUE){
 
-  survival 	  <- sample(survival) # pseudo-random shuffle
-  splitted.gt <- SplitGt(gt$gt, survival, verbose = verbose)
-  probs       <- AnalyseExpt(splitted.gt$alive, splitted.gt$dead)
+  result <- NULL
 
-  result <- probs
+  if (!is.null(odded.deaths) && !is.null(odded.samples)) {
+
+    survival <- rep(FALSE, length(survival))
+    survival[sample(odded.samples$HOMOREF)[1:odded.deaths['HOMOREF']]] <- TRUE
+    survival[sample(odded.samples$HETERO)[1:odded.deaths['HETERO']]]   <- TRUE
+    survival[sample(odded.samples$HOMOALT)[1:odded.deaths['HOMOALT']]] <- TRUE
+
+  } else {
+
+    survival <- sample(survival) # pseudo-random shuffle
+
+  }
+
+   splitted.gt <- SplitGt(gt, survival, verbose = verbose)
+   probs       <- AnalyseExpt(splitted.gt$alive, splitted.gt$dead)
+
+   result <- probs
 
   return(result)
 
@@ -73,7 +94,9 @@ CountSignSnps <- function(probs, max.p.neutral = 0.01){
 #' @param max.p.neutral A threshold for \code{p.neutral} under which the snp
 #' will be counted (default is 0.01)
 #' @param iter Number of iteration (default is 10)
-#' @param odds Optional. Not used yet.
+#' @param odded.pos Optional. Reference to a variant in \code{gt} as a string.
+#' Iterate random pick according to the observed odds of genotype at this
+#' position in the genome.
 #' @param verbose Logical. If TRUE (default), report status of the process
 #' along the execution.
 #'
@@ -92,18 +115,63 @@ CountSignSnps <- function(probs, max.p.neutral = 0.01){
 #' IterRandomPick(gt, survival, max.p.neutral = 0.05)
 #' IterRandomPick(gt, survival, iter = 1000, verbose = FALSE)
 
-IterRandomPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
-                            odds = NULL, verbose = TRUE){
+IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
+                            odded.pos = NULL, verbose = TRUE){
 
   result <- c()
+
+  # Prepare number of deaths if needed ----------------------------------------
+
+  if (is.character(odded.pos)) {
+
+    if (verbose) {
+      message(paste("Preparing : ", iter * sum(!survival),
+                    " odded deaths, it can take a while...", sep = ""))
+    }
+
+    # variant in which positive selection will be applied
+    odded.variant <- gt[odded.pos, ]
+    split.odded.variant <- SplitVect(odded.variant, survival)
+    variant.alive <- t(data.frame("variant" = split.odded.variant$alive,
+                                    stringsAsFactors = FALSE))
+    variant.dead  <- t(data.frame("variant" = split.odded.variant$dead,
+                                      stringsAsFactors = FALSE))
+    rownames(variant.alive) <- c(odded.pos)
+    rownames(variant.dead)  <- c(odded.pos)
+
+    # ids of samples concerned by each genotype
+    gt.ids <- list("HOMOREF" = grep("0.*0", odded.variant),
+                    "HETERO" = grep("0.*1|1.*0", odded.variant),
+                    "HOMOALT" = grep("1.*1", odded.variant))
+
+    # stats for observed selection during the real experiment
+    probs <- AnalyseExpt(variant.alive, variant.dead)
+    freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
+                          "ALL.count.gt.HOMOALT")]
+    odds <- probs[, c("weight.gt.HOMOREF", "weight.gt.HETERO",
+                    "weight.gt.HOMOALT")]
+
+    # simulate number of deaths per genotypes with the observed odds
+    nb.alive <- BiasedUrn::rMWNCHypergeo(nran = iter, m = freqs.all,
+                                          n = sum(survival), odds = odds)
+    rownames(nb.alive) <- c("HOMOREF", "HETERO", "HOMOALT")
+    colnames(nb.alive) <- 1:iter
+    
+    if (verbose) {
+      message("Preparing : DONE.")
+    }
+
+  }
+
+  # Start iterating -----------------------------------------------------------
 
   time.stamp <- proc.time()[3] # ellapsed time since session launched
   time.left  <- NA # estimated remaining time
 
   for (i in 1:iter) {
 
+    # print the iteration number and the estimated remaining time
     if (verbose) {
-      # print the iteration number and the estimated remaining time
       if (i == 1) {
         message(paste("Iterating : ", i, " out of ", iter, " (Estimating time)",
                       sep = ""))
@@ -114,7 +182,13 @@ IterRandomPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
     }
 
     # calculate probs with a random survival vector
-    probs.rand <- PermutSurv(gt, survival, verbose = FALSE)
+    if (is.character(odded.pos)){
+      probs.rand <- PermutRandSurv(gt, survival, odded.deaths = nb.alive[, i],
+                                    odded.samples = gt.ids, verbose = FALSE)
+    } else {
+      probs.rand <- PermutRandSurv(gt, survival,verbose = FALSE)
+    }
+
     # count significant p.neutral and append the count to result
     result     <- c(result, CountSignSnps(probs.rand, max.p.neutral))
 
