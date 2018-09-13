@@ -6,12 +6,16 @@
 of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
-AnalyseExpt(gt.alive, gt.dead, p.values = TRUE, backup.path = NULL)
+AnalyseExpt(gt.alive, gt.dead, location.cols = TRUE, p.values = TRUE,
+  backup.path = NULL)
 }
 \arguments{
 \item{gt.alive}{A genotype data frame of the alive population}
 
 \item{gt.dead}{A genotype data frame of the dead population}
+
+\item{location.cols}{If TRUE, adds two columns to the result, which are the
+scaffold name and the locus name as factors (deafult is FALSE)}
 
 \item{p.values}{If TRUE (default), some probabilities will be included in
 the result, as well as frequencies}

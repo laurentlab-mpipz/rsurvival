@@ -113,7 +113,7 @@ SplitVect <- function(vect, survival){
   }
 
   alive <- vect[survival]
-  dead <- vect[!survival]
+  dead  <- vect[!survival]
 
   result <- list("alive" = alive, "dead" = dead)
   return(result)

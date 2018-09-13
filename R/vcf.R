@@ -122,7 +122,7 @@ SplitVcf <- function(vcf, survival, verbose = TRUE){
 
   # add TRUE at the beggining to include the FORMAT column as well
   alive <- vcf[, c(TRUE, survival)]
-  dead <- vcf[, c(TRUE, !survival)]
+  dead  <- vcf[, c(TRUE, !survival)]
 
   # $alive items correspond to a TRUE in the survival vector
   result <- list("alive" = alive, "dead" = dead) 

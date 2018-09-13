@@ -275,7 +275,7 @@ SplitGt <- function(gt, survival, verbose = TRUE){
   }
 
   alive <- gt[, survival]
-  dead <- gt[, !survival]
+  dead  <- gt[, !survival]
 
   # $alive items correspond to a TRUE in the survival vector
   result <- list("alive" = alive, "dead" = dead) 

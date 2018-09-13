@@ -34,8 +34,7 @@ condition will be omitted. Default is NULL (disabled).}
 
 \item{min.freq.al}{Optional. Minimal value of relative frequency for each
 allele in a variant of \code{gt}. Variants which does not fulfill this
-condition will be omitted. Default is 0.1, set it to NULL to disable this
-feature.}
+condition will be omitted. Default is NULL (disabled).}
 }
 \value{
 A data frame of frequencies.

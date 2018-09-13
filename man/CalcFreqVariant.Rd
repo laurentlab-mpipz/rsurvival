@@ -31,8 +31,7 @@ condition, return NULL. Default is NULL (disabled).}
 
 \item{min.freq.al}{Optional. Minimal value of relative frequency for each
 allele in a \code{variant}. If \code{variant} does not fulfill this
-condition, return NULL. Default is 0.1, set it to NULL to disable this
-feature.}
+condition, return NULL. Default is NULL (disabled).}
 }
 \value{
 A vector of frequencies.

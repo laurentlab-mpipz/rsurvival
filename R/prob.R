@@ -4,6 +4,8 @@
 #'
 #' @param gt.alive A genotype data frame of the alive population
 #' @param gt.dead A genotype data frame of the dead population
+#' @param location.cols If TRUE, adds two columns to the result, which are the
+#' scaffold name and the locus name as factors (deafult is FALSE)
 #' @param p.values If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
 #' @param backup.path Optionnal. A path where backup files can be stored
@@ -21,8 +23,8 @@
 #' AnalyseExpt(gt.alive, gt.dead, p.values = FALSE)
 #' AnalyseExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
-AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
-                              backup.path = NULL){
+AnalyseExpt <- function(gt.alive, gt.dead, location.cols = TRUE, 
+                        p.values = TRUE, backup.path = NULL){
 
   # calculate frequencies
   freq.alive <- CalcFreqGt(gt.alive, genotypic = TRUE, allelic = TRUE,
@@ -64,6 +66,16 @@ AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
 
     freqs <- cbind(freqs, t(probs))
 
+  }
+
+  if (location.cols) {
+    temp.names <- colnames(freqs)
+    lim <- stringr::str_locate(rownames(freqs), "_")[, 1]
+    freqs <- cbind(data.frame(stringr::str_sub(rownames(freqs), lim + 1, -1)),
+                    freqs)
+    freqs <- cbind(data.frame(stringr::str_sub(rownames(freqs), 1, lim - 1)),
+                    freqs)
+    colnames(freqs) <- c("CHROM", "LOCUS", temp.names)
   }
 
   result <- freqs
@@ -114,21 +126,24 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
   if ((sum(is.na(sel.weights)) == 0) && (sum(sel.weights <= 0) == 0) 
       && (sum(is.infinite(sel.weights)) == 0)) {
 
-    geno.freq.id <- c("count.gt.HOMOREF", "count.gt.HETERO", "count.gt.HOMOALT")
-    x <- freq.alive[1:3] # distribution in alive population
-    m <- freq.all[1:3] # distribution in aliveoriginal population
+    id.alive <- FindIdsGtCounts(freq.alive)
+    id.all   <- FindIdsGtCounts(freq.all)
+
+    # distribution in alive population
+    x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
+    # distribution in aliveoriginal population
+    m <- freq.all[c(id.all$homo.ref, id.all$hetero, id.all$homo.alt)]
     # nb of alive samples with valid data
     n <- freq.alive['count.gt.TOTAL'] - freq.alive['count.gt.MISSVAL']
 
-    prob.sel <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
+    prob.sel     <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
                                           odds = sel.weights)
     prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
                                               odds = c(1,1,1))
 
-    lrt <- 2 * log(prob.sel / prob.neutral)
-    p.value <- 1 - stats::pchisq(q = lrt, df = 2)
-
-    result <- c(sel.weights, prob.neutral, prob.sel, lrt, p.value)
+    lrt     <- 2 * log(prob.sel / prob.neutral)
+    p.value <- 1 - stats::pchisq(q = lrt, df = 2)  
+    result  <- c(sel.weights, prob.neutral, prob.sel, lrt, p.value)
 
   } else {
     result <- rep(NA, 7) # to ensure that the result always has the same length
@@ -162,12 +177,18 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 
 CalcWeightsSurvival <- function(freq.alive, freq.all){
     
-    # index of the frequencies of the genotypes
-    geno.freq.id <- c("count.gt.HOMOREF", "count.gt.HETERO", "count.gt.HOMOALT")
-    mu <- freq.alive[1:3] # distribution of alive samples
-    m  <- freq.all[1:3] # distribution of original population
+    id.alive <- FindIdsGtCounts(freq.alive)
+    id.all   <- FindIdsGtCounts(freq.all)
+
+    # distribution of alive samples
+    mu <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
+    # distribution of original population
+    m  <- freq.all[c(id.all$homo.ref, id.all$hetero, id.all$homo.alt)] 
     # number of alive samples with valid data
-    n  <- freq.alive[5] - freq.alive[4]
+    n  <- freq.alive[id.alive$total] - freq.alive[id.alive$missval]
+    
+
+
     # calculate odds
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
                                                             m = m, n = n))

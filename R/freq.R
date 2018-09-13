@@ -17,8 +17,7 @@
 #' condition will be omitted. Default is NULL (disabled).
 #' @param min.freq.al Optional. Minimal value of relative frequency for each
 #' allele in a variant of \code{gt}. Variants which does not fulfill this
-#' condition will be omitted. Default is 0.1, set it to NULL to disable this
-#' feature.
+#' condition will be omitted. Default is NULL (disabled).
 #'
 #' @return 
 #' A data frame of frequencies.
@@ -98,8 +97,7 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 #' condition, return NULL. Default is NULL (disabled).
 #' @param min.freq.al Optional. Minimal value of relative frequency for each
 #' allele in a \code{variant}. If \code{variant} does not fulfill this
-#' condition, return NULL. Default is 0.1, set it to NULL to disable this
-#' feature.
+#' condition, return NULL. Default is NULL (disabled).
 #'
 #' @return 
 #' A vector of frequencies.
@@ -139,7 +137,8 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                      FUN = function(x){
                        CalcFreqVariant(x, genotypic = genotypic,
                                        allelic = allelic, absolute = absolute,
-                                       percentage = percentage, totals = totals,
+                                       percentage = percentage,
+                                       totals = totals,
                                        min.freq.gt = min.freq.gt,
                                        min.freq.al = min.freq.al)
                      }
@@ -228,6 +227,34 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   } else {
     result <- result.al
   }
+
+  return(result)
+
+}
+
+
+#' @export
+
+FindIdsGtCounts <- function(freq){
+
+  # index of the frequencies of the genotypes
+  homo.ref <- grep("^.*count\\.gt\\.HOMOREF$", names(freq))
+  hetero   <- grep("^.*count\\.gt\\.HETERO$", names(freq))
+  homo.alt <- grep("^.*count\\.gt\\.HOMOALT$", names(freq))
+  missval  <- grep("^.*count\\.gt\\.MISSVAL$", names(freq))
+  total    <- grep("^.*count\\.gt\\.TOTAL$", names(freq))
+
+  # if (length(homoref) != 1 || length(alive.id.hetero) != 1 
+  #       || length(alive.id.homoalt) != 1 || length(alive.id.total) != 1
+  #       || length(alive.id.total) != 1) {
+  #   stop(paste("Wrong number of ids for frequency columnns in freq.alive. ", 
+  #               "Sould be (1,1,1,1,1) instead of (", alive.id.homoref, ",",
+  #               alive.id.hetero, ",", alive.id.homoalt, ",",
+  #               alive.id.missval, ",", alive.id.total, ")." ))
+  # }
+
+  result <- list("homo.ref" = homo.ref, "hetero" = hetero,
+                  "homo.alt" = homo.alt, "missval" = missval, "total"= total)
 
   return(result)
 
