@@ -6,7 +6,7 @@
 selection model from a genotype matrix whit a randomly shuffled survival
 vector}
 \usage{
-PermutRandSurv(gt, survival, odded.deaths = NULL, odded.samples = NULL,
+PermutRandSurv(gt, survival, odded.lives = NULL, odded.samples = NULL,
   verbose = TRUE)
 }
 \arguments{
@@ -14,12 +14,15 @@ PermutRandSurv(gt, survival, odded.deaths = NULL, odded.samples = NULL,
 
 \item{survival}{A survival vector to shuffle}
 
+\item{odded.lives}{Optional. A vector containing a number of lives for each
+categories of \code{odded.samples} (e.g. c("HETERO" = 32, "HOMOREF" = 18, 
+... ))}
+
+\item{odded.samples}{Optional. A list of vectors containing index for each
+odded sample categories. (e.g. list$HETERO could be c(1,3,7,45,141))}
+
 \item{verbose}{Logical. If TRUE (default), report status of the process
 along the execution.}
-
-\item{odded.pos}{Optional. Not used yet.}
-
-\item{odds}{Optional. Not used yet.}
 }
 \value{
 A data frame of frequencies and probabilities, one snp per row.
@@ -32,6 +35,8 @@ vector
 \examples{
 PermutSurv(gt, c(TRUE, TRUE, FALSE, ...))
 PermutSurv(gt, survival, verbose = FALSE)
+PermutSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
+), odded.samples = list("HETERO" = c(1,3,7,45,141), ...)))
 }
 \seealso{
 For more detail, see \code{link{AnalyseExpt}} which this function

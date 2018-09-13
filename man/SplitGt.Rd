@@ -17,7 +17,7 @@ The length of the vector must match the number of samples in the gt matrix.}
 along the execution.}
 }
 \value{
-A list of genotype matrix list.
+A list of genotype matrix.
 \code{list$alive} is the gt matrix containing the samples which position
 corresponds with a TRUE in the \code{survival} vector.
 The other samples are contained in \code{list$dead} as an other gt matrix

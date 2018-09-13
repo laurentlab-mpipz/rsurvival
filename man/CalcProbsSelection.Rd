@@ -37,6 +37,6 @@ f.dead  <- f.all - f.dead
 CalcProbsSelection(f.alive, f.dead, f.all)
 }
 \seealso{
-For more information, see \code{\link{CalcWeightsSelection}} wich
+For more information, see \code{\link{CalcWeightsSurvival}} wich
 this function bind.
 }

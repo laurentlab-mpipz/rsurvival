@@ -4,7 +4,7 @@
 #'
 #' @param gt A genotype matrix
 #' @param survival A survival vector to shuffle
-#' @param odded.deaths Optional. A vector containing a number of death for each
+#' @param odded.lives Optional. A vector containing a number of lives for each
 #' categories of \code{odded.samples} (e.g. c("HETERO" = 32, "HOMOREF" = 18, 
 #' ... ))
 #' @param odded.samples Optional. A list of vectors containing index for each
@@ -23,20 +23,20 @@
 #' @examples
 #' PermutSurv(gt, c(TRUE, TRUE, FALSE, ...))
 #' PermutSurv(gt, survival, verbose = FALSE)
-#' PermutSurv(gt, survival, odded.deaths = c("HETERO" = 32, "HOMOREF" = 18, ...
+#' PermutSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
 #' ), odded.samples = list("HETERO" = c(1,3,7,45,141), ...)))
 
-PermutRandSurv <- function(gt, survival, odded.deaths = NULL,
+PermutRandSurv <- function(gt, survival, odded.lives = NULL,
                             odded.samples = NULL, verbose = TRUE){
 
   result <- NULL
 
-  if (!is.null(odded.deaths) && !is.null(odded.samples)) {
+  if (!is.null(odded.lives) && !is.null(odded.samples)) {
 
     survival <- rep(FALSE, length(survival))
-    survival[sample(odded.samples$HOMOREF)[1:odded.deaths['HOMOREF']]] <- TRUE
-    survival[sample(odded.samples$HETERO)[1:odded.deaths['HETERO']]]   <- TRUE
-    survival[sample(odded.samples$HOMOALT)[1:odded.deaths['HOMOALT']]] <- TRUE
+    survival[sample(odded.samples$HOMOREF)[1:odded.lives['HOMOREF']]] <- TRUE
+    survival[sample(odded.samples$HETERO)[1:odded.lives['HETERO']]]   <- TRUE
+    survival[sample(odded.samples$HOMOALT)[1:odded.lives['HOMOALT']]] <- TRUE
 
   } else {
 
@@ -124,42 +124,11 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
 
   if (is.character(odded.pos)) {
 
-    if (verbose) {
-      message(paste("Preparing : ", iter * sum(!survival),
-                    " odded deaths, it can take a while...", sep = ""))
-    }
-
-    # variant in which positive selection will be applied
     odded.variant <- gt[odded.pos, ]
-    split.odded.variant <- SplitVect(odded.variant, survival)
-    variant.alive <- t(data.frame("variant" = split.odded.variant$alive,
-                                    stringsAsFactors = FALSE))
-    variant.dead  <- t(data.frame("variant" = split.odded.variant$dead,
-                                      stringsAsFactors = FALSE))
-    rownames(variant.alive) <- c(odded.pos)
-    rownames(variant.dead)  <- c(odded.pos)
-
-    # ids of samples concerned by each genotype
-    gt.ids <- list("HOMOREF" = grep("0.*0", odded.variant),
-                    "HETERO" = grep("0.*1|1.*0", odded.variant),
-                    "HOMOALT" = grep("1.*1", odded.variant))
-
-    # stats for observed selection during the real experiment
-    probs <- AnalyseExpt(variant.alive, variant.dead)
-    freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
-                          "ALL.count.gt.HOMOALT")]
-    odds <- probs[, c("weight.gt.HOMOREF", "weight.gt.HETERO",
-                    "weight.gt.HOMOALT")]
-
-    # simulate number of deaths per genotypes with the observed odds
-    nb.alive <- BiasedUrn::rMWNCHypergeo(nran = iter, m = freqs.all,
-                                          n = sum(survival), odds = odds)
-    rownames(nb.alive) <- c("HOMOREF", "HETERO", "HOMOALT")
-    colnames(nb.alive) <- 1:iter
-    
-    if (verbose) {
-      message("Preparing : DONE.")
-    }
+    odded.pick    <- CalcOddedPick(odded.variant, survival, n = iter,
+                            verbose = verbose)
+    odded.lives   <- odded.pick$odded.lives
+    odded.samples <- odded.pick$odded.samples
 
   }
 
@@ -183,11 +152,15 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
 
     # calculate probs with a random survival vector
     if (is.character(odded.pos)){
-      probs.rand <- PermutRandSurv(gt, survival, odded.deaths = nb.alive[, i],
-                                    odded.samples = gt.ids, verbose = FALSE)
+      probs.rand <- PermutRandSurv(gt, survival,
+                                    odded.lives = odded.lives[, i],
+                                    odded.samples = odded.samples,
+                                    verbose = FALSE)
     } else {
-      probs.rand <- PermutRandSurv(gt, survival,verbose = FALSE)
+      probs.rand <- PermutRandSurv(gt, survival, verbose = FALSE)
     }
+
+    print(dim(probs.rand))
 
     # count significant p.neutral and append the count to result
     result     <- c(result, CountSignSnps(probs.rand, max.p.neutral))
@@ -204,5 +177,75 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
   }
   
   return(result)
+
+}
+
+
+#' A function to calculate the number of picked lives per categories of samples
+#' according to MWNCHypergeo model. 
+#'
+#' @param variant The odded variant vector
+#' @param survival A survival vector
+#' @param n Number of life vectors to be generated (default is 10)
+#' @param verbose Logical. If TRUE (default), report status of the process
+#' along the execution.
+#'
+#' @return 
+#' A list. list$odded.lives is a matrix containing a number of survivors per 
+#' categories (e.g. list$odded.lives row names could be "HOMOREF", "HOMOALT",
+#' ...) with \code{n} column, each time generated with the same input values.
+#' list$odded.samples are the index of the samples belonging to each categories
+#' (e.g. list$odded.samples$HETERO could be c(1, 3, 8, 14))
+#' @export
+#'
+#' @seealso For more detail, see \code{link{IterRandPick}} which binds this
+#' function
+#'
+#' @examples
+#' CalcOddedPick(variant, survival)
+#' CalcOddedPick(variant, survival, n = 1000)
+#' CalcOddedPick(variant, survival, verbose = FALSE)
+
+CalcOddedPick <- function(variant, survival, n = 10, verbose = TRUE){
+
+  if (verbose) {
+      message(paste("Preparing : ", n * sum(survival),
+                    " odded survivals, it can take a while...", sep = ""))
+    }
+
+    # split variant in which positive selection will be applied
+    split.variant <- SplitVect(variant, survival)
+    variant.alive <- t(data.frame("variant" = split.variant$alive,
+                                    stringsAsFactors = FALSE))
+    variant.dead  <- t(data.frame("variant" = split.variant$dead,
+                                      stringsAsFactors = FALSE))
+    rownames(variant.alive) <- c("odded.variant")
+    rownames(variant.dead)  <- c("odded.variant")
+
+    # ids of samples concerned by each genotype
+    gt.ids <- list("HOMOREF" = grep("0.*0", variant),
+                    "HETERO" = grep("0.*1|1.*0", variant),
+                    "HOMOALT" = grep("1.*1", variant))
+
+    # stats for observed selection during the real experiment
+    probs <- AnalyseExpt(variant.alive, variant.dead)
+    freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
+                          "ALL.count.gt.HOMOALT")]
+    odds <- probs[, c("weight.gt.HOMOREF", "weight.gt.HETERO",
+                    "weight.gt.HOMOALT")]
+
+    # simulate number of deaths per genotypes with the observed odds
+    nb.lives <- BiasedUrn::rMWNCHypergeo(nran = n, m = freqs.all,
+                                          n = sum(survival), odds = odds)
+    rownames(nb.lives) <- c("HOMOREF", "HETERO", "HOMOALT")
+    colnames(nb.lives) <- 1:n
+
+    result <- list("odded.lives" = nb.lives, "odded.samples" = gt.ids)
+    
+    if (verbose) {
+      message("Preparing : DONE.")
+    }
+
+    return (result)
 
 }

@@ -18,10 +18,12 @@ will be counted (default is 0.01)}
 
 \item{iter}{Number of iteration (default is 10)}
 
+\item{odded.pos}{Optional. Reference to a variant in \code{gt} as a string.
+Iterate random pick according to the observed odds of genotype at this
+position in the genome.}
+
 \item{verbose}{Logical. If TRUE (default), report status of the process
 along the execution.}
-
-\item{odds}{Optional. Not used yet.}
 }
 \value{
 An integer vector. Each item is the number of snps with low \code{p.neutral}

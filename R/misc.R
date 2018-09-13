@@ -108,7 +108,7 @@ IsAtLeastNARatio <- function(vect, min.ratio) {
 
 SplitVect <- function(vect, survival){
 
-  if (length(ve) != length(survival)) {
+  if (length(vect) != length(survival)) {
     warning("Both parameter should have the same length")
   }
 
