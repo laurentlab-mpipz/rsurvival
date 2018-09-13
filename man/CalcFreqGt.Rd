@@ -6,7 +6,7 @@
 \usage{
 CalcFreqGt(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
   percentage = FALSE, totals = TRUE, backup.path = NULL,
-  min.freq.gt = NULL, min.freq.al = 0.1)
+  min.freq.gt = NULL, min.freq.al = NULL)
 }
 \arguments{
 \item{gt}{The genotype matrix to analyse}

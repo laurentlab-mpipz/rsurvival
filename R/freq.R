@@ -44,7 +44,7 @@
 
 CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
                         percentage = FALSE, totals = TRUE, backup.path = NULL,
-                        min.freq.gt = NULL, min.freq.al = 0.1) {
+                        min.freq.gt = NULL, min.freq.al = NULL) {
 
   result <- apply(gt, MARGIN = 1, 
                   FUN = function(x) {
@@ -125,7 +125,7 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                             absolute = TRUE, percentage = FALSE,
                             totals = TRUE, min.freq.gt = NULL,
-                            min.freq.al = 0.1) {
+                            min.freq.al = NULL) {
 
   result.al <- NULL
   result.gt <- NULL

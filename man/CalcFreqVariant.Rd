@@ -6,7 +6,7 @@
 \usage{
 CalcFreqVariant(variant, genotypic = TRUE, allelic = FALSE,
   absolute = TRUE, percentage = FALSE, totals = TRUE,
-  min.freq.gt = NULL, min.freq.al = 0.1)
+  min.freq.gt = NULL, min.freq.al = NULL)
 }
 \arguments{
 \item{variant}{The genotype matrix to analyse}

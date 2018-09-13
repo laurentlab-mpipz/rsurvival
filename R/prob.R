@@ -26,10 +26,10 @@ AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
 
   # calculate frequencies
   freq.alive <- CalcFreqGt(gt.alive, genotypic = TRUE, allelic = TRUE,
-                        absolute = TRUE)
+                            absolute = TRUE)
   freq.dead  <- CalcFreqGt(gt.dead, genotypic = TRUE, allelic = TRUE,
-                        absolute = TRUE)
-
+                            absolute = TRUE)
+  dim(freq.alive)
   # only keep rows in common
   filter.alive <- rownames(freq.alive) %in% rownames(freq.dead)
   if (sum(!filter.alive) > 0) {
@@ -44,7 +44,7 @@ AnalyseExpt <- function(gt.alive, gt.dead, p.values = TRUE,
   freqs      <- cbind(freq.alive, freq.all)
 
   # modify frequencies column names
-  colnames.alive   <- paste("SURVIVERS", colnames(freq.alive), sep = ".")
+  colnames.alive  <- paste("SURVIVERS", colnames(freq.alive), sep = ".")
   colnames.all    <- paste("ALL", colnames(freq.alive), sep = ".")
   colnames(freqs) <- c(colnames.alive, colnames.all)
 

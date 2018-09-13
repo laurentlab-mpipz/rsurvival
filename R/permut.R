@@ -160,8 +160,6 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
       probs.rand <- PermutRandSurv(gt, survival, verbose = FALSE)
     }
 
-    print(dim(probs.rand))
-
     # count significant p.neutral and append the count to result
     result     <- c(result, CountSignSnps(probs.rand, max.p.neutral))
 
