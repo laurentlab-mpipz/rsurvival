@@ -19,11 +19,11 @@
 #' @export
 #'
 #' @examples
-#' AnalyseExpt(gt.alive, gt.dead)
-#' AnalyseExpt(gt.alive, gt.dead, p.values = FALSE)
-#' AnalyseExpt(gt.alive, gt.dead, backup.path = "example.csv")
+#' AnalyseSplittedExpt(gt.alive, gt.dead)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, p.values = FALSE)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
-AnalyseExpt <- function(gt.alive, gt.dead, location.cols = TRUE, 
+AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
                         p.values = TRUE, genotypic = FALSE,
                         backup.path = NULL){
 
@@ -92,6 +92,48 @@ AnalyseExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
     utils::write.csv(result, backup.path) # write to file
   }
 
+  return(result)
+
+}
+
+
+#' A function to analyse a selection experiment, including observed frequencies
+#' of genotype and probabilities that they are due to random picking and
+#' positive selection.
+#'
+#' @param gt A genotype data frame of your original population
+#' @param survival A logical vector. TRUE survived the experiment, FALSE died
+#' @param location.cols If TRUE, adds two columns to the result, which are the
+#' scaffold name and the locus name as factors (deafult is FALSE)
+#' @param p.values If TRUE (default), some probabilities will be included in
+#' the result, as well as frequencies
+#' @param backup.path Optionnal. A path where backup files can be stored
+#'
+#' @return 
+#' A data frame of frequencies and probabilities from your experiment.
+#'
+#' @seealso For more information, see \code{\link{AnalyseSplittedExpt}} which
+#' this function bind. 
+#'
+#' @export
+#'
+#' @examples
+#' AnalyseExpt(gt, survival)
+#' AnalyseExpt(gt, survival, p.values = FALSE)
+#' AnalyseExpt(gt, survival, backup.path = "example.csv")
+
+AnalyseExpt <- function(gt, survival, location.cols = TRUE, 
+                        p.values = TRUE, genotypic = FALSE,
+                        backup.path = NULL){
+
+  splitted.gt <- SplitGt(gt, survival)
+  gt.alive    <- splitted.gt$alive
+  gt.dead     <- splitted.gt$dead
+
+  result <- AnalyseSplittedExpt(gt.alive, gt.dead,
+                                location.cols = location.cols,
+                                p.values = p.values, genotypic = genotypic,
+                                backup.path = backup.path)
   return(result)
 
 }
