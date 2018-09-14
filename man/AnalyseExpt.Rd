@@ -6,8 +6,8 @@
 of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
-AnalyseExpt(gt, survival, location.cols = TRUE, p.values = TRUE,
-  genotypic = FALSE, backup.path = NULL)
+AnalyseExpt(gt, survival, location.cols = TRUE, min.freq.al = NULL,
+  p.values = TRUE, genotypic = FALSE, backup.path = NULL)
 }
 \arguments{
 \item{gt}{A genotype data frame of your original population}

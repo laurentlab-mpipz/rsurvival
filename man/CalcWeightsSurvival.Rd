@@ -5,7 +5,8 @@
 \title{A function to calculate odds for positive selection from observed selection
 frequencies using MWNCHHypergeo model.}
 \usage{
-CalcWeightsSurvival(freq.alive, freq.all)
+CalcWeightsSurvival(freq.alive, freq.all, map.alive = NULL,
+  map.all = NULL)
 }
 \arguments{
 \item{freq.alive}{A vector of observed absolute frequencies for the three

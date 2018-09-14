@@ -39,6 +39,6 @@ PermutSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
 ), odded.samples = list("HETERO" = c(1,3,7,45,141), ...)))
 }
 \seealso{
-For more detail, see \code{link{AnalyseExpt}} which this function
+For more detail, see \code{link{AnalyseSplittedExpt}} which this function
 bind.
 }

@@ -23,17 +23,18 @@
 #' AnalyseSplittedExpt(gt.alive, gt.dead, p.values = FALSE)
 #' AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
-AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
-                        p.values = TRUE, genotypic = FALSE,
-                        backup.path = NULL){
+AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
+                                location.cols = TRUE, p.values = TRUE, 
+                                genotypic = FALSE, backup.path = NULL){
 
-  # calculate frequencies
+  # Calculate frequencies -----------------------------------------------------
   freq.alive <- CalcFreqGt(gt.alive, genotypic = TRUE, allelic = TRUE,
-                            absolute = TRUE)
+                            absolute = c(TRUE, FALSE))
   freq.dead  <- CalcFreqGt(gt.dead, genotypic = TRUE, allelic = TRUE,
-                            absolute = TRUE)
-  dim(freq.alive)
-  # only keep rows in common
+                            absolute = c(TRUE, FALSE))
+
+  # Only keep rows in common --------------------------------------------------
+
   filter.alive <- rownames(freq.alive) %in% rownames(freq.dead)
   if (sum(!filter.alive) > 0) {
     freq.alive <- freq.alive[filter.alive, ]
@@ -43,25 +44,61 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
     freq.dead <- freq.dead[filter.dead, ]
   }
 
-  freq.all   <- freq.alive + freq.dead
+  # Create frequency matrix ---------------------------------------------------
+
+  map.gt.alive <- FindIdsGtCounts(freq.alive[1, ])
+  map.al.alive <- FindIdsAlFreqs(freq.alive[1, ])
+  ratio.alive  <- ncol(gt.alive) / (ncol(gt.alive) + ncol(gt.dead))
+
+  freq.all   <- cbind(freq.alive[, unlist(map.gt.alive)] 
+                      + freq.dead[, unlist(map.gt.alive)],
+                      freq.alive[, unlist(map.al.alive)] * ratio.alive 
+                      + freq.dead[, unlist(map.al.alive)] * (1 - ratio.alive),
+                      freq.alive[, ncol(freq.alive)] # <-- bad things here
+                      + freq.dead[, ncol(freq.alive)])
+
+  print(freq.all)
+
+  map.gt.all <- FindIdsGtCounts(freq.all[1, ])
+  map.al.all <- FindIdsAlFreqs(freq.all[1, ])
+
   freqs      <- cbind(freq.alive, freq.all)
 
-  # modify frequencies column names
+  # modify frequency matrix column names
   colnames.alive  <- paste("SURVIVERS", colnames(freq.alive), sep = ".")
   colnames.all    <- paste("ALL", colnames(freq.alive), sep = ".")
   colnames(freqs) <- c(colnames.alive, colnames.all)
 
+  # Remove variants with low allelic frequencies ------------------------------
+
+  if (is.numeric(min.freq.al)) {
+
+      freq.al.ids <- c(map.al.all$ref, map.al.all$alt)
+      filter <- !as.logical(rowSums(freq.all[, freq.al.ids] < min.freq.al,
+                                    na.rm = TRUE))
+      freqs <- freqs[filter, ]
+      freq.alive <- freq.alive[filter, ]
+      freq.all <- freq.all [filter, ]
+
+      if (is.null(dim(freqs))) {
+        stop("You removed all rows from gt using parameter min.freq.al")
+      }
+
+  }
+
+  # Calculate probabilities ---------------------------------------------------
+
   if (p.values) {
 
-    col.dead <- ncol(freq.alive) + 1
-    col.all  <- ncol(freq.alive) + ncol(freq.dead) + 1
-    col.end  <- ncol(freq.alive) + ncol(freq.dead) + ncol(freq.all)
+    col.all  <- ncol(freq.alive) + 1
+    col.end  <- ncol(freq.alive) + ncol(freq.all)
 
-    probs <- apply(cbind(freq.alive, freq.dead, freq.all), MARGIN = 1,
+    probs <- apply(cbind(freq.alive, freq.all), MARGIN = 1,
                       FUN = function(x) {
-                        CalcProbsSelection (x[1:(col.dead - 1)],
-                                            x[col.dead:(col.all - 1)], 
-                                            x[col.all:col.end])
+                        CalcProbsSelection (x[1:(col.all - 1)],
+                                            x[col.all:col.end],
+                                            map.alive = map.gt.alive,
+                                            map.all = map.gt.all)
                       }
                 )
 
@@ -69,12 +106,16 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
 
   }
 
+  # Remove gt stats columns ---------------------------------------------------
+
   if (!genotypic) {
 
     filter <- !grepl("count\\.gt\\.", colnames(freqs))
     freqs <- freqs[, filter]
 
   }
+
+  # Add location columns ------------------------------------------------------
 
   if (location.cols) {
     temp.names <- colnames(freqs)
@@ -87,6 +128,8 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
   }
 
   result <- freqs
+
+  # Save to a file ------------------------------------------------------------
 
   if (is.character(backup.path)) {
     utils::write.csv(result, backup.path) # write to file
@@ -122,7 +165,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
 #' AnalyseExpt(gt, survival, p.values = FALSE)
 #' AnalyseExpt(gt, survival, backup.path = "example.csv")
 
-AnalyseExpt <- function(gt, survival, location.cols = TRUE, 
+AnalyseExpt <- function(gt, survival, location.cols = TRUE, min.freq.al = NULL,
                         p.values = TRUE, genotypic = FALSE,
                         backup.path = NULL){
 
@@ -131,7 +174,8 @@ AnalyseExpt <- function(gt, survival, location.cols = TRUE,
   gt.dead     <- splitted.gt$dead
 
   result <- AnalyseSplittedExpt(gt.alive, gt.dead,
-                                location.cols = location.cols,
+                                location.cols = location.cols, 
+                                min.freq.al = min.freq.al,
                                 p.values = p.values, genotypic = genotypic,
                                 backup.path = backup.path)
   return(result)
@@ -144,8 +188,6 @@ AnalyseExpt <- function(gt, survival, location.cols = TRUE,
 #'
 #' @param freq.alive An vector of observed absolute frequencies for the three
 #' genotypes in the alive population
-#' @param freq.dead An vector of observed absolute frequencies for the three
-#' genotypes in the dead population
 #' @param freq.all An vector of observed absolute frequencies for the three
 #' genotypes in the population before selection
 #'
@@ -166,18 +208,27 @@ AnalyseExpt <- function(gt, survival, location.cols = TRUE,
 #' @examples
 #' f.alive <- c(17, 3, 15, 1, 36)
 #' f.all   <- c(24, 5, 22, 2, 53)
-#' f.dead  <- f.all - f.dead
-#' CalcProbsSelection(f.alive, f.dead, f.all)
+#' CalcProbsSelection(f.alive, f.all)
 
-CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
+CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
+                               map.all = NULL){
 
   sel.weights <- CalcWeightsSurvival(freq.alive, freq.all)
 
   if ((sum(is.na(sel.weights)) == 0) && (sum(sel.weights <= 0) == 0) 
       && (sum(is.infinite(sel.weights)) == 0)) {
 
-    id.alive <- FindIdsGtCounts(freq.alive)
-    id.all   <- FindIdsGtCounts(freq.all)
+    if(!is.null(map.alive)) {
+      id.alive <- map.alive
+    } else {
+      id.alive <- FindIdsGtCounts(freq.alive)
+    }
+
+    if(!is.null(map.all)) {
+      id.all <- map.all
+    } else {
+      id.all <- FindIdsGtCounts(freq.all)
+    }
 
     # distribution in alive population
     x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
@@ -225,10 +276,20 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 #' f.all  <- c(24, 5, 22, 2, 53)
 #' CalcWeightsSurvival(f.alive, f.all)
 
-CalcWeightsSurvival <- function(freq.alive, freq.all){
-    
-    id.alive <- FindIdsGtCounts(freq.alive)
-    id.all   <- FindIdsGtCounts(freq.all)
+CalcWeightsSurvival <- function(freq.alive, freq.all, map.alive = NULL,
+                                map.all = NULL){
+
+    if(!is.null(map.alive)) {
+      id.alive <- map.alive
+    } else {
+      id.alive <- FindIdsGtCounts(freq.alive)
+    }
+
+    if(!is.null(map.all)) {
+      id.all <- map.all
+    } else {
+      id.all <- FindIdsGtCounts(freq.all)
+    }
 
     # distribution of alive samples
     mu <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
@@ -236,8 +297,6 @@ CalcWeightsSurvival <- function(freq.alive, freq.all){
     m  <- freq.all[c(id.all$homo.ref, id.all$hetero, id.all$homo.alt)] 
     # number of alive samples with valid data
     n  <- freq.alive[id.alive$total] - freq.alive[id.alive$missval]
-    
-
 
     # calculate odds
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,

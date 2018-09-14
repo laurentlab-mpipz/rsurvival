@@ -6,8 +6,9 @@
 of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
-AnalyseSplittedExpt(gt.alive, gt.dead, location.cols = TRUE,
-  p.values = TRUE, genotypic = FALSE, backup.path = NULL)
+AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = NULL,
+  location.cols = TRUE, p.values = TRUE, genotypic = FALSE,
+  backup.path = NULL)
 }
 \arguments{
 \item{gt.alive}{A genotype data frame of the alive population}

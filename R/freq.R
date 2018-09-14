@@ -137,6 +137,10 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   result    <- NULL 
   return.na <- FALSE
 
+  if (length(absolute) == 1){
+    absolute <- rep(absolute, 2)
+  }
+
   # handle lists --------------------------------------------------------------
 
   if (typeof(variant) == "list") {
@@ -156,18 +160,18 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   # actual counting using regex -----------------------------------------------
 
   counts <- c(sum(grepl("0.*0",variant)), sum(grepl("0.*1|1.*0",variant)),
-               sum(grepl("1.*1",variant)), sum(is.na(variant)))
+              sum(grepl("1.*1",variant)), sum(is.na(variant)))
 
   # calculate frequencies of alleles ------------------------------------------
 
   counts.al <- c(counts[1] * 2 + counts[2], counts[3] * 2 + counts[2],
-                2 * counts[4])
+                 2 * counts[4])
   total.al <- sum(counts.al)
 
   if (extrapolate.freq) {
     freqs.al  <- c(counts.al[1] / sum(counts.al[1:2]),
-                    counts.al[2] / sum(counts.al[1:2]),
-                    counts.al[3] / total.al)
+                   counts.al[2] / sum(counts.al[1:2]),
+                   counts.al[3] / total.al)
   } else {
     freqs.al <- counts.al / total.al   
   }
@@ -178,9 +182,9 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   total.gt  <- sum(counts.gt)
   if (extrapolate.freq) {
     freqs.gt  <- c(counts.gt[1] / sum(counts.gt[1:3]),
-                counts.gt[2] / sum(counts.gt[1:3]),
-                counts.gt[3] / sum(counts.gt[1:3]),
-                counts.gt[4] / total.gt)
+                   counts.gt[2] / sum(counts.gt[1:3]),
+                   counts.gt[3] / sum(counts.gt[1:3]),
+                   counts.gt[4] / total.gt)
   } else {
     freqs.gt  <- counts.gt / total.gt
   } 
@@ -208,26 +212,35 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
 
   # build resulting frequencies -----------------------------------------------
 
-  if (!absolute) {
-    prefix    <- "freq"
-    result.al <- freqs.al
+  if (!absolute[1]) { # for genotype
+    prefix.gt    <- "freq"
     result.gt <- freqs.gt
     if (percentage) {
-      prefix    <- "perc"
-      result.al <- result.al * 100
+      prefix.gt <- "perc"
       result.gt <- result.gt * 100
     }
   } else {
-    prefix    <- "count"
-    result.al <- counts.al
+    prefix.gt <- "count"
     result.gt <- counts.gt
+  }
+
+  if (!absolute[2]) { # for alleles
+    prefix.al <- "freq"
+    result.al <- freqs.al
+    if (percentage) {
+      prefix.al <- "perc"
+      result.al <- result.al * 100
+    }
+  } else {
+    prefix.al  <- "count"
+    result.al <- counts.al
   }
 
   # build titles for each frequencies returned --------------------------------
 
-  names(result.al) <- paste(prefix,
+  names(result.al) <- paste(prefix.al,
                             c("al.REF", "al.ALT", "al.MISSVAL"), sep=".")
-  names(result.gt) <- paste(prefix,
+  names(result.gt) <- paste(prefix.gt,
                             c("gt.HOMOREF", "gt.HETERO", "gt.HOMOALT",
                               "gt.MISSVAL"),
                             sep=".")
@@ -275,7 +288,22 @@ FindIdsGtCounts <- function(freq){
   # }
 
   result <- list("homo.ref" = homo.ref, "hetero" = hetero,
-                  "homo.alt" = homo.alt, "missval" = missval, "total"= total)
+                 "homo.alt" = homo.alt, "missval" = missval, "total"= total)
+
+  return(result)
+
+}
+
+#' @export
+
+FindIdsAlFreqs <- function(freq){
+
+  # index of the frequencies of the genotypes
+  ref <- grep("^.*freq\\.al\\.REF$", names(freq))
+  alt <- grep("^.*freq\\.al\\.ALT$", names(freq))
+  missval  <- grep("^.*freq\\.al\\.MISSVAL$", names(freq))
+
+  result <- list("ref" = ref, "alt" = alt, "missval" = missval)
 
   return(result)
 
