@@ -7,7 +7,7 @@ of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
 AnalyseExpt(gt.alive, gt.dead, location.cols = TRUE, p.values = TRUE,
-  backup.path = NULL)
+  genotypic = FALSE, backup.path = NULL)
 }
 \arguments{
 \item{gt.alive}{A genotype data frame of the alive population}

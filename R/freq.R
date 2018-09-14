@@ -11,6 +11,9 @@
 #' frequencies in percentage. Default is FALSE.
 #' @param backup.path Optional. Path to the CSV backup file the result must be
 #' saved to.
+#' @param extrapolate.freq If TRUE (default), the relative frequencies of the 
+#' signinficant data will be extrapolated. (i.e. freq.al.REF + freq.al.ALT = 1,
+#' even if there are missing datas
 #' @param totals If TRUE (default), returned vector will include totals.
 #' @param min.freq.gt Optional. Minimal value of relative frequency for each
 #' genotype in a variant of \code{gt}. Variants which does not fulfill this
@@ -42,8 +45,9 @@
 #' CalcFreqGt(genotype, totals= FALSE, min.freq.al = 0.15)
 
 CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
-                        percentage = FALSE, totals = TRUE, backup.path = NULL,
-                        min.freq.gt = NULL, min.freq.al = NULL) {
+                        percentage = FALSE, extrapolate.freq = TRUE,
+                        totals = TRUE, backup.path = NULL, min.freq.gt = NULL,
+                        min.freq.al = NULL) {
 
   result <- apply(gt, MARGIN = 1, 
                   FUN = function(x) {
