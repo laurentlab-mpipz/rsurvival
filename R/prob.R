@@ -24,7 +24,8 @@
 #' AnalyseExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
 AnalyseExpt <- function(gt.alive, gt.dead, location.cols = TRUE, 
-                        p.values = TRUE, backup.path = NULL){
+                        p.values = TRUE, genotypic = FALSE,
+                        backup.path = NULL){
 
   # calculate frequencies
   freq.alive <- CalcFreqGt(gt.alive, genotypic = TRUE, allelic = TRUE,
@@ -65,6 +66,13 @@ AnalyseExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
                 )
 
     freqs <- cbind(freqs, t(probs))
+
+  }
+
+  if (!genotypic) {
+
+    filter <- !grepl("count\\.gt\\.", colnames(freqs))
+    freqs <- freqs[, filter]
 
   }
 

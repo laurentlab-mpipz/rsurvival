@@ -226,7 +226,7 @@ CalcOddedPick <- function(variant, survival, n = 10, verbose = TRUE){
                     "HOMOALT" = grep("1.*1", variant))
 
     # stats for observed selection during the real experiment
-    probs <- AnalyseExpt(variant.alive, variant.dead)
+    probs <- AnalyseExpt(variant.alive, variant.dead, genotypic = TRUE)
     freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
                           "ALL.count.gt.HOMOALT")]
     odds <- probs[, c("weight.gt.HOMOREF", "weight.gt.HETERO",

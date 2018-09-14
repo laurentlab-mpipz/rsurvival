@@ -91,6 +91,9 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 #' relative frequencies
 #' @param percentage If TRUE and absolute is FALSE, show the relative
 #' frequencies in percentage
+#' @param extrapolate.freq If TRUE (default), the relative frequencies of the 
+#' signinficant data will be extrapolated. (i.e. freq.al.REF + freq.al.ALT = 1,
+#' even if there are missing datas)
 #' @param totals If TRUE (default), returned vector will include totals.
 #' @param min.freq.gt Optional. Minimal value of relative frequency for each
 #' genotype in a \code{variant}. If \code{variant} does not fulfill this
@@ -122,8 +125,8 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 
 CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                             absolute = TRUE, percentage = FALSE,
-                            totals = TRUE, min.freq.gt = NULL,
-                            min.freq.al = NULL) {
+                            extrapolate.freq = TRUE, totals = TRUE,
+                            min.freq.gt = NULL, min.freq.al = NULL) {
 
   result.al <- NULL
   result.gt <- NULL
@@ -156,13 +159,27 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   counts.al <- c(counts[1] * 2 + counts[2], counts[3] * 2 + counts[2],
                 2 * counts[4])
   total.al <- sum(counts.al)
-  freqs.al <- counts.al / total.al
+
+  if (extrapolate.freq) {
+    freqs.al  <- c(counts.al[1] / sum(counts.al[1:2]),
+                    counts.al[2] / sum(counts.al[1:2]),
+                    counts.al[3] / total.al)
+  } else {
+    freqs.al <- counts.al / total.al   
+  }
 
   # calculate frequencies of genotypes ----------------------------------------
 
   counts.gt <- c(counts[1], counts[2], counts[3], counts[4])
   total.gt  <- sum(counts.gt)
-  freqs.gt  <- counts.gt / total.gt
+  if (extrapolate.freq) {
+    freqs.gt  <- c(counts.gt[1] / sum(counts.gt[1:3]),
+                counts.gt[2] / sum(counts.gt[1:3]),
+                counts.gt[3] / sum(counts.gt[1:3]),
+                counts.gt[4] / total.gt)
+  } else {
+    freqs.gt  <- counts.gt / total.gt
+  } 
 
   # check minimal frequencies -------------------------------------------------
 
