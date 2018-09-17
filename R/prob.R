@@ -24,8 +24,9 @@
 #' AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
 AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
-                                location.cols = TRUE, p.values = TRUE, 
-                                genotypic = FALSE, backup.path = NULL){
+                                location.cols = TRUE, deltas = TRUE,
+                                p.values = TRUE, genotypic = FALSE,
+                                backup.path = NULL){
 
   # Calculate frequencies -----------------------------------------------------
   freq.alive <- CalcFreqGt(gt.alive, genotypic = TRUE, allelic = TRUE,
@@ -34,8 +35,8 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
                             absolute = c(TRUE, FALSE))
   freq.alive <- data.frame(freq.alive)
   freq.dead  <- data.frame(freq.dead)
-  # Only keep rows in common --------------------------------------------------
 
+  # Only keep rows in common --------------------------------------------------
   filter.alive <- rownames(freq.alive) %in% rownames(freq.dead)
   if (sum(!filter.alive) > 0) {
     freq.alive <- freq.alive[filter.alive, ]
@@ -80,13 +81,24 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
       freq.al.ids <- c(map.al.all$ref, map.al.all$alt)
       filter <- !as.logical(rowSums(freq.all[, freq.al.ids] < min.freq.al,
                                     na.rm = TRUE))
-      freqs <- freqs[filter, ]
+      freqs      <- freqs[filter, ]
       freq.alive <- freq.alive[filter, ]
-      freq.all <- freq.all [filter, ]
+      freq.all   <- freq.all [filter, ]
 
       if (is.null(dim(freqs))) {
         stop("You removed all rows from gt using parameter min.freq.al")
       }
+
+  }
+
+  # Calculate deltas ----------------------------------------------------------
+
+  if (deltas) {
+
+    deltas <- (SliceDfColumns(freq.alive, c(map.al.alive$ref, map.al.alive$alt))
+              - SliceDfColumns(freq.all, c(map.al.all$ref, map.al.all$alt)))
+    colnames(deltas) <- c("DELTA.freq.al.REF", "DELTA.freq.al.ALT")
+    freqs <- cbind(freqs, deltas)
 
   }
 
@@ -96,7 +108,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 
     col.all  <- ncol(freq.alive) + 1
     col.end  <- ncol(freq.alive) + ncol(freq.all)
-    probs <- apply(cbind(freq.alive, freq.all), MARGIN = 1,
+    probs  <- apply(cbind(freq.alive, freq.all), MARGIN = 1,
                       FUN = function(x) {
                         CalcProbsSelection (x[1:(col.all - 1)],
                                             x[col.all:col.end],
@@ -167,17 +179,16 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 #' AnalyseExpt(gt, survival, p.values = FALSE)
 #' AnalyseExpt(gt, survival, backup.path = "example.csv")
 
-AnalyseExpt <- function(gt, survival, location.cols = TRUE, min.freq.al = NULL,
-                        p.values = TRUE, genotypic = FALSE,
+AnalyseExpt <- function(gt, survival, min.freq.al = NULL, location.cols = TRUE,
+                        deltas = TRUE, p.values = TRUE, genotypic = FALSE,
                         backup.path = NULL){
 
   splitted.gt <- SplitGt(gt, survival)
   gt.alive    <- splitted.gt$alive
   gt.dead     <- splitted.gt$dead
 
-  result <- AnalyseSplittedExpt(gt.alive, gt.dead,
-                                location.cols = location.cols, 
-                                min.freq.al = min.freq.al,
+  result <- AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = min.freq.al,
+                                location.cols = location.cols, deltas = deltas,
                                 p.values = p.values, genotypic = genotypic,
                                 backup.path = backup.path)
   return(result)

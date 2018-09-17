@@ -44,7 +44,7 @@ PermutRandSurv <- function(gt, survival, odded.lives = NULL,
 
   } 
 
-  probs <- AnalyseExpt(gt, survival, min.freq.al = 0.1)
+  probs <- AnalyseExpt(gt, survival, min.freq.al = 0.1, deltas = FALSE)
   result <- probs
 
   return(result)
@@ -215,7 +215,7 @@ CalcOddedPick <- function(variant, survival, n = 10, verbose = TRUE){
                    "HOMOALT" = grep("1.*1", variant))
 
     # stats for observed selection during the real experiment
-    probs <- AnalyseExpt(variant, survival, genotypic = TRUE)
+    probs <- AnalyseExpt(variant, survival, genotypic = TRUE, deltas = FALSE)
     freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
                            "ALL.count.gt.HOMOALT")]
     odds <- probs[, c("weight.gt.HOMOREF", "weight.gt.HETERO",
