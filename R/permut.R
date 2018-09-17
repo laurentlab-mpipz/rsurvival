@@ -123,6 +123,7 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
   if (is.character(odded.pos)) {
 
     odded.variant <- gt[odded.pos, ]
+    odded.variant <- t(data.frame(odded.variant)) # reorganise data in 1 row df
     odded.pick    <- CalcOddedPick(odded.variant, survival, n = iter,
                                    verbose = verbose)
     odded.lives   <- odded.pick$odded.lives
@@ -208,30 +209,22 @@ CalcOddedPick <- function(variant, survival, n = 10, verbose = TRUE){
                     " odded survivals, it can take a while...", sep = ""))
     }
 
-    # split variant in which positive selection will be applied
-    split.variant <- SplitVect(variant, survival)
-    variant.alive <- t(data.frame("variant" = split.variant$alive,
-                                  stringsAsFactors = FALSE))
-    variant.dead  <- t(data.frame("variant" = split.variant$dead,
-                                  stringsAsFactors = FALSE))
-    rownames(variant.alive) <- c("odded.variant")
-    rownames(variant.dead)  <- c("odded.variant")
-
     # ids of samples concerned by each genotype
     gt.ids <- list("HOMOREF" = grep("0.*0", variant),
                    "HETERO" = grep("0.*1|1.*0", variant),
                    "HOMOALT" = grep("1.*1", variant))
 
     # stats for observed selection during the real experiment
-    probs <- AnalyseSplittedExpt(variant.alive, variant.dead, genotypic = TRUE)
+    probs <- AnalyseExpt(variant, survival, genotypic = TRUE)
     freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
                            "ALL.count.gt.HOMOALT")]
     odds <- probs[, c("weight.gt.HOMOREF", "weight.gt.HETERO",
                       "weight.gt.HOMOALT")]
 
     # simulate number of deaths per genotypes with the observed odds
-    nb.lives <- BiasedUrn::rMWNCHypergeo(nran = n, m = freqs.all,
-                                         n = sum(survival), odds = odds)
+    nb.lives <- BiasedUrn::rMWNCHypergeo(nran = n, m = unlist(freqs.all),
+                                         n = sum(survival),
+                                         odds = unlist(odds))
     rownames(nb.lives) <- c("HOMOREF", "HETERO", "HOMOALT")
     colnames(nb.lives) <- 1:n
 

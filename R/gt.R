@@ -277,6 +277,16 @@ SplitGt <- function(gt, survival, verbose = TRUE){
   alive <- gt[, survival]
   dead  <- gt[, !survival]
 
+  # force 1 row data frame outputs when outputs are 1 row vectors
+  if (is.null(dim(alive))) {
+    alive <- t(data.frame(alive))
+    rownames(alive) <- rownames(gt)
+  }
+  if (is.null(dim(dead))) {
+    dead <- t(data.frame(dead))
+    rownames(dead) <- rownames(gt)
+  }
+
   # $alive items correspond to a TRUE in the survival vector
   result <- list("alive" = alive, "dead" = dead) 
 

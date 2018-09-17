@@ -32,7 +32,8 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
                             absolute = c(TRUE, FALSE))
   freq.dead  <- CalcFreqGt(gt.dead, genotypic = TRUE, allelic = TRUE,
                             absolute = c(TRUE, FALSE))
-
+  freq.alive <- data.frame(freq.alive)
+  freq.dead  <- data.frame(freq.dead)
   # Only keep rows in common --------------------------------------------------
 
   filter.alive <- rownames(freq.alive) %in% rownames(freq.dead)
@@ -46,23 +47,26 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 
   # Create frequency matrix ---------------------------------------------------
 
-  map.gt.alive <- FindIdsGtCounts(freq.alive[1, ])
-  map.al.alive <- FindIdsAlFreqs(freq.alive[1, ])
+  first.freq.alive <- SliceDfRows(freq.alive, 1) # Freqs for the 1st variant
+  map.gt.alive <- FindIdsGtCounts(first.freq.alive) # Ids of intersting freqs
+  map.al.alive <- FindIdsAlFreqs(first.freq.alive)
+  # how many samples survived (ratio)
   ratio.alive  <- ncol(gt.alive) / (ncol(gt.alive) + ncol(gt.dead))
 
-  freq.all   <- cbind(freq.alive[, unlist(map.gt.alive)] 
-                      + freq.dead[, unlist(map.gt.alive)],
-                      freq.alive[, unlist(map.al.alive)] * ratio.alive 
-                      + freq.dead[, unlist(map.al.alive)] * (1 - ratio.alive),
-                      freq.alive[, ncol(freq.alive)] # <-- bad things here
-                      + freq.dead[, ncol(freq.alive)])
+  freq.all   <- cbind(SliceDfColumns(freq.alive, unlist(map.gt.alive)) 
+                      + SliceDfColumns(freq.dead, unlist(map.gt.alive)),
+                      SliceDfColumns(freq.alive, unlist(map.al.alive))
+                      * ratio.alive 
+                      + SliceDfColumns(freq.dead, unlist(map.al.alive)) 
+                      * (1 - ratio.alive),
+                      SliceDfColumns(freq.alive, ncol(freq.alive)) # <-- bad things here
+                      + SliceDfColumns(freq.alive, ncol(freq.alive)))
 
-  print(freq.all)
+  first.freq.all <- SliceDfRows(freq.all, 1)
+  map.gt.all     <- FindIdsGtCounts(first.freq.all)
+  map.al.all     <- FindIdsAlFreqs(first.freq.all)
 
-  map.gt.all <- FindIdsGtCounts(freq.all[1, ])
-  map.al.all <- FindIdsAlFreqs(freq.all[1, ])
-
-  freqs      <- cbind(freq.alive, freq.all)
+  freqs <- cbind(freq.alive, freq.all)
 
   # modify frequency matrix column names
   colnames.alive  <- paste("SURVIVERS", colnames(freq.alive), sep = ".")
@@ -92,7 +96,6 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 
     col.all  <- ncol(freq.alive) + 1
     col.end  <- ncol(freq.alive) + ncol(freq.all)
-
     probs <- apply(cbind(freq.alive, freq.all), MARGIN = 1,
                       FUN = function(x) {
                         CalcProbsSelection (x[1:(col.all - 1)],
@@ -101,7 +104,6 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
                                             map.all = map.gt.all)
                       }
                 )
-
     freqs <- cbind(freqs, t(probs))
 
   }

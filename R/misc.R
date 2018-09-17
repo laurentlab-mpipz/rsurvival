@@ -119,3 +119,34 @@ SplitVect <- function(vect, survival){
   return(result)
 
 }
+
+#' @export
+
+SliceDfRows <- function(df, rows){
+
+  if (length(rows) > 1){
+    result <- df[rows, ]
+  } else {
+    df <- data.frame(df)
+    df <- tibble::rownames_to_column(df, var = "rowname")
+    df <- dplyr::slice(df, rows)
+    result <- tibble::column_to_rownames(df, var = "rowname")
+  }
+
+  return(result)
+
+}
+
+#' @export
+
+SliceDfColumns <- function(df, columns){
+
+  if (length(columns) > 1){
+    result <- df[, columns]
+  } else {
+    result <- t(SliceDfRows(t(df), columns))
+  }
+
+  return(result)
+
+}
