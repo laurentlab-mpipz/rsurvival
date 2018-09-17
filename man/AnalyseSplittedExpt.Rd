@@ -7,19 +7,29 @@ of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
 AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = NULL,
-  location.cols = TRUE, p.values = TRUE, genotypic = FALSE,
-  backup.path = NULL)
+  location.cols = TRUE, deltas = TRUE, p.values = TRUE,
+  genotypic = FALSE, backup.path = NULL)
 }
 \arguments{
 \item{gt.alive}{A genotype data frame of the alive population}
 
 \item{gt.dead}{A genotype data frame of the dead population}
 
+\item{min.freq.al}{Optional. Numeric from 0 to 1. Variants with MAF under
+this threshold will be ommited.}
+
 \item{location.cols}{If TRUE, adds two columns to the result, which are the
 scaffold name and the locus name as factors (deafult is FALSE)}
 
+\item{deltas}{If TRUE (default), include columns of differencies between
+relative allelic frequencies after selection and before selection in the
+result. Positive value means that the allele is more common in the survivers
+population.}
+
 \item{p.values}{If TRUE (default), some probabilities will be included in
 the result, as well as frequencies}
+
+\item{genotypic}{If TRUE, will include counts of genotype in the result.}
 
 \item{backup.path}{Optionnal. A path where backup files can be stored}
 }
@@ -33,7 +43,9 @@ positive selection.
 }
 \examples{
 AnalyseSplittedExpt(gt.alive, gt.dead)
-AnalyseSplittedExpt(gt.alive, gt.dead, p.values = FALSE)
+AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = 0.1)
+AnalyseSplittedExpt(gt.alive, gt.dead, location.cols = FALSE)
+AnalyseSplittedExpt(gt.alive, gt.dead, deltas = FALSE, p.values = FALSE)
 AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
 }
 \seealso{

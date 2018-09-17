@@ -14,6 +14,16 @@ genotypes in the alive population}
 
 \item{freq.all}{An vector of observed absolute frequencies for the three
 genotypes in the population before selection}
+
+\item{map.alive}{Optional. Integer list containing the ids of specific
+columns of \code{freq.alive}. Increase speed for large scale calls. Items of
+\code{map.alive} must be named "homo.ref", "hetero", "homo.alt", "missval",
+"total".}
+
+\item{map.all}{Optional. Integer list containing the ids of specific
+columns of \code{freq.all}. Increase speed for large scale calls. Items of
+\code{map.all} must be named "homo.ref", "hetero", "homo.alt", "missval",
+"total".}
 }
 \value{
 A vector of odds for the 3 genotypes, according to the MWNCHHypergeo model.
@@ -26,4 +36,8 @@ frequencies using MWNCHHypergeo model.
 f.alive <- c(17, 3, 15, 1, 36)
 f.all  <- c(24, 5, 22, 2, 53)
 CalcWeightsSurvival(f.alive, f.all)
+}
+\seealso{
+For more information, see \code{\link{FindIdsGtCounts}} which this
+function binds.
 }

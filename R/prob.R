@@ -4,10 +4,17 @@
 #'
 #' @param gt.alive A genotype data frame of the alive population
 #' @param gt.dead A genotype data frame of the dead population
+#' @param min.freq.al Optional. Numeric from 0 to 1. Variants with MAF under
+#' this threshold will be ommited.
 #' @param location.cols If TRUE, adds two columns to the result, which are the
 #' scaffold name and the locus name as factors (deafult is FALSE)
+#' @param deltas If TRUE (default), include columns of differencies between
+#' relative allelic frequencies after selection and before selection in the
+#' result. Positive value means that the allele is more common in the survivers
+#' population.
 #' @param p.values If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
+#' @param genotypic If TRUE, will include counts of genotype in the result.
 #' @param backup.path Optionnal. A path where backup files can be stored
 #'
 #' @return 
@@ -20,7 +27,9 @@
 #'
 #' @examples
 #' AnalyseSplittedExpt(gt.alive, gt.dead)
-#' AnalyseSplittedExpt(gt.alive, gt.dead, p.values = FALSE)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = 0.1)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, location.cols = FALSE)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, deltas = FALSE, p.values = FALSE)
 #' AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
 AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
@@ -160,10 +169,17 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 #'
 #' @param gt A genotype data frame of your original population
 #' @param survival A logical vector. TRUE survived the experiment, FALSE died
+#' @param min.freq.al Optional. Numeric from 0 to 1. Variants with MAF under
+#' this threshold will be ommited.
 #' @param location.cols If TRUE, adds two columns to the result, which are the
 #' scaffold name and the locus name as factors (deafult is FALSE)
+#' @param deltas If TRUE (default), include columns of differencies between
+#' relative allelic frequencies after selection and before selection in the
+#' result. Positive value means that the allele is more common in the survivers
+#' population.
 #' @param p.values If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
+#' @param genotypic If TRUE, will include counts of genotype in the result.
 #' @param backup.path Optionnal. A path where backup files can be stored
 #'
 #' @return 
@@ -176,7 +192,8 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 #'
 #' @examples
 #' AnalyseExpt(gt, survival)
-#' AnalyseExpt(gt, survival, p.values = FALSE)
+#' AnalyseExpt(gt, survival, min.freq.al = 0.1, location.cols = FALSE)
+#' AnalyseExpt(gt, survival, deltas = FALSE, p.values = FALSE)
 #' AnalyseExpt(gt, survival, backup.path = "example.csv")
 
 AnalyseExpt <- function(gt, survival, min.freq.al = NULL, location.cols = TRUE,
@@ -203,7 +220,14 @@ AnalyseExpt <- function(gt, survival, min.freq.al = NULL, location.cols = TRUE,
 #' genotypes in the alive population
 #' @param freq.all An vector of observed absolute frequencies for the three
 #' genotypes in the population before selection
-#'
+#' @param map.alive Optional. Integer list containing the ids of specific
+#' columns of \code{freq.alive}. Increase speed for large scale calls. Items of
+#' \code{map.alive} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
+#' @param map.all Optional. Integer list containing the ids of specific
+#' columns of \code{freq.all}. Increase speed for large scale calls. Items of
+#' \code{map.all} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
 #' @return 
 #' A vector of probabilities : \code{p_neutral} is the probability to obtain
 #' this distribution with a random picking process, \code{p_select} is the
@@ -213,8 +237,8 @@ AnalyseExpt <- function(gt, survival, min.freq.al = NULL, location.cols = TRUE,
 #' \code{p_neutral}, \code{p_value} is the probability that the distribution
 #' is due to positive selection.
 #'
-#' @seealso For more information, see \code{\link{CalcWeightsSurvival}} wich
-#' this function bind.
+#' @seealso For more information, see \code{\link{CalcWeightsSurvival}} and
+#' \code{\link{FindIdsGtCounts}} wich this function binds.
 #'
 #' @export
 #'
@@ -278,9 +302,20 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
 #' genotypes in the alive population
 #' @param freq.all An vector of observed absolute frequencies for the three
 #' genotypes in the population before selection
+#' @param map.alive Optional. Integer list containing the ids of specific
+#' columns of \code{freq.alive}. Increase speed for large scale calls. Items of
+#' \code{map.alive} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
+#' @param map.all Optional. Integer list containing the ids of specific
+#' columns of \code{freq.all}. Increase speed for large scale calls. Items of
+#' \code{map.all} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
 #'
 #' @return 
 #' A vector of odds for the 3 genotypes, according to the MWNCHHypergeo model.
+#'
+#' @seealso For more information, see \code{\link{FindIdsGtCounts}} which this
+#' function binds.
 #'
 #' @export
 #'

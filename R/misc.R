@@ -120,7 +120,21 @@ SplitVect <- function(vect, survival){
 
 }
 
+
+#' A function to slice data frames without loosing row names
+#'
+#' @param df A dataframe to slice
+#' @param rows A integer vector. The ids of the rows to return.
+#'
+#' @return
+#' A dataframe containing only the rows number \code{rows} from \code{df}.
+#'
 #' @export
+#'
+#' @examples
+#' SliceDfRows(df, 1)
+#' SliceDfRows(df, 1:5)
+#' SliceDfRows(df, c(1,3,5))
 
 SliceDfRows <- function(df, rows){
 
@@ -137,7 +151,22 @@ SliceDfRows <- function(df, rows){
 
 }
 
+
+#' A function to slice data frames without loosing column names
+#'
+#' @param df A dataframe to slice
+#' @param columns A integer vector. The ids of the columns to return.
+#'
+#' @return
+#' A dataframe containing only the columns number \code{columns} from
+#' \code{df}.
+#'
 #' @export
+#'
+#' @examples
+#' SliceDfColumns(df, 1)
+#' SliceDfColumns(df, 1:5)
+#' SliceDfColumns(df, c(1,3,5))
 
 SliceDfColumns <- function(df, columns){
 

@@ -266,8 +266,19 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
 
 }
 
-
+#' A function to find the ids of counts.gt columns in a frequency matrix.
+#'
+#' @param freq the absolute frequency matrix
+#'
+#' @return 
+#' A list of integers containing ids of specific columns. Items names are :
+#' "homo.ref", "hetero", "homo.alt", "missval", "total". The value are the 
+#' corresponding column ids.
+#'
 #' @export
+#'
+#' @examples
+#' FindIdsGtCounts(freq)
 
 FindIdsGtCounts <- function(freq){
 
@@ -278,15 +289,6 @@ FindIdsGtCounts <- function(freq){
   missval  <- grep("^.*count\\.gt\\.MISSVAL$", names(freq))
   total    <- grep("^.*count\\.gt\\.TOTAL$", names(freq))
 
-  # if (length(homoref) != 1 || length(alive.id.hetero) != 1 
-  #       || length(alive.id.homoalt) != 1 || length(alive.id.total) != 1
-  #       || length(alive.id.total) != 1) {
-  #   stop(paste("Wrong number of ids for frequency columnns in freq.alive. ", 
-  #               "Sould be (1,1,1,1,1) instead of (", alive.id.homoref, ",",
-  #               alive.id.hetero, ",", alive.id.homoalt, ",",
-  #               alive.id.missval, ",", alive.id.total, ")." ))
-  # }
-
   result <- list("homo.ref" = homo.ref, "hetero" = hetero,
                  "homo.alt" = homo.alt, "missval" = missval, "total"= total)
 
@@ -294,7 +296,18 @@ FindIdsGtCounts <- function(freq){
 
 }
 
+#' A function to find the ids of freq.al columns in a frequency matrix.
+#'
+#' @param freq the realtive frequency matrix
+#'
+#' @return 
+#' A list of integers containing ids of specific columns. Items names are :
+#' "ref", "alt", "missval". The value are the corresponding column ids.
+#'
 #' @export
+#'
+#' @examples
+#' FindIdsAlFeqs(freq)
 
 FindIdsAlFreqs <- function(freq){
 
