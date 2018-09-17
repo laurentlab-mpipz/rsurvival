@@ -5,17 +5,25 @@
 \title{A function to calculate probabilities that observed frequencies are due to
 positive selection using MWNCHHypergeo model.}
 \usage{
-CalcProbsSelection(freq.alive, freq.dead, freq.all)
+CalcProbsSelection(freq.alive, freq.all, map.alive = NULL,
+  map.all = NULL)
 }
 \arguments{
 \item{freq.alive}{An vector of observed absolute frequencies for the three
 genotypes in the alive population}
 
-\item{freq.dead}{An vector of observed absolute frequencies for the three
-genotypes in the dead population}
-
 \item{freq.all}{An vector of observed absolute frequencies for the three
 genotypes in the population before selection}
+
+\item{map.alive}{Optional. Integer list containing the ids of specific
+columns of \code{freq.alive}. Increase speed for large scale calls. Items of
+\code{map.alive} must be named "homo.ref", "hetero", "homo.alt", "missval",
+"total".}
+
+\item{map.all}{Optional. Integer list containing the ids of specific
+columns of \code{freq.all}. Increase speed for large scale calls. Items of
+\code{map.all} must be named "homo.ref", "hetero", "homo.alt", "missval",
+"total".}
 }
 \value{
 A vector of probabilities : \code{p_neutral} is the probability to obtain
@@ -33,10 +41,9 @@ positive selection using MWNCHHypergeo model.
 \examples{
 f.alive <- c(17, 3, 15, 1, 36)
 f.all   <- c(24, 5, 22, 2, 53)
-f.dead  <- f.all - f.dead
-CalcProbsSelection(f.alive, f.dead, f.all)
+CalcProbsSelection(f.alive, f.all)
 }
 \seealso{
-For more information, see \code{\link{CalcWeightsSurvival}} wich
-this function bind.
+For more information, see \code{\link{CalcWeightsSurvival}} and
+\code{\link{FindIdsGtCounts}} wich this function binds.
 }

@@ -26,6 +26,6 @@ CountSignSnps(probs)
 CountSignSnps(probs, max.p.neutral = 0.05)
 }
 \seealso{
-For more detail, see \code{link{AnalyseExpt}} or
+For more detail, see \code{link{AnalyseSplittedExpt}} or
 \code{link{CalcProbsSelection}} which can provide you a probs data frame.
 }

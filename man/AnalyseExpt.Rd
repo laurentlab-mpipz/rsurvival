@@ -6,19 +6,30 @@
 of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
-AnalyseExpt(gt, survival, location.cols = TRUE, p.values = TRUE,
-  genotypic = FALSE, backup.path = NULL)
+AnalyseExpt(gt, survival, min.freq.al = NULL, location.cols = TRUE,
+  deltas = TRUE, p.values = TRUE, genotypic = FALSE,
+  backup.path = NULL)
 }
 \arguments{
 \item{gt}{A genotype data frame of your original population}
 
 \item{survival}{A logical vector. TRUE survived the experiment, FALSE died}
 
+\item{min.freq.al}{Optional. Numeric from 0 to 1. Variants with MAF under
+this threshold will be ommited.}
+
 \item{location.cols}{If TRUE, adds two columns to the result, which are the
 scaffold name and the locus name as factors (deafult is FALSE)}
 
+\item{deltas}{If TRUE (default), include columns of differencies between
+relative allelic frequencies after selection and before selection in the
+result. Positive value means that the allele is more common in the survivers
+population.}
+
 \item{p.values}{If TRUE (default), some probabilities will be included in
 the result, as well as frequencies}
+
+\item{genotypic}{If TRUE, will include counts of genotype in the result.}
 
 \item{backup.path}{Optionnal. A path where backup files can be stored}
 }
@@ -32,7 +43,8 @@ positive selection.
 }
 \examples{
 AnalyseExpt(gt, survival)
-AnalyseExpt(gt, survival, p.values = FALSE)
+AnalyseExpt(gt, survival, min.freq.al = 0.1, location.cols = FALSE)
+AnalyseExpt(gt, survival, deltas = FALSE, p.values = FALSE)
 AnalyseExpt(gt, survival, backup.path = "example.csv")
 }
 \seealso{

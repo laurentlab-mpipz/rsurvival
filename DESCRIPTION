@@ -12,5 +12,7 @@ Imports: vcfR,
     stringr,
     BiasedUrn,
     stats,
-    lubridate
+    lubridate,
+    dplyr,
+    tibble
 Suggests: testthat

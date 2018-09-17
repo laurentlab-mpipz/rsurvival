@@ -4,10 +4,17 @@
 #'
 #' @param gt.alive A genotype data frame of the alive population
 #' @param gt.dead A genotype data frame of the dead population
+#' @param min.freq.al Optional. Numeric from 0 to 1. Variants with MAF under
+#' this threshold will be ommited.
 #' @param location.cols If TRUE, adds two columns to the result, which are the
 #' scaffold name and the locus name as factors (deafult is FALSE)
+#' @param deltas If TRUE (default), include columns of differencies between
+#' relative allelic frequencies after selection and before selection in the
+#' result. Positive value means that the allele is more common in the survivers
+#' population.
 #' @param p.values If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
+#' @param genotypic If TRUE, will include counts of genotype in the result.
 #' @param backup.path Optionnal. A path where backup files can be stored
 #'
 #' @return 
@@ -20,20 +27,25 @@
 #'
 #' @examples
 #' AnalyseSplittedExpt(gt.alive, gt.dead)
-#' AnalyseSplittedExpt(gt.alive, gt.dead, p.values = FALSE)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = 0.1)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, location.cols = FALSE)
+#' AnalyseSplittedExpt(gt.alive, gt.dead, deltas = FALSE, p.values = FALSE)
 #' AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
 
-AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
-                        p.values = TRUE, genotypic = FALSE,
-                        backup.path = NULL){
+AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
+                                location.cols = TRUE, deltas = TRUE,
+                                p.values = TRUE, genotypic = FALSE,
+                                backup.path = NULL){
 
-  # calculate frequencies
+  # Calculate frequencies -----------------------------------------------------
   freq.alive <- CalcFreqGt(gt.alive, genotypic = TRUE, allelic = TRUE,
-                            absolute = TRUE)
+                            absolute = c(TRUE, FALSE))
   freq.dead  <- CalcFreqGt(gt.dead, genotypic = TRUE, allelic = TRUE,
-                            absolute = TRUE)
-  dim(freq.alive)
-  # only keep rows in common
+                            absolute = c(TRUE, FALSE))
+  freq.alive <- data.frame(freq.alive)
+  freq.dead  <- data.frame(freq.dead)
+
+  # Only keep rows in common --------------------------------------------------
   filter.alive <- rownames(freq.alive) %in% rownames(freq.dead)
   if (sum(!filter.alive) > 0) {
     freq.alive <- freq.alive[filter.alive, ]
@@ -43,31 +55,81 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
     freq.dead <- freq.dead[filter.dead, ]
   }
 
-  freq.all   <- freq.alive + freq.dead
-  freqs      <- cbind(freq.alive, freq.all)
+  # Create frequency matrix ---------------------------------------------------
 
-  # modify frequencies column names
+  first.freq.alive <- SliceDfRows(freq.alive, 1) # Freqs for the 1st variant
+  map.gt.alive <- FindIdsGtCounts(first.freq.alive) # Ids of intersting freqs
+  map.al.alive <- FindIdsAlFreqs(first.freq.alive)
+  # how many samples survived (ratio)
+  ratio.alive  <- ncol(gt.alive) / (ncol(gt.alive) + ncol(gt.dead))
+
+  freq.all   <- cbind(SliceDfColumns(freq.alive, unlist(map.gt.alive)) 
+                      + SliceDfColumns(freq.dead, unlist(map.gt.alive)),
+                      SliceDfColumns(freq.alive, unlist(map.al.alive))
+                      * ratio.alive 
+                      + SliceDfColumns(freq.dead, unlist(map.al.alive)) 
+                      * (1 - ratio.alive),
+                      SliceDfColumns(freq.alive, ncol(freq.alive)) # <-- bad things here
+                      + SliceDfColumns(freq.alive, ncol(freq.alive)))
+
+  first.freq.all <- SliceDfRows(freq.all, 1)
+  map.gt.all     <- FindIdsGtCounts(first.freq.all)
+  map.al.all     <- FindIdsAlFreqs(first.freq.all)
+
+  freqs <- cbind(freq.alive, freq.all)
+
+  # modify frequency matrix column names
   colnames.alive  <- paste("SURVIVERS", colnames(freq.alive), sep = ".")
   colnames.all    <- paste("ALL", colnames(freq.alive), sep = ".")
   colnames(freqs) <- c(colnames.alive, colnames.all)
 
+  # Remove variants with low allelic frequencies ------------------------------
+
+  if (is.numeric(min.freq.al)) {
+
+      freq.al.ids <- c(map.al.all$ref, map.al.all$alt)
+      filter <- !as.logical(rowSums(freq.all[, freq.al.ids] < min.freq.al,
+                                    na.rm = TRUE))
+      freqs      <- freqs[filter, ]
+      freq.alive <- freq.alive[filter, ]
+      freq.all   <- freq.all [filter, ]
+
+      if (is.null(dim(freqs))) {
+        stop("You removed all rows from gt using parameter min.freq.al")
+      }
+
+  }
+
+  # Calculate deltas ----------------------------------------------------------
+
+  if (deltas) {
+
+    deltas <- (SliceDfColumns(freq.alive, c(map.al.alive$ref, map.al.alive$alt))
+              - SliceDfColumns(freq.all, c(map.al.all$ref, map.al.all$alt)))
+    colnames(deltas) <- c("DELTA.freq.al.REF", "DELTA.freq.al.ALT")
+    freqs <- cbind(freqs, deltas)
+
+  }
+
+  # Calculate probabilities ---------------------------------------------------
+
   if (p.values) {
 
-    col.dead <- ncol(freq.alive) + 1
-    col.all  <- ncol(freq.alive) + ncol(freq.dead) + 1
-    col.end  <- ncol(freq.alive) + ncol(freq.dead) + ncol(freq.all)
-
-    probs <- apply(cbind(freq.alive, freq.dead, freq.all), MARGIN = 1,
+    col.all  <- ncol(freq.alive) + 1
+    col.end  <- ncol(freq.alive) + ncol(freq.all)
+    probs  <- apply(cbind(freq.alive, freq.all), MARGIN = 1,
                       FUN = function(x) {
-                        CalcProbsSelection (x[1:(col.dead - 1)],
-                                            x[col.dead:(col.all - 1)], 
-                                            x[col.all:col.end])
+                        CalcProbsSelection (x[1:(col.all - 1)],
+                                            x[col.all:col.end],
+                                            map.alive = map.gt.alive,
+                                            map.all = map.gt.all)
                       }
                 )
-
     freqs <- cbind(freqs, t(probs))
 
   }
+
+  # Remove gt stats columns ---------------------------------------------------
 
   if (!genotypic) {
 
@@ -75,6 +137,8 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
     freqs <- freqs[, filter]
 
   }
+
+  # Add location columns ------------------------------------------------------
 
   if (location.cols) {
     temp.names <- colnames(freqs)
@@ -87,6 +151,8 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
   }
 
   result <- freqs
+
+  # Save to a file ------------------------------------------------------------
 
   if (is.character(backup.path)) {
     utils::write.csv(result, backup.path) # write to file
@@ -103,10 +169,17 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
 #'
 #' @param gt A genotype data frame of your original population
 #' @param survival A logical vector. TRUE survived the experiment, FALSE died
+#' @param min.freq.al Optional. Numeric from 0 to 1. Variants with MAF under
+#' this threshold will be ommited.
 #' @param location.cols If TRUE, adds two columns to the result, which are the
 #' scaffold name and the locus name as factors (deafult is FALSE)
+#' @param deltas If TRUE (default), include columns of differencies between
+#' relative allelic frequencies after selection and before selection in the
+#' result. Positive value means that the allele is more common in the survivers
+#' population.
 #' @param p.values If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
+#' @param genotypic If TRUE, will include counts of genotype in the result.
 #' @param backup.path Optionnal. A path where backup files can be stored
 #'
 #' @return 
@@ -119,19 +192,20 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, location.cols = TRUE,
 #'
 #' @examples
 #' AnalyseExpt(gt, survival)
-#' AnalyseExpt(gt, survival, p.values = FALSE)
+#' AnalyseExpt(gt, survival, min.freq.al = 0.1, location.cols = FALSE)
+#' AnalyseExpt(gt, survival, deltas = FALSE, p.values = FALSE)
 #' AnalyseExpt(gt, survival, backup.path = "example.csv")
 
-AnalyseExpt <- function(gt, survival, location.cols = TRUE, 
-                        p.values = TRUE, genotypic = FALSE,
+AnalyseExpt <- function(gt, survival, min.freq.al = NULL, location.cols = TRUE,
+                        deltas = TRUE, p.values = TRUE, genotypic = FALSE,
                         backup.path = NULL){
 
   splitted.gt <- SplitGt(gt, survival)
   gt.alive    <- splitted.gt$alive
   gt.dead     <- splitted.gt$dead
 
-  result <- AnalyseSplittedExpt(gt.alive, gt.dead,
-                                location.cols = location.cols,
+  result <- AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = min.freq.al,
+                                location.cols = location.cols, deltas = deltas,
                                 p.values = p.values, genotypic = genotypic,
                                 backup.path = backup.path)
   return(result)
@@ -144,11 +218,16 @@ AnalyseExpt <- function(gt, survival, location.cols = TRUE,
 #'
 #' @param freq.alive An vector of observed absolute frequencies for the three
 #' genotypes in the alive population
-#' @param freq.dead An vector of observed absolute frequencies for the three
-#' genotypes in the dead population
 #' @param freq.all An vector of observed absolute frequencies for the three
 #' genotypes in the population before selection
-#'
+#' @param map.alive Optional. Integer list containing the ids of specific
+#' columns of \code{freq.alive}. Increase speed for large scale calls. Items of
+#' \code{map.alive} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
+#' @param map.all Optional. Integer list containing the ids of specific
+#' columns of \code{freq.all}. Increase speed for large scale calls. Items of
+#' \code{map.all} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
 #' @return 
 #' A vector of probabilities : \code{p_neutral} is the probability to obtain
 #' this distribution with a random picking process, \code{p_select} is the
@@ -158,26 +237,35 @@ AnalyseExpt <- function(gt, survival, location.cols = TRUE,
 #' \code{p_neutral}, \code{p_value} is the probability that the distribution
 #' is due to positive selection.
 #'
-#' @seealso For more information, see \code{\link{CalcWeightsSurvival}} wich
-#' this function bind.
+#' @seealso For more information, see \code{\link{CalcWeightsSurvival}} and
+#' \code{\link{FindIdsGtCounts}} wich this function binds.
 #'
 #' @export
 #'
 #' @examples
 #' f.alive <- c(17, 3, 15, 1, 36)
 #' f.all   <- c(24, 5, 22, 2, 53)
-#' f.dead  <- f.all - f.dead
-#' CalcProbsSelection(f.alive, f.dead, f.all)
+#' CalcProbsSelection(f.alive, f.all)
 
-CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
+CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
+                               map.all = NULL){
 
   sel.weights <- CalcWeightsSurvival(freq.alive, freq.all)
 
   if ((sum(is.na(sel.weights)) == 0) && (sum(sel.weights <= 0) == 0) 
       && (sum(is.infinite(sel.weights)) == 0)) {
 
-    id.alive <- FindIdsGtCounts(freq.alive)
-    id.all   <- FindIdsGtCounts(freq.all)
+    if(!is.null(map.alive)) {
+      id.alive <- map.alive
+    } else {
+      id.alive <- FindIdsGtCounts(freq.alive)
+    }
+
+    if(!is.null(map.all)) {
+      id.all <- map.all
+    } else {
+      id.all <- FindIdsGtCounts(freq.all)
+    }
 
     # distribution in alive population
     x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
@@ -214,9 +302,20 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 #' genotypes in the alive population
 #' @param freq.all An vector of observed absolute frequencies for the three
 #' genotypes in the population before selection
+#' @param map.alive Optional. Integer list containing the ids of specific
+#' columns of \code{freq.alive}. Increase speed for large scale calls. Items of
+#' \code{map.alive} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
+#' @param map.all Optional. Integer list containing the ids of specific
+#' columns of \code{freq.all}. Increase speed for large scale calls. Items of
+#' \code{map.all} must be named "homo.ref", "hetero", "homo.alt", "missval",
+#' "total".
 #'
 #' @return 
 #' A vector of odds for the 3 genotypes, according to the MWNCHHypergeo model.
+#'
+#' @seealso For more information, see \code{\link{FindIdsGtCounts}} which this
+#' function binds.
 #'
 #' @export
 #'
@@ -225,10 +324,20 @@ CalcProbsSelection <- function(freq.alive, freq.dead, freq.all){
 #' f.all  <- c(24, 5, 22, 2, 53)
 #' CalcWeightsSurvival(f.alive, f.all)
 
-CalcWeightsSurvival <- function(freq.alive, freq.all){
-    
-    id.alive <- FindIdsGtCounts(freq.alive)
-    id.all   <- FindIdsGtCounts(freq.all)
+CalcWeightsSurvival <- function(freq.alive, freq.all, map.alive = NULL,
+                                map.all = NULL){
+
+    if(!is.null(map.alive)) {
+      id.alive <- map.alive
+    } else {
+      id.alive <- FindIdsGtCounts(freq.alive)
+    }
+
+    if(!is.null(map.all)) {
+      id.all <- map.all
+    } else {
+      id.all <- FindIdsGtCounts(freq.all)
+    }
 
     # distribution of alive samples
     mu <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
@@ -236,8 +345,6 @@ CalcWeightsSurvival <- function(freq.alive, freq.all){
     m  <- freq.all[c(id.all$homo.ref, id.all$hetero, id.all$homo.alt)] 
     # number of alive samples with valid data
     n  <- freq.alive[id.alive$total] - freq.alive[id.alive$missval]
-    
-
 
     # calculate odds
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
