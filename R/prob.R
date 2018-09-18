@@ -63,11 +63,11 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
   # how many samples survived (ratio)
   ratio.alive  <- ncol(gt.alive) / (ncol(gt.alive) + ncol(gt.dead))
 
-  freq.all   <- cbind(SliceDfColumns(freq.alive, unlist(map.gt.alive)) 
+  freq.all   <- cbind(SliceDfColumns(freq.alive, unlist(map.gt.alive))
                       + SliceDfColumns(freq.dead, unlist(map.gt.alive)),
                       SliceDfColumns(freq.alive, unlist(map.al.alive))
-                      * ratio.alive 
-                      + SliceDfColumns(freq.dead, unlist(map.al.alive)) 
+                      * ratio.alive
+                      + SliceDfColumns(freq.dead, unlist(map.al.alive))
                       * (1 - ratio.alive),
                       SliceDfColumns(freq.alive, ncol(freq.alive)) # <-- bad things here
                       + SliceDfColumns(freq.alive, ncol(freq.alive)))
@@ -105,7 +105,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
   if (deltas) {
 
     deltas <- (SliceDfColumns(freq.alive, c(map.al.alive$ref, map.al.alive$alt))
-              - SliceDfColumns(freq.all, c(map.al.all$ref, map.al.all$alt)))
+               - SliceDfColumns(freq.all, c(map.al.all$ref, map.al.all$alt)))
     colnames(deltas) <- c("DELTA.freq.al.REF", "DELTA.freq.al.ALT")
     freqs <- cbind(freqs, deltas)
 

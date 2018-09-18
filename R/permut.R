@@ -17,7 +17,7 @@
 #'
 #' @export
 #'
-#' @seealso For more detail, see \code{link{AnalyseSplittedExpt}} which this function
+#' @seealso For more detail, see \code{\link{AnalyseSplittedExpt}} which this function
 #' bind.
 #'
 #' @examples
@@ -65,8 +65,8 @@ PermutRandSurv <- function(gt, survival, odded.lives = NULL,
 #'
 #' @export
 #'
-#' @seealso For more detail, see \code{link{AnalyseSplittedExpt}} or
-#' \code{link{CalcProbsSelection}} which can provide you a probs data frame.
+#' @seealso For more detail, see \code{\link{AnalyseSplittedExpt}} or
+#' \code{\link{CalcProbsSelection}} which can provide you a probs data frame.
 #'
 #' @examples
 #' CountSignSnps(probs)
@@ -105,8 +105,8 @@ CountSignSnps <- function(probs, max.p.neutral = 0.01){
 #'
 #' @export
 #'
-#' @seealso For more detail, see \code{link{PermutSurv}} and
-#' \code{link{CountSignSnps}} which this function bind.
+#' @seealso For more detail, see \code{\link{PermutSurv}} and
+#' \code{\link{CountSignSnps}} which this function bind.
 #'
 #' @examples
 #' IterRandomPick(gt, survival)
@@ -194,7 +194,7 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
 #' (e.g. list$odded.samples$HETERO could be c(1, 3, 8, 14))
 #' @export
 #'
-#' @seealso For more detail, see \code{link{IterRandPick}} which binds this
+#' @seealso For more detail, see \code{\link{IterRandPick}} which binds this
 #' function
 #'
 #' @examples
