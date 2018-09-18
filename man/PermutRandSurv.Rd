@@ -33,9 +33,9 @@ selection model from a genotype matrix whit a randomly shuffled survival
 vector
 }
 \examples{
-PermutSurv(gt, c(TRUE, TRUE, FALSE, ...))
-PermutSurv(gt, survival, verbose = FALSE)
-PermutSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
+PermutRandSurv(gt, c(TRUE, TRUE, FALSE, ...))
+PermutRandSurv(gt, survival, verbose = FALSE)
+PermutRandSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
 ), odded.samples = list("HETERO" = c(1,3,7,45,141), ...)))
 }
 \seealso{

@@ -40,6 +40,6 @@ IterRandomPick(gt, survival, max.p.neutral = 0.05)
 IterRandomPick(gt, survival, iter = 1000, verbose = FALSE)
 }
 \seealso{
-For more detail, see \code{\link{PermutSurv}} and
+For more detail, see \code{\link{PermutRandSurv}} and
 \code{\link{CountSignSnps}} which this function bind.
 }
