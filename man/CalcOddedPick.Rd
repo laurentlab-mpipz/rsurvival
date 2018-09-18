@@ -34,6 +34,6 @@ CalcOddedPick(variant, survival, n = 1000)
 CalcOddedPick(variant, survival, verbose = FALSE)
 }
 \seealso{
-For more detail, see \code{link{IterRandPick}} which binds this
+For more detail, see \code{\link{IterRandPick}} which binds this
 function
 }
