@@ -11,12 +11,12 @@ If you do not have the _devtools_ package installed, please first run
 `install.packages('devtools')`
 and select the appropriate CRAN mirror.
 
+## How to use
+You will find some tutorials and documentation on our [wiki page](https://github.com/laurentlab-mpipz/rsurvival/wiki).
+This is the best way to start with this package.
+
 ## License
 This package is under GPL-3.0 license. You can find all the details in the [LICENSE](https://github.com/laurentlab-mpipz/rsurvival/blob/master/LICENSE) file.
-
-## Dependencies
-This package needs vcfR, BiasedUrn, stringr and lubridate packages to work properly.
-Unit testing is done using testthat package.
 
 ## About the autors
 Developped by the Max Planck Institute for Plant Breeding Research.
