@@ -21,9 +21,9 @@
 #' bind.
 #'
 #' @examples
-#' PermutSurv(gt, c(TRUE, TRUE, FALSE, ...))
-#' PermutSurv(gt, survival, verbose = FALSE)
-#' PermutSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
+#' PermutRandSurv(gt, c(TRUE, TRUE, FALSE, ...))
+#' PermutRandSurv(gt, survival, verbose = FALSE)
+#' PermutRandSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
 #' ), odded.samples = list("HETERO" = c(1,3,7,45,141), ...)))
 
 PermutRandSurv <- function(gt, survival, odded.lives = NULL,
@@ -105,7 +105,7 @@ CountSignSnps <- function(probs, max.p.neutral = 0.01){
 #'
 #' @export
 #'
-#' @seealso For more detail, see \code{\link{PermutSurv}} and
+#' @seealso For more detail, see \code{\link{PermutRandSurv}} and
 #' \code{\link{CountSignSnps}} which this function bind.
 #'
 #' @examples
