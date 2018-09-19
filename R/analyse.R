@@ -120,6 +120,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
                   return(result)
                  })
     
+    fst <- data.frame(fst)
     colnames(fst) <- c("FST.pop1.pop2")
     freqs <- cbind(freqs, fst)
 
