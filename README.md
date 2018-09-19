@@ -18,5 +18,5 @@ This is the best way to start with this package.
 ## License
 This package is under GPL-3.0 license. You can find all the details in the [LICENSE](https://github.com/laurentlab-mpipz/rsurvival/blob/master/LICENSE) file.
 
-## About the autors
+## About the authors
 Developped by the Max Planck Institute for Plant Breeding Research.
