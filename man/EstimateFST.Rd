@@ -20,3 +20,8 @@ variants.
 A function to estimate the FST of a variant using the Weir & Cockerham
 (1984) method
 }
+\examples{
+\dontrun{
+EstimateFST(v1, v2)
+}
+}
