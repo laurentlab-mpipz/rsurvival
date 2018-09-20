@@ -33,9 +33,11 @@ A function to calculate odds for positive selection from observed selection
 frequencies using MWNCHHypergeo model.
 }
 \examples{
+\dontrun{
 f.alive <- c(17, 3, 15, 1, 36)
 f.all  <- c(24, 5, 22, 2, 53)
 CalcWeightsSurvival(f.alive, f.all)
+}
 }
 \seealso{
 For more information, see \code{\link{FindIdsGtCounts}} which this

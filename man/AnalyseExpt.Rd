@@ -45,10 +45,12 @@ of genotype and probabilities that they are due to random picking and
 positive selection.
 }
 \examples{
+\dontrun{
 AnalyseExpt(gt, survival)
 AnalyseExpt(gt, survival, min.freq.al = 0.1, location.cols = FALSE)
 AnalyseExpt(gt, survival, deltas = FALSE, p.values = FALSE)
 AnalyseExpt(gt, survival, backup.path = "example.csv")
+}
 }
 \seealso{
 For more information, see \code{\link{AnalyseSplittedExpt}} which

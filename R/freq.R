@@ -56,11 +56,13 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' CalcFreqGt(genotype)
 #' CalcFreqGt(genotype, genotypic = FALSE, allelic = TRUE)
 #' CalcFreqGt(genotype, absolute = FALSE, percentage = TRUE)
 #' CalcFreqGt(genotype, backup.path = "example.csv")
 #' CalcFreqGt(genotype, totals= FALSE, min.freq.al = 0.15)
+#' }
 
 CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
                         percentage = FALSE, extrapolate.freq = TRUE,
@@ -140,10 +142,12 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' CalcFreqVariant(variant)
 #' CalcFreqVariant(variant, genotypic = FALSE, allelic = TRUE)
 #' CalcFreqVariant(variant, absolute = FALSE, percentage = TRUE)
 #' CalcFreqVariant(variant, totals= FALSE, min.freq.al = 0.15)
+#' }
 
 CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                             absolute = TRUE, percentage = FALSE,
@@ -296,7 +300,9 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' FindIdsGtCounts(freq)
+#' }
 
 FindIdsGtCounts <- function(freq){
 
@@ -325,7 +331,9 @@ FindIdsGtCounts <- function(freq){
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' FindIdsAlFeqs(freq)
+#' }
 
 FindIdsAlFreqs <- function(freq){
 

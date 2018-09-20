@@ -36,9 +36,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' ExtractGt(vcf)
 #' ExtractGt(vcf, min.sample.qual = 0.65, min.variant.qual = 0.4)
 #' ExtractGt(vcf, min.depth = 4, verbose = FALSE)
+#' }
 
 ExtractGt <- function(vcf, min.depth = NULL, min.sample.qual = NULL,
                       min.variant.qual = NULL, include.depth = FALSE,
@@ -104,8 +106,10 @@ ExtractGt <- function(vcf, min.depth = NULL, min.sample.qual = NULL,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' censorLowDepth(genotype, depth, 4)
 #' censorLowDepth(genotype, depth, 4, verbose = FALSE)
+#' }
 
 CensorLowDepth <- function(gt, dp, min.depth, verbose = TRUE){
 
@@ -153,9 +157,11 @@ CensorLowDepth <- function(gt, dp, min.depth, verbose = TRUE){
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' OmitPoorSamples(genotype, 0.15)
 #' OmitPoorSamples(genotype, 0.2, dp = depth)
 #' OmitPoorSamples(genotype, 0.2, verbose = FALSE)
+#' }
 
 OmitPoorSamples <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 
@@ -209,9 +215,11 @@ OmitPoorSamples <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' OmitPoorVariants(genotype, 0.15)
 #' OmitPoorVariants(genotype, 0.2, dp = depth)
 #' OmitPoorVariants(genotype, 0.2, verbose = FALSE)
+#' }
 
 OmitPoorVariants <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 
@@ -259,8 +267,10 @@ OmitPoorVariants <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' SplitGt(gt, c(TRUE, TRUE, FALSE, ...))
 #' SplitGt(gt, survival.vector, verbose = FALSE)
+#' }
 
 SplitGt <- function(gt, survival, verbose = TRUE){
 

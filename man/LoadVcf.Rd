@@ -36,10 +36,12 @@ A function to get a filtered (and possibly splitted) vcfR::VCF object from
 a VCF file.
 }
 \examples{
+\dontrun{
 LoadVCF("example.vcf")
 LoadVCF("example.vcf", survival = c(TRUE, FALSE, FALSE, TRUE, ...))
 LoadVCF("example.vcf", survival = mySurvVector, verbose = FALSE)
 LoadVCF("example.vcf", only.biallelic = FALSE, only.snp = FALSE)
+}
 }
 \seealso{
 For more information, see \code{\link{SplitVcf}},

@@ -49,11 +49,13 @@ of genotype and probabilities that they are due to random picking and
 positive selection.
 }
 \examples{
+\dontrun{
 AnalyseSplittedExpt(gt.alive, gt.dead)
 AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = 0.1)
 AnalyseSplittedExpt(gt.alive, gt.dead, location.cols = FALSE)
 AnalyseSplittedExpt(gt.alive, gt.dead, deltas = FALSE, p.values = FALSE)
 AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
+}
 }
 \seealso{
 For more information, see \code{\link{CalcProbsSelection}} and

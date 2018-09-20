@@ -27,6 +27,8 @@ A function to split a vector into two vectors according to a survival
 logical vector
 }
 \examples{
+\dontrun{
 SplitGt(gt, c(TRUE, TRUE, FALSE, ...))
 SplitGt(gt, survival.vector, verbose = FALSE)
+}
 }

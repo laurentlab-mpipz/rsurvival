@@ -18,5 +18,9 @@ Logical. TRUE if the ratio of NA in vect is at least minRatio, else FALSE.
 A function to check if the ratio of NA in a vector is over a threshold.
 }
 \examples{
-IsAboveNARatio(vector, 0.2)
+\dontrun{
+vector.true  <- c(NA, 1:3) 
+vector.false <- c(NA, 1:5) 
+IsAboveNARatio(vector.true, 0.2)
+}
 }

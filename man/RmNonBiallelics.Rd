@@ -19,6 +19,8 @@ A vcfR::VCF object rid of its non-biallelic variants
 A function to remove non-biallelic variants from a vcfR::VCF object
 }
 \examples{
+\dontrun{
 RmNonBiallelics(vcf)
 RmNonBiallelics(vcf, verbose = FALSE)
+}
 }

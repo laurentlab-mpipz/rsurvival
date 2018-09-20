@@ -44,10 +44,12 @@
 #' function bind.
 #'
 #' @examples
+#' \dontrun{
 #' LoadVCF("example.vcf")
 #' LoadVCF("example.vcf", survival = c(TRUE, FALSE, FALSE, TRUE, ...))
 #' LoadVCF("example.vcf", survival = mySurvVector, verbose = FALSE)
 #' LoadVCF("example.vcf", only.biallelic = FALSE, only.snp = FALSE)
+#' }
 
 LoadVcf <- function(file.path, survival = NULL, only.biallelic = TRUE,
                     only.snp = TRUE, verbose = TRUE) {
@@ -108,8 +110,10 @@ LoadVcf <- function(file.path, survival = NULL, only.biallelic = TRUE,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' SplitVcf(vcf, c(TRUE, TRUE, FALSE, ...))
 #' SplitVcf(vcf, survival.vector, verbose = FALSE)
+#' }
 
 SplitVcf <- function(vcf, survival, verbose = TRUE){
 
@@ -162,8 +166,10 @@ SplitVcf <- function(vcf, survival, verbose = TRUE){
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' RmNonBiallelics(vcf)
 #' RmNonBiallelics(vcf, verbose = FALSE)
+#' }
 
 RmNonBiallelics <- function(vcf, verbose = TRUE) {
 
@@ -202,8 +208,10 @@ RmNonBiallelics <- function(vcf, verbose = TRUE) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' RmIndels(vcf)
 #' RmIndels(vcf, verbose = FALSE)
+#' }
 
 RmIndels <- function(vcf, verbose = TRUE) {
 

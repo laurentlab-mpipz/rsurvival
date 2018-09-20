@@ -39,10 +39,12 @@
 #' bind.
 #'
 #' @examples
+#' \dontrun{
 #' PermutRandSurv(gt, c(TRUE, TRUE, FALSE, ...))
 #' PermutRandSurv(gt, survival, verbose = FALSE)
 #' PermutRandSurv(gt, survival, odded.lives = c("HETERO" = 32, "HOMOREF" = 18, ...
 #' ), odded.samples = list("HETERO" = c(1,3,7,45,141), ...)))
+#' }
 
 PermutRandSurv <- function(gt, survival, odded.lives = NULL,
                            odded.samples = NULL, verbose = TRUE){
@@ -87,8 +89,10 @@ PermutRandSurv <- function(gt, survival, odded.lives = NULL,
 #' \code{\link{CalcProbsSelection}} which can provide you a probs data frame.
 #'
 #' @examples
+#' \dontrun{
 #' CountSignSnps(probs)
 #' CountSignSnps(probs, max.p.neutral = 0.05)
+#' }
 
 CountSignSnps <- function(probs, max.p.neutral = 0.01){
 
@@ -127,9 +131,11 @@ CountSignSnps <- function(probs, max.p.neutral = 0.01){
 #' \code{\link{CountSignSnps}} which this function bind.
 #'
 #' @examples
+#' \dontrun{
 #' IterRandomPick(gt, survival)
 #' IterRandomPick(gt, survival, max.p.neutral = 0.05)
 #' IterRandomPick(gt, survival, iter = 1000, verbose = FALSE)
+#' }
 
 IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
                          odded.pos = NULL, verbose = TRUE){
@@ -216,9 +222,11 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
 #' function
 #'
 #' @examples
+#' \dontrun{
 #' CalcOddedPick(variant, survival)
 #' CalcOddedPick(variant, survival, n = 1000)
 #' CalcOddedPick(variant, survival, verbose = FALSE)
+#' }
 
 CalcOddedPick <- function(variant, survival, n = 10, verbose = TRUE){
 

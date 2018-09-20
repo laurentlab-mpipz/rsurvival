@@ -28,6 +28,8 @@ A function to split a vcfR::VCF object in two vcfR::VCF object according to
 a logical vector
 }
 \examples{
+\dontrun{
 SplitVcf(vcf, c(TRUE, TRUE, FALSE, ...))
 SplitVcf(vcf, survival.vector, verbose = FALSE)
+}
 }

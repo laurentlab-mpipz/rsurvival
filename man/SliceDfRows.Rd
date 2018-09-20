@@ -18,7 +18,9 @@ A dataframe containing only the rows number \code{rows} from \code{df}.
 A function to slice data frames without loosing row names
 }
 \examples{
+\dontrun{
 SliceDfRows(df, 1)
 SliceDfRows(df, 1:5)
 SliceDfRows(df, c(1,3,5))
+}
 }

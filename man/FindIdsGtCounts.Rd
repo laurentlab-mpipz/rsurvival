@@ -18,5 +18,7 @@ corresponding column ids.
 A function to find the ids of counts.gt columns in a frequency matrix.
 }
 \examples{
+\dontrun{
 FindIdsGtCounts(freq)
+}
 }

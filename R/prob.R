@@ -46,9 +46,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' f.alive <- c(17, 3, 15, 1, 36)
 #' f.all   <- c(24, 5, 22, 2, 53)
 #' CalcProbsSelection(f.alive, f.all)
+#' }
 
 CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
                                map.all = NULL){
@@ -123,9 +125,11 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' f.alive <- c(17, 3, 15, 1, 36)
 #' f.all  <- c(24, 5, 22, 2, 53)
 #' CalcWeightsSurvival(f.alive, f.all)
+#' }
 
 CalcWeightsSurvival <- function(freq.alive, freq.all, map.alive = NULL,
                                 map.all = NULL){

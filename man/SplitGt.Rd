@@ -27,6 +27,8 @@ A function to split a genotype matrix two genotype matrix according to a
 logical vector
 }
 \examples{
+\dontrun{
 SplitGt(gt, c(TRUE, TRUE, FALSE, ...))
 SplitGt(gt, survival.vector, verbose = FALSE)
+}
 }

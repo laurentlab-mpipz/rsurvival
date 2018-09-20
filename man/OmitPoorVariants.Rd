@@ -32,9 +32,11 @@ A function to remove rows with a high ratio of missing data from a
 dataframe. (e.g. variants from genotype)
 }
 \examples{
+\dontrun{
 OmitPoorVariants(genotype, 0.15)
 OmitPoorVariants(genotype, 0.2, dp = depth)
 OmitPoorVariants(genotype, 0.2, verbose = FALSE)
+}
 }
 \seealso{
 \code{\link{OmitPoorSamples}}

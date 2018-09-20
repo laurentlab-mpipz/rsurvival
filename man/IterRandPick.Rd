@@ -35,9 +35,11 @@ A function to iterate significant snps counting in a genotype matrx with a
 random permutation of the survival vector
 }
 \examples{
+\dontrun{
 IterRandomPick(gt, survival)
 IterRandomPick(gt, survival, max.p.neutral = 0.05)
 IterRandomPick(gt, survival, iter = 1000, verbose = FALSE)
+}
 }
 \seealso{
 For more detail, see \code{\link{PermutRandSurv}} and

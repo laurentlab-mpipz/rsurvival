@@ -33,9 +33,9 @@
 #' @param p.values If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
 #' @param genotypic If TRUE, will include counts of genotype in the result.
-#' @param gt.pop1 A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
+#' @param gt.pop1 Optional. A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
 #' are set, will include the W&C FST estimation to the result.
-#' @param gt.pop2 A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
+#' @param gt.pop2 Optional. A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
 #' are set, will include the W&C FST estimation to the result.
 #' @param backup.path Optionnal. A path where backup files can be stored
 #'
@@ -48,11 +48,13 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' AnalyseSplittedExpt(gt.alive, gt.dead)
 #' AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = 0.1)
 #' AnalyseSplittedExpt(gt.alive, gt.dead, location.cols = FALSE)
 #' AnalyseSplittedExpt(gt.alive, gt.dead, deltas = FALSE, p.values = FALSE)
 #' AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
+#' }
 
 AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
                                 location.cols = TRUE, deltas = TRUE,
@@ -226,10 +228,12 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' AnalyseExpt(gt, survival)
 #' AnalyseExpt(gt, survival, min.freq.al = 0.1, location.cols = FALSE)
 #' AnalyseExpt(gt, survival, deltas = FALSE, p.values = FALSE)
 #' AnalyseExpt(gt, survival, backup.path = "example.csv")
+#' }
 
 AnalyseExpt <- function(gt, survival, population = NULL, min.freq.al = NULL,
                         location.cols = TRUE, deltas = TRUE, p.values = TRUE,

@@ -33,8 +33,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' ConvertFileToLogic("myFile.txt")
 #' ConvertFileToLogic("myFile.txt", type = "character")
+#' }
 
 
 ConvertFileToLogic <- function(file.path, type = "number") {
@@ -78,7 +80,11 @@ ConvertFileToLogic <- function(file.path, type = "number") {
 #' @export
 #'
 #' @examples
-#' IsAboveNARatio(vector, 0.2)
+#' \dontrun{
+#' vector.true  <- c(NA, 1:3) 
+#' vector.false <- c(NA, 1:5) 
+#' IsAboveNARatio(vector.true, 0.2)
+#' }
 
 IsAtLeastNARatio <- function(vect, min.ratio) {
 
@@ -121,8 +127,10 @@ IsAtLeastNARatio <- function(vect, min.ratio) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' SplitGt(gt, c(TRUE, TRUE, FALSE, ...))
 #' SplitGt(gt, survival.vector, verbose = FALSE)
+#' }
 
 SplitVect <- function(vect, survival, verbose = TRUE){
 
@@ -150,9 +158,11 @@ SplitVect <- function(vect, survival, verbose = TRUE){
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' SliceDfRows(df, 1)
 #' SliceDfRows(df, 1:5)
 #' SliceDfRows(df, c(1,3,5))
+#' }
 
 SliceDfRows <- function(df, rows){
 
@@ -182,9 +192,11 @@ SliceDfRows <- function(df, rows){
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' SliceDfColumns(df, 1)
 #' SliceDfColumns(df, 1:5)
 #' SliceDfColumns(df, c(1,3,5))
+#' }
 
 SliceDfColumns <- function(df, columns){
 

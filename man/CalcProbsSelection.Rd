@@ -39,9 +39,11 @@ A function to calculate probabilities that observed frequencies are due to
 positive selection using MWNCHHypergeo model.
 }
 \examples{
+\dontrun{
 f.alive <- c(17, 3, 15, 1, 36)
 f.all   <- c(24, 5, 22, 2, 53)
 CalcProbsSelection(f.alive, f.all)
+}
 }
 \seealso{
 For more information, see \code{\link{CalcWeightsSurvival}} and

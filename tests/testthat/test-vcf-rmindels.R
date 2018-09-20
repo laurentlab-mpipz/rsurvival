@@ -21,16 +21,16 @@ test_that("the returned vcfR object contains no indels", {
   expect_equal(vcfR::extract.indels(vcf), cleared.vcf)
 })
 
-test_that("lists of vcfR objects are correctly handled", {
+# test_that("lists of vcfR objects are correctly handled", {
 
-  vcf.list <- list("alive" = vcf, "dead" = vcf)
-  cleared.vcf.list <- RmIndels(vcf.list, verbose = FALSE)
+#   vcf.list <- list("alive" = vcf, "dead" = vcf)
+#   cleared.vcf.list <- RmIndels(vcf.list, verbose = FALSE)
 
-  expect_is(cleared.vcf.list$alive, "vcfR")
-  expect_is(cleared.vcf.list$dead, "vcfR")
-  expect_true(nrow(cleared.vcf.list$alive) == 135)
-  expect_true(nrow(cleared.vcf.list$dead) == 135)
-  expect_equal(vcfR::extract.indels(vcf.list$alive), cleared.vcf.list$alive)
-  expect_equal(vcfR::extract.indels(vcf.list$dead), cleared.vcf.list$dead)
+#   expect_is(cleared.vcf.list$alive, "vcfR")
+#   expect_is(cleared.vcf.list$dead, "vcfR")
+#   expect_true(nrow(cleared.vcf.list$alive) == 135)
+#   expect_true(nrow(cleared.vcf.list$dead) == 135)
+#   expect_equal(vcfR::extract.indels(vcf.list$alive), cleared.vcf.list$alive)
+#   expect_equal(vcfR::extract.indels(vcf.list$dead), cleared.vcf.list$dead)
 
-})
+# })

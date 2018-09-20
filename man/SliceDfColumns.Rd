@@ -19,7 +19,9 @@ A dataframe containing only the columns number \code{columns} from
 A function to slice data frames without loosing column names
 }
 \examples{
+\dontrun{
 SliceDfColumns(df, 1)
 SliceDfColumns(df, 1:5)
 SliceDfColumns(df, c(1,3,5))
+}
 }

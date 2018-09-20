@@ -55,11 +55,13 @@ including the ones with missing data.
 A function to count occurences of genotypes in a genotype matrix.
 }
 \examples{
+\dontrun{
 CalcFreqGt(genotype)
 CalcFreqGt(genotype, genotypic = FALSE, allelic = TRUE)
 CalcFreqGt(genotype, absolute = FALSE, percentage = TRUE)
 CalcFreqGt(genotype, backup.path = "example.csv")
 CalcFreqGt(genotype, totals= FALSE, min.freq.al = 0.15)
+}
 }
 \seealso{
 \code{\link{CalcFreqVariant}} which this function bind

@@ -19,6 +19,8 @@ A vcfR::VCF object rid of its indel variants
 A function to remove indel variants from a vcfR::VCF object
 }
 \examples{
+\dontrun{
 RmIndels(vcf)
 RmIndels(vcf, verbose = FALSE)
+}
 }

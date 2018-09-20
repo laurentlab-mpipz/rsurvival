@@ -27,6 +27,8 @@ A list of dataframes.
 A function to replace genotype data with low depth by NA
 }
 \examples{
+\dontrun{
 censorLowDepth(genotype, depth, 4)
 censorLowDepth(genotype, depth, 4, verbose = FALSE)
+}
 }

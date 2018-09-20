@@ -29,9 +29,11 @@ A function to calculate the number of picked lives per categories of samples
 according to MWNCHypergeo model.
 }
 \examples{
+\dontrun{
 CalcOddedPick(variant, survival)
 CalcOddedPick(variant, survival, n = 1000)
 CalcOddedPick(variant, survival, verbose = FALSE)
+}
 }
 \seealso{
 For more detail, see \code{\link{IterRandPick}} which binds this

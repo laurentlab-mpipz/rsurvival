@@ -22,8 +22,10 @@ A function to count snps with a low probability of being due to a neutral
 model
 }
 \examples{
+\dontrun{
 CountSignSnps(probs)
 CountSignSnps(probs, max.p.neutral = 0.05)
+}
 }
 \seealso{
 For more detail, see \code{\link{AnalyseSplittedExpt}} or

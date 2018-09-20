@@ -25,6 +25,8 @@ A function to turn a file into a logical vector. Useful for making a
 survivals vector to split your data in two parts.
 }
 \examples{
+\dontrun{
 ConvertFileToLogic("myFile.txt")
 ConvertFileToLogic("myFile.txt", type = "character")
+}
 }

@@ -32,7 +32,9 @@ A genotype matrix from the vcfR object.
 A function to extract a genotype from a vcfR::VCF object.
 }
 \examples{
+\dontrun{
 ExtractGt(vcf)
 ExtractGt(vcf, min.sample.qual = 0.65, min.variant.qual = 0.4)
 ExtractGt(vcf, min.depth = 4, verbose = FALSE)
+}
 }

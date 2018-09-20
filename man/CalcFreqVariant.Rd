@@ -52,10 +52,12 @@ including the ones with missing data.
 A function to count occurences of genotypes in a variant vector.
 }
 \examples{
+\dontrun{
 CalcFreqVariant(variant)
 CalcFreqVariant(variant, genotypic = FALSE, allelic = TRUE)
 CalcFreqVariant(variant, absolute = FALSE, percentage = TRUE)
 CalcFreqVariant(variant, totals= FALSE, min.freq.al = 0.15)
+}
 }
 \seealso{
 \code{\link{CalcFreqGt}} which bind this function

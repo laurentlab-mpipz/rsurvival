@@ -17,5 +17,7 @@ A list of integers containing ids of specific columns. Items names are :
 A function to find the ids of freq.al columns in a frequency matrix.
 }
 \examples{
+\dontrun{
 FindIdsAlFeqs(freq)
+}
 }
