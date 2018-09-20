@@ -261,6 +261,28 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 base::cat("CountSignSnps", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
+nameEx("EstimateFST")
+### * EstimateFST
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: EstimateFST
+### Title: A function to estimate the FST of a variant using the Weir &
+###   Cockerham (1984) method
+### Aliases: EstimateFST
+
+### ** Examples
+
+## Not run: 
+##D EstimateFST(v1, v2)
+## End(Not run)
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("EstimateFST", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
 nameEx("ExtractGt")
 ### * ExtractGt
 

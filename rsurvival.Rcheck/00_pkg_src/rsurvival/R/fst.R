@@ -27,6 +27,11 @@
 #' variants.
 #' 
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' EstimateFST(v1, v2)
+#' }
 
 EstimateFST <- function(variant.pop1, variant.pop2){
 
