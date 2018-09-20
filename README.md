@@ -1,6 +1,7 @@
 # MPIPZ R Package : rsurvival 
 
 [![Travis-CI Build Status](https://travis-ci.org/laurentlab-mpipz/rsurvival.svg?branch=master)](https://travis-ci.org/laurentlab-mpipz/rsurvival)
+[![Coverage status](https://codecov.io/gh/laurentlab-mpipz/rsurvival/branch/master/graph/badge.svg)](https://codecov.io/github/laurentlab-mpipz/rsurvival?branch=master)
 
 This package can be used to help you identify the SNPs in a genotype which are subjects to positive selection. 
 You will have to provide a VCF file and a survival vector to get started with this 📦.

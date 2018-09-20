@@ -15,4 +15,6 @@ Imports: vcfR,
     lubridate,
     dplyr,
     tibble
-Suggests: testthat
+Suggests: 
+    testthat,
+    covr

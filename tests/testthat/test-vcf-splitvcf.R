@@ -1,7 +1,7 @@
 context("Split VCF")
 
-vcf <- readRDS('res-splitvcf\\vcf.rds')
-survivals <- readRDS('res-splitvcf\\survivals.rds')
+vcf <- readRDS('res-splitvcf/vcf.rds')
+survivals <- readRDS('res-splitvcf/survivals.rds')
 split <- SplitVcf(vcf, survivals)
 nbcol.vcf <- dim(vcf)["gt_cols"]
 

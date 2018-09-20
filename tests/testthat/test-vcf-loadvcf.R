@@ -1,7 +1,7 @@
 context("Load VCF File")
 
 test_that("LoadVcf returns a vcfR object", {
-  vcf <- LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = FALSE,
+  vcf <- LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = FALSE,
                   only.snp = FALSE, verbose = FALSE)
   expect_equal(typeof(vcf), "S4")
   expect_is(vcf, "vcfR")
@@ -9,7 +9,7 @@ test_that("LoadVcf returns a vcfR object", {
 })
 
 test_that("LoadVcf filters non-biallelic variants", {
-  vcf <- LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = TRUE,
+  vcf <- LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = TRUE,
                   only.snp = FALSE, verbose = FALSE)  
   expect_equal(typeof(vcf), "S4")
   expect_is(vcf, "vcfR")
@@ -17,7 +17,7 @@ test_that("LoadVcf filters non-biallelic variants", {
 })
 
 test_that("LoadVcf filters indel variants", {
-  vcf <- LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = FALSE,
+  vcf <- LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = FALSE,
                   only.snp = , verbose = FALSE)  
   expect_equal(typeof(vcf), "S4")
   expect_is(vcf, "vcfR")
@@ -25,7 +25,7 @@ test_that("LoadVcf filters indel variants", {
 })
 
 test_that("LoadVcf can apply both filters", {
-  vcf <- LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = TRUE,
+  vcf <- LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = TRUE,
                   only.snp = TRUE, verbose = FALSE)  
   expect_equal(typeof(vcf), "S4")
   expect_is(vcf, "vcfR")
@@ -33,16 +33,16 @@ test_that("LoadVcf can apply both filters", {
 })
 
 test_that("LoadVcf throws errors when logical inputs are not valid", {
-  expect_error(LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = "sweets",
+  expect_error(LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = "sweets",
                 only.snp = FALSE, verbose = FALSE),
                 "only.biallelic")
-  expect_error(LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = 42,
+  expect_error(LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = 42,
             only.snp = FALSE, verbose = FALSE),
             "only.biallelic")
-  expect_error(LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = FALSE,
+  expect_error(LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = FALSE,
                 only.snp = "sweets", verbose = FALSE),
                 "only.snp")
-  expect_error(LoadVcf('res-loadvcf\\lollipop.vcf', only.biallelic = FALSE,
+  expect_error(LoadVcf('res-loadvcf/lollipop.vcf', only.biallelic = FALSE,
                 only.snp = 42, verbose = FALSE),
                 "only.snp")
 })

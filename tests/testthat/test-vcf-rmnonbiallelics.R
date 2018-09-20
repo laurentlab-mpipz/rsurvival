@@ -1,6 +1,6 @@
 context("Remove Non Biallelics")
 
-vcf <- readRDS('res-rmnonbiallelics\\vcf.rds')
+vcf <- readRDS('res-rmnonbiallelics/vcf.rds')
 vcf.list <- list("alive" = vcf, "dead" = vcf)
 cleared.vcf <- RmNonBiallelics(vcf, verbose = FALSE)
 cleared.vcf.list <- RmNonBiallelics(vcf.list, verbose = FALSE)
