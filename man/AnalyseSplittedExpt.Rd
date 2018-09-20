@@ -32,10 +32,10 @@ the result, as well as frequencies}
 
 \item{genotypic}{If TRUE, will include counts of genotype in the result.}
 
-\item{gt.pop1}{A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
+\item{gt.pop1}{Optional. A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
 are set, will include the W&C FST estimation to the result.}
 
-\item{gt.pop2}{A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
+\item{gt.pop2}{Optional. A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
 are set, will include the W&C FST estimation to the result.}
 
 \item{backup.path}{Optionnal. A path where backup files can be stored}
