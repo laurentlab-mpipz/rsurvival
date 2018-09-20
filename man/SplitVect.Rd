@@ -5,7 +5,7 @@
 \title{A function to split a vector into two vectors according to a survival 
 logical vector}
 \usage{
-SplitVect(vect, survival)
+SplitVect(vect, survival, verbose = TRUE)
 }
 \arguments{
 \item{vect}{The original vector to split}

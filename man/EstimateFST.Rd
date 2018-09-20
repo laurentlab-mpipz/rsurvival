@@ -10,7 +10,7 @@ EstimateFST(variant.pop1, variant.pop2)
 \arguments{
 \item{variant.pop1}{A variant vector from a genotype matrix}
 
-\item{vect.pop2}{A variant vector from a genotype matrix}
+\item{variant.pop2}{A variant vector from a genotype matrix}
 }
 \value{
 A numeric value. The FST estimation for the allelic records of this  two
