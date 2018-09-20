@@ -3,3 +3,12 @@
 language: R
 sudo: false
 cache: packages
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-toker: $GITHUB_PUSH_KEY
+  keep-history: true
+  target-branch: build
+  verbose: true
+  on:
+    branch: master
