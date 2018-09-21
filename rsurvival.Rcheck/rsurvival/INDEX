@@ -16,9 +16,9 @@ CalcOddedPick           A function to calculate the number of picked
 CalcProbsSelection      A function to calculate probabilities that
                         observed frequencies are due to positive
                         selection using MWNCHHypergeo model.
-CalcWeightsSurvival     A function to calculate odds for positive
-                        selection from observed selection frequencies
-                        using MWNCHHypergeo model.
+CalcWeightsPredation    A function to calculate odds for predation from
+                        observed selection frequencies using
+                        MWNCHHypergeo model.
 CensorLowDepth          A function to replace genotype data with low
                         depth by NA
 ConvertFileToLogic      A function to turn a file into a logical

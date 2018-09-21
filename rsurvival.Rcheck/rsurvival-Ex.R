@@ -169,29 +169,29 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 base::cat("CalcProbsSelection", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
-nameEx("CalcWeightsSurvival")
-### * CalcWeightsSurvival
+nameEx("CalcWeightsPredation")
+### * CalcWeightsPredation
 
 flush(stderr()); flush(stdout())
 
 base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-### Name: CalcWeightsSurvival
-### Title: A function to calculate odds for positive selection from
-###   observed selection frequencies using MWNCHHypergeo model.
-### Aliases: CalcWeightsSurvival
+### Name: CalcWeightsPredation
+### Title: A function to calculate odds for predation from observed
+###   selection frequencies using MWNCHHypergeo model.
+### Aliases: CalcWeightsPredation
 
 ### ** Examples
 
 ## Not run: 
 ##D f.alive <- c(17, 3, 15, 1, 36)
 ##D f.all  <- c(24, 5, 22, 2, 53)
-##D CalcWeightsSurvival(f.alive, f.all)
+##D CalcWeightsPredation(f.alive, f.all)
 ## End(Not run)
 
 
 
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-base::cat("CalcWeightsSurvival", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+base::cat("CalcWeightsPredation", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 cleanEx()
 nameEx("CensorLowDepth")
 ### * CensorLowDepth

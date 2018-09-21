@@ -46,6 +46,6 @@ CalcProbsSelection(f.alive, f.all)
 }
 }
 \seealso{
-For more information, see \code{\link{CalcWeightsSurvival}} and
+For more information, see \code{\link{CalcWeightsPredation}} and
 \code{\link{FindIdsGtCounts}} wich this function binds.
 }

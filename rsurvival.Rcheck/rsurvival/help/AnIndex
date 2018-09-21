@@ -4,7 +4,7 @@ CalcFreqGt	CalcFreqGt
 CalcFreqVariant	CalcFreqVariant
 CalcOddedPick	CalcOddedPick
 CalcProbsSelection	CalcProbsSelection
-CalcWeightsSurvival	CalcWeightsSurvival
+CalcWeightsPredation	CalcWeightsPredation
 CensorLowDepth	CensorLowDepth
 ConvertFileToLogic	ConvertFileToLogic
 CountSignSnps	CountSignSnps
