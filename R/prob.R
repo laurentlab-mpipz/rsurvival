@@ -40,7 +40,7 @@
 #' \code{p_neutral}, \code{p_value} is the probability that the distribution
 #' is due to positive selection.
 #'
-#' @seealso For more information, see \code{\link{CalcWeightsSurvival}} and
+#' @seealso For more information, see \code{\link{CalcWeightsPredation}} and
 #' \code{\link{FindIdsGtCounts}} wich this function binds.
 #'
 #' @export
@@ -55,10 +55,12 @@
 CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
                                map.all = NULL){
 
-  sel.weights <- CalcWeightsSurvival(freq.alive, freq.all)
+  pred.weights <- CalcWeightsPredation(freq.alive, freq.all,
+                                       map.alive = map.alive,
+                                       map.all = map.all)
 
-  if ((sum(is.na(sel.weights)) == 0) && (sum(sel.weights <= 0) == 0) 
-      && (sum(is.infinite(sel.weights)) == 0)) {
+  if ((sum(is.na(pred.weights)) == 0) && (sum(pred.weights <= 0) == 0) 
+      && (sum(is.infinite(pred.weights)) == 0)) {
 
     if(!is.null(map.alive)) {
       id.alive <- map.alive
@@ -72,21 +74,21 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
       id.all <- FindIdsGtCounts(freq.all)
     }
 
-    # distribution in alive population
+    # distribution in survivors population
     x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
-    # distribution in aliveoriginal population
+    # distribution in original population
     m <- freq.all[c(id.all$homo.ref, id.all$hetero, id.all$homo.alt)]
-    # nb of alive samples with valid data
-    n <- freq.alive['count.gt.TOTAL'] - freq.alive['count.gt.MISSVAL']
+    # nb of survivivor samples with valid data
+    n <- freq.alive[id.alive$total] - freq.alive[id.alive$missval]
 
     prob.sel     <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
-                                          odds = sel.weights)
+                                          odds = 1 / pred.weights)
     prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
                                               odds = c(1,1,1))
 
     lrt     <- 2 * log(prob.sel / prob.neutral)
     p.value <- 1 - stats::pchisq(q = lrt, df = 2)  
-    result  <- c(sel.weights, prob.neutral, prob.sel, lrt, p.value)
+    result  <- c(pred.weights, prob.neutral, prob.sel, lrt, p.value)
 
   } else {
     result <- rep(NA, 7) # to ensure that the result always has the same length
@@ -100,7 +102,7 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
 }
 
 
-#' A function to calculate odds for positive selection from observed selection
+#' A function to calculate odds for predation from observed selection
 #' frequencies using MWNCHHypergeo model. 
 #'
 #' @param freq.alive A vector of observed absolute frequencies for the three
@@ -128,11 +130,14 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
 #' \dontrun{
 #' f.alive <- c(17, 3, 15, 1, 36)
 #' f.all  <- c(24, 5, 22, 2, 53)
-#' CalcWeightsSurvival(f.alive, f.all)
+#' CalcWeightsPredation(f.alive, f.all)
 #' }
 
-CalcWeightsSurvival <- function(freq.alive, freq.all, map.alive = NULL,
+CalcWeightsPredation <- function(freq.alive, freq.all, map.alive = NULL,
                                 map.all = NULL){
+
+    standard.map <- list("homo.ref" = 1 , "hetero" = 2, "homo.alt" = 3,
+                         "missval" = 4, "total" = 5)
 
     if(!is.null(map.alive)) {
       id.alive <- map.alive
@@ -146,12 +151,16 @@ CalcWeightsSurvival <- function(freq.alive, freq.all, map.alive = NULL,
       id.all <- FindIdsGtCounts(freq.all)
     }
 
-    # distribution of alive samples
-    mu <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
+
+    freq.dead <- freq.all[unlist(id.all)] - freq.alive[unlist(id.alive)]
+    id.dead   <- standard.map
+
+    # distribution of dead samples
+    mu <- freq.dead[c(id.dead$homo.ref, id.dead$hetero, id.dead$homo.alt)]
     # distribution of original population
     m  <- freq.all[c(id.all$homo.ref, id.all$hetero, id.all$homo.alt)] 
-    # number of alive samples with valid data
-    n  <- freq.alive[id.alive$total] - freq.alive[id.alive$missval]
+    # number of dead samples with valid data
+    n  <- freq.dead[id.dead$total] - freq.dead[id.dead$missval]
 
     # calculate odds
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
