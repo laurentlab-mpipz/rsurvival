@@ -1,7 +1,6 @@
 # MPIPZ R Package : rsurvival 
 
 [![GitHub version](https://badge.fury.io/gh/laurentlab-mpipz%2Frsurvival.svg)](https://github.com/Naereen/StrapDown.js)
-[![Travis-CI Build Status](https://travis-ci.org/laurentlab-mpipz/rsurvival.svg?branch=master)](https://travis-ci.org/laurentlab-mpipz/rsurvival)
 [![Coverage status](https://codecov.io/gh/laurentlab-mpipz/rsurvival/branch/master/graph/badge.svg)](https://codecov.io/github/laurentlab-mpipz/rsurvival?branch=master)
 [![GitHub license](https://img.shields.io/github/license/laurentlab-mpipz/rsurvival.svg)](https://github.com/laurentlab-mpipz/rsurvival/blob/master/LICENSE)
 
