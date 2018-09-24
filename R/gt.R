@@ -189,7 +189,8 @@ OmitPoorSamples <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 
   # FALSE if too much NAs per columns
   filter <- apply(gt, MARGIN = 2,
-                  FUN = function(x){!IsAtLeastNARatio(x, 1 - min.qual)})
+                  FUN = function(x){!IsAtLeastNARatio(x, 1 - min.qual,
+                                                      verbose = FALSE)})
 
   gt <- gt[, filter]
 
@@ -294,17 +295,23 @@ SplitGt <- function(gt, survival, verbose = TRUE){
   
   gt <- data.frame(gt)
 
+  if (class(gt) == "matrix") {
+    gt <- data.frame(gt, stringsAsFactors = FALSE)
+  }
+
   alive <- NULL
   dead  <- NULL
 
   if (!is.logical(survival)) {
     stop("Parameter survival must be a logical vector")
   }
+  
   if (class(gt) == "list") {
     return(lapply(gt, FUN = function(x){ SplitGt(x, survival) }))
   }
-  if (class(gt) != "data.frame") {
-    stop("Parameter gt must be a matrix")
+
+  if (class(gt) != "data.frame" ) {
+    stop("Parameter gt must be a data.frame or a matrix")
   }
 
   # number of alive samples
@@ -314,11 +321,11 @@ SplitGt <- function(gt, survival, verbose = TRUE){
 
   if (len.survival < len.gt){
     if (verbose) {
-      warning(paste("Parameter surivals is shorter than parameter gt (",
+      warning(paste("Parameter survival is shorter than parameter gt (",
                     len.survival, " versus ", len.gt, ")"))
     }
   } else if (len.survival > len.gt) {
-    stop(paste("Parameter surivals is longer than parameter gt (",
+    stop(paste("Parameter survival is longer than parameter gt (",
                     len.survival, " versus ", len.gt, ")"))
   }
 

@@ -164,20 +164,22 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   }
 
   # handle lists --------------------------------------------------------------
+  
+  # broken since gts are data frames -> variants are lists
 
-  if (typeof(variant) == "list") {
-    result <- lapply(variant,
-                     FUN = function(x){
-                       CalcFreqVariant(x, genotypic = genotypic,
-                                       allelic = allelic, absolute = absolute,
-                                       percentage = percentage,
-                                       totals = totals,
-                                       min.freq.gt = min.freq.gt,
-                                       min.freq.al = min.freq.al)
-                     }
-                   )
-    return(result)
-  }
+  #if (typeof(variant) == "list") {
+  #   result <- lapply(variant,
+  #                    FUN = function(x){
+  #                       CalcFreqVariant(x, genotypic = genotypic,
+  #                                       allelic = allelic, absolute = absolute,
+  #                                       percentage = percentage,
+  #                                       totals = totals,
+  #                                       min.freq.gt = min.freq.gt,
+  #                                       min.freq.al = min.freq.al)
+  #                     }
+  #                   )
+  #    return(result)
+  #}
 
   # actual counting using regex -----------------------------------------------
 
