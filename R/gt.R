@@ -46,37 +46,55 @@ ExtractGt <- function(vcf, min.depth = NULL, min.sample.qual = NULL,
                       min.variant.qual = NULL, include.depth = FALSE,
                       verbose = TRUE) {
 
-  # A data.frame of strings (e.g. "1/0") or NA.
+  # A matrix of strings (e.g. "1/0") or NA.
   gt <- vcfR::extract.gt(vcf, element = "GT")
 
-  # A data.frame of positive integers or NA.
+  # A matrix of positive integers or NA.
   dp <- vcfR::extract.gt(vcf, element = "DP", as.numeric = TRUE)
 
   if (is.numeric(min.depth)) {
+    if (min.depth %% 1 != 0 || min.depth < 0) {
+      warning("Parameter min.depth should be a positive integer.")
+    }
     censored <- CensorLowDepth(gt, dp, min.depth, verbose = verbose)
     gt <- censored$gt
     if (include.depth) {
       dp <- censored$dp
     }
+  } else if (!is.null(min.depth)) {
+    stop("Parameter min.depth must be a number or NULL.")
   }
 
   if (is.numeric(min.variant.qual)) {
+    if (min.variant.qual > 1 || min.variant.qual < 0) {
+      warning("Parameter min.variant.qual should be a float between 0 and 1")
+    }
     omitted <- OmitPoorVariants(gt, min.variant.qual, dp = dp,
                                 verbose = verbose)
     gt <- omitted$gt
     if (include.depth) {
       dp <- omitted$dp
     }
+  } else if (!is.null(min.variant.qual)) {
+    stop("Parameter min.variant.qual must be a number or NULL.")
   }
 
   if (is.numeric(min.sample.qual)) {
+    if (min.sample.qual > 1 || min.sample.qual < 0) {
+      warning("Parameter min.sample.qual should be a float between 0 and 1")
+    }
     omitted <- OmitPoorSamples(gt, min.sample.qual, dp = dp, verbose = verbose)
     gt <- omitted$gt
     if (include.depth) {
       dp <- omitted$dp
     }
+  } else if (!is.null(min.sample.qual)) {
+    stop("Parameter min.sample.qual must be a number or NULL.")
   }
 
+  gt <- data.frame(gt, stringsAsFactors = FALSE)
+  dp <- data.frame(gt, stringsAsFactors = FALSE)
+  
   if (include.depth) {
     result <- list("gt" = gt, "dp" = dp)
   } else {
