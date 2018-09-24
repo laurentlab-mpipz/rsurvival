@@ -3,8 +3,8 @@ AnalyseSplittedExpt	AnalyseSplittedExpt
 CalcFreqGt	CalcFreqGt
 CalcFreqVariant	CalcFreqVariant
 CalcOddedPick	CalcOddedPick
+CalcOddsPredation	CalcOddsPredation
 CalcProbsSelection	CalcProbsSelection
-CalcWeightsPredation	CalcWeightsPredation
 CensorLowDepth	CensorLowDepth
 ConvertFileToLogic	ConvertFileToLogic
 CountSignSnps	CountSignSnps

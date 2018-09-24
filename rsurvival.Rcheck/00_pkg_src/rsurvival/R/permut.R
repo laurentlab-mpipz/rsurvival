@@ -244,8 +244,8 @@ CalcOddedPick <- function(variant, survival, n = 10, verbose = TRUE){
     probs <- AnalyseExpt(variant, survival, genotypic = TRUE, deltas = FALSE)
     freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
                            "ALL.count.gt.HOMOALT")]
-    odds <- probs[, c("weight.gt.HOMOREF", "weight.gt.HETERO",
-                      "weight.gt.HOMOALT")]
+    odds <- probs[, c("odd.gt.HOMOREF", "odd.gt.HETERO",
+                      "odd.gt.HOMOALT")]
 
     # simulate number of deaths per genotypes with the observed odds
     nb.lives <- BiasedUrn::rMWNCHypergeo(nran = n, m = unlist(freqs.all),

@@ -13,12 +13,12 @@ CalcFreqVariant         A function to count occurences of genotypes in
 CalcOddedPick           A function to calculate the number of picked
                         lives per categories of samples according to
                         MWNCHypergeo model.
+CalcOddsPredation       A function to calculate odds for predation from
+                        observed selection frequencies using
+                        MWNCHHypergeo model.
 CalcProbsSelection      A function to calculate probabilities that
                         observed frequencies are due to positive
                         selection using MWNCHHypergeo model.
-CalcWeightsPredation    A function to calculate odds for predation from
-                        observed selection frequencies using
-                        MWNCHHypergeo model.
 CensorLowDepth          A function to replace genotype data with low
                         depth by NA
 ConvertFileToLogic      A function to turn a file into a logical

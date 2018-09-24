@@ -29,7 +29,7 @@ columns of \code{freq.all}. Increase speed for large scale calls. Items of
 A vector of probabilities : \code{p_neutral} is the probability to obtain
 this distribution with a random picking process, \code{p_select} is the
 probability to obtain this distribution with a picking in a biased urn,
-\code{weights} are the odds used to calculate \code{p_select}, \code{lrt}
+\code{odds} are the odds used to calculate \code{p_select}, \code{lrt}
 is the result of the likelyhood test of \code{p_select} uppon
 \code{p_neutral}, \code{p_value} is the probability that the distribution
 is due to positive selection.
@@ -46,6 +46,6 @@ CalcProbsSelection(f.alive, f.all)
 }
 }
 \seealso{
-For more information, see \code{\link{CalcWeightsPredation}} and
+For more information, see \code{\link{CalcOddsPredation}} and
 \code{\link{FindIdsGtCounts}} wich this function binds.
 }
