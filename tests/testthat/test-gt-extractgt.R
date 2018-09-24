@@ -71,11 +71,11 @@ test_that("error is thrown when min.variant.qual is not a numeric or NULL", {
 })
 
 test_that("warning is thrown when min.sample.qual is not between 0 and 1", {
-    expect_warning(ExtractGt(vcf, min.variant.qual = -1), "min.sample.qual")
-  expect_warning(ExtractGt(vcf, min.variant.qual = 777), "min.sample.qual")
+    expect_warning(ExtractGt(vcf, min.sample.qual = -1), "min.sample.qual")
+  expect_warning(ExtractGt(vcf, min.sample.qual = 777), "min.sample.qual")
 })
 
 test_that("error is thrown when min.sample.qual is not a numeric or NULL", {
-  expect_error(ExtractGt(vcf, min.variant.qual = "nachos"), "min.sample.qual")
-  expect_error(ExtractGt(vcf, min.variant.qual = NA), "min.sample.qual")
+  expect_error(ExtractGt(vcf, min.sample.qual = "nachos"), "min.sample.qual")
+  expect_error(ExtractGt(vcf, min.sample.qual = NA), "min.sample.qual")
 })

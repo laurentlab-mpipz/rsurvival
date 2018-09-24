@@ -73,6 +73,8 @@ ConvertFileToLogic <- function(file.path, type = "number") {
 #'
 #' @param vect A vector to analyse
 #' @param min.ratio A threshold ratio of NA values in vect (from 0 to 1)
+#' @param verbose Logical. If TRUE (default), report status of the process
+#' along the executions
 #'
 #' @return 
 #' Logical. TRUE if the ratio of NA in vect is at least minRatio, else FALSE.
@@ -83,17 +85,17 @@ ConvertFileToLogic <- function(file.path, type = "number") {
 #' \dontrun{
 #' vector.true  <- c(NA, 1:3) 
 #' vector.false <- c(NA, 1:5) 
-#' IsAboveNARatio(vector.true, 0.2)
+#' IsAtLeastNARatio(vector.true, 0.2)
 #' }
 
-IsAtLeastNARatio <- function(vect, min.ratio) {
+IsAtLeastNARatio <- function(vect, min.ratio, verbose = TRUE) {
 
   if (!(is.numeric(min.ratio))) {
     stop("Parameter min.ratio must be a number")
   } else if (length(min.ratio) != 1){
     stop("Parameter min.ratio must be of length 1")
-  } else if(min.ratio < 0  || min.ratio > 1){
-    warning("Parameter min.ratio should in range [0:1]")
+  } else if((min.ratio < 0  || min.ratio > 1) && verbose){
+    warning("Parameter min.ratio should be in range [0:1]")
   } 
 
   if (length(vect) < 1){

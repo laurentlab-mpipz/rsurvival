@@ -5,19 +5,19 @@ surv <- readRDS('res-splitgt/survivals.rds')
 splitted <- SplitGt(gt, surv)
 
 test_that("SplitGt returns a list of data frame", {
-  expect_is(gt, "list")
-  expect_is(gt$alive, "data.frame")
-  expect_is(gt$dead, "data.frame")
+  expect_is(splitted, "list")
+  expect_is(splitted$alive, "data.frame")
+  expect_is(splitted$dead, "data.frame")
 })
 
 test_that("returned data frames contain strings", {
-  expect_is(gt$alive[1,1], "character")
-  expect_is(gt$dead[1,1], "character")
+  expect_is(splitted$alive[1,1], "character")
+  expect_is(splitted$dead[1,1], "character")
 })
 
 test_that("dimensions of returned data frames are correct", {
-  expect_equal(dim(gt$alive), c(nrow(gt), sum(as.numeric(surv))))
-  expect_equal(dim(gt$dead), c(nrow(gt), sum(as.numeric(!surv)))))
+  expect_equal(dim(splitted$alive), c(nrow(gt), sum(as.numeric(surv))))
+  expect_equal(dim(splitted$dead), c(nrow(gt), sum(as.numeric(!surv))))
 })
 
 test_that("warning is thrown when survival is too short", {
@@ -35,5 +35,5 @@ test_that("error is thrown when survival is not a logical vector", {
 
 test_that("error is thrown when gt is not a matrix or data.frame", {
   expect_error(SplitGt("tenders", surv), "gt")
-  expect_error(c(1:42), surv), "gt")
+  expect_error(SplitGt(c(1:42), surv), "gt")
 })
