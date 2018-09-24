@@ -24,8 +24,8 @@ Read 3 items
 Read 0 items
 Read 3 items
 ══ testthat results  ═══════════════════════════════════════════════════════════
-OK: 78 SKIPPED: 0 FAILED: 0
+OK: 102 SKIPPED: 0 FAILED: 0
 > 
 > proc.time()
    user  system elapsed 
-  1.719   0.089   1.798 
+  2.052   0.084   2.135 

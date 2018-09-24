@@ -74,6 +74,16 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
       id.all <- FindIdsGtCounts(freq.all)
     }
 
+    homo.weights     <- c(pred.weights[1], pred.weights[3])
+    min.homo.weights <- min(homo.weights)
+    pred.weights     <- (1 / min.homo.weights) * pred.weights # set min w to 1
+    homo.weights     <- c(pred.weights[1], pred.weights[3])
+    max.homo.weights <- max(homo.weights)
+    hetero.weight    <- pred.weights[2]
+
+    s <- max.homo.weights - 1
+    h <- hetero.weight + s - 1
+
     # distribution in survivors population
     x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
     # distribution in original population
@@ -87,15 +97,15 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
                                               odds = c(1,1,1))
 
     lrt     <- 2 * log(prob.sel / prob.neutral)
-    p.value <- 1 - stats::pchisq(q = lrt, df = 2)  
-    result  <- c(pred.weights, prob.neutral, prob.sel, lrt, p.value)
+    p.value <- 1 - stats::pchisq(q = lrt, df = 2)
+    result  <- c(pred.weights, s, h, prob.neutral, prob.sel, lrt, p.value)
 
   } else {
-    result <- rep(NA, 7) # to ensure that the result always has the same length
+    result <- rep(NA, 9) # to ensure that the result always has the same length
   }
 
   names(result) <- c("weight.gt.HOMOREF", "weight.gt.HETERO",
-                      "weight.gt.HOMOALT", "p.neutral", "p.select",  "lrt",
+                      "weight.gt.HOMOALT", "s", "h", "p.neutral", "p.select",  "lrt",
                       "p.value")
   return(result)
 

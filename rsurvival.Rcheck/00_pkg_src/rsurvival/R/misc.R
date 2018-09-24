@@ -134,8 +134,12 @@ IsAtLeastNARatio <- function(vect, min.ratio) {
 
 SplitVect <- function(vect, survival, verbose = TRUE){
 
-  if ((length(vect) != length(survival)) && verbose) {
-    warning("Both parameter should have the same length")
+  if ((length(vect) > length(survival)) && verbose) {
+    warning("Parameter survival is shorter than parameter vect.")
+  }
+
+  if ((length(vect) < length(survival))) {
+    stop("Parameter survival is longer than parameter vect.")
   }
 
   alive <- vect[survival]
@@ -200,10 +204,15 @@ SliceDfRows <- function(df, rows){
 
 SliceDfColumns <- function(df, columns){
 
-  if (length(columns) > 1){
+  if (length(columns) > 1) {
     result <- df[, columns]
   } else {
-    result <- t(SliceDfRows(t(df), columns))
+    colnames <- colnames(df)
+    rownames <- rownames(df)
+    colnames <- colnames[columns]
+    result <- data.frame(t(SliceDfRows(t(df), columns)))
+    colnames(result) <- colnames
+    rownames(result) <- rownames
   }
 
   return(result)
