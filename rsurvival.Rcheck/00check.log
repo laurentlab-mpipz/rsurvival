@@ -14,6 +14,7 @@
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
 * checking for sufficient/correct file permissions ... OK
+* checking serialization versions ... OK
 * checking whether package ‘rsurvival’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
@@ -47,6 +48,6 @@
 * checking examples ... OK
 * checking for unstated dependencies in ‘tests’ ... OK
 * checking tests ... OK
-  Running ‘testthat.R’ [21s/22s]
+  Running ‘testthat.R’ [14s/14s]
 * DONE
 Status: OK
