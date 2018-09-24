@@ -35,12 +35,12 @@
 #' A vector of probabilities : \code{p_neutral} is the probability to obtain
 #' this distribution with a random picking process, \code{p_select} is the
 #' probability to obtain this distribution with a picking in a biased urn,
-#' \code{weights} are the odds used to calculate \code{p_select}, \code{lrt}
+#' \code{odds} are the odds used to calculate \code{p_select}, \code{lrt}
 #' is the result of the likelyhood test of \code{p_select} uppon
 #' \code{p_neutral}, \code{p_value} is the probability that the distribution
 #' is due to positive selection.
 #'
-#' @seealso For more information, see \code{\link{CalcWeightsPredation}} and
+#' @seealso For more information, see \code{\link{CalcOddsPredation}} and
 #' \code{\link{FindIdsGtCounts}} wich this function binds.
 #'
 #' @export
@@ -55,12 +55,12 @@
 CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
                                map.all = NULL){
 
-  pred.weights <- CalcWeightsPredation(freq.alive, freq.all,
+  pred.odds <- CalcOddsPredation(freq.alive, freq.all,
                                        map.alive = map.alive,
                                        map.all = map.all)
 
-  if ((sum(is.na(pred.weights)) == 0) && (sum(pred.weights <= 0) == 0) 
-      && (sum(is.infinite(pred.weights)) == 0)) {
+  if ((sum(is.na(pred.odds)) == 0) && (sum(pred.odds <= 0) == 0) 
+      && (sum(is.infinite(pred.odds)) == 0)) {
 
     if(!is.null(map.alive)) {
       id.alive <- map.alive
@@ -74,15 +74,17 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
       id.all <- FindIdsGtCounts(freq.all)
     }
 
-    homo.weights     <- c(pred.weights[1], pred.weights[3])
-    min.homo.weights <- min(homo.weights)
-    pred.weights     <- (1 / min.homo.weights) * pred.weights # set min w to 1
-    homo.weights     <- c(pred.weights[1], pred.weights[3])
-    max.homo.weights <- max(homo.weights)
-    hetero.weight    <- pred.weights[2]
+    sel.odds = 1 / pred.odds
 
-    s <- max.homo.weights - 1
-    h <- hetero.weight + s - 1
+    homo.odds     <- c(sel.odds[1], sel.odds[3])
+    min.homo.odds <- min(homo.odds)
+    sel.odds     <- (1 / min.homo.odds) * sel.odds # set min w to 1
+    homo.odds     <- c(sel.odds[1], sel.odds[3])
+    max.homo.odds <- max(homo.odds)
+    hetero.odd    <- sel.odds[2]
+
+    s <- max.homo.odds - 1
+    h <- (hetero.odd - 1) / s
 
     # distribution in survivors population
     x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
@@ -92,20 +94,20 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
     n <- freq.alive[id.alive$total] - freq.alive[id.alive$missval]
 
     prob.sel     <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
-                                          odds = 1 / pred.weights)
+                                          odds = 1 / pred.odds)
     prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
                                               odds = c(1,1,1))
 
     lrt     <- 2 * log(prob.sel / prob.neutral)
     p.value <- 1 - stats::pchisq(q = lrt, df = 2)
-    result  <- c(pred.weights, s, h, prob.neutral, prob.sel, lrt, p.value)
+    result  <- c(sel.odds, s, h, prob.neutral, prob.sel, lrt, p.value)
 
   } else {
     result <- rep(NA, 9) # to ensure that the result always has the same length
   }
 
-  names(result) <- c("weight.gt.HOMOREF", "weight.gt.HETERO",
-                      "weight.gt.HOMOALT", "s", "h", "p.neutral", "p.select",  "lrt",
+  names(result) <- c("sel.odd.gt.HOMOREF", "sel.odd.gt.HETERO",
+                      "sel.odd.gt.HOMOALT", "s", "h", "p.neutral", "p.select",  "lrt",
                       "p.value")
   return(result)
 
@@ -140,10 +142,10 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
 #' \dontrun{
 #' f.alive <- c(17, 3, 15, 1, 36)
 #' f.all  <- c(24, 5, 22, 2, 53)
-#' CalcWeightsPredation(f.alive, f.all)
+#' CalcOddsPredation(f.alive, f.all)
 #' }
 
-CalcWeightsPredation <- function(freq.alive, freq.all, map.alive = NULL,
+CalcOddsPredation <- function(freq.alive, freq.all, map.alive = NULL,
                                 map.all = NULL){
 
     standard.map <- list("homo.ref" = 1 , "hetero" = 2, "homo.alt" = 3,
@@ -160,7 +162,6 @@ CalcWeightsPredation <- function(freq.alive, freq.all, map.alive = NULL,
     } else {
       id.all <- FindIdsGtCounts(freq.all)
     }
-
 
     freq.dead <- freq.all[unlist(id.all)] - freq.alive[unlist(id.alive)]
     id.dead   <- standard.map
