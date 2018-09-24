@@ -291,6 +291,8 @@ OmitPoorVariants <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 #' }
 
 SplitGt <- function(gt, survival, verbose = TRUE){
+  
+  gt <- data.frame(gt)
 
   if (class(gt) == "matrix") {
     gt <- data.frame(gt, stringsAsFactors = FALSE)
@@ -312,9 +314,9 @@ SplitGt <- function(gt, survival, verbose = TRUE){
   if (class(gt) == "list") {
     return(lapply(gt, FUN = function(x){ SplitGt(x, survival) }))
   }
+
   if (class(gt) != "data.frame" ) {
     stop("Parameter gt must be a data.frame or a matrix")
-  }
 
   # number of alive samples
   len.survival <- length(survival)
