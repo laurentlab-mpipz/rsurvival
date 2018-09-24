@@ -292,17 +292,28 @@ OmitPoorVariants <- function(gt, min.qual, dp = NULL, verbose = TRUE) {
 
 SplitGt <- function(gt, survival, verbose = TRUE){
 
+  if (class(gt) == "matrix") {
+    gt <- data.frame(gt, stringsAsFactors = FALSE)
+  }
+
   alive <- NULL
   dead  <- NULL
 
   if (!is.logical(survival)) {
     stop("Parameter survival must be a logical vector")
+  } else if (length(survival) < ncol(gt)) {
+    warning(paste("Parameter surival is shorter than parameter gt (",
+                    length(survival), " versus ", ncol(gt), ")"))
+  } else if (length(survival) > ncol(gt)) {
+    stop(paste("Parameter surival is longer than parameter gt (",
+                  length(survival), " versus ", ncol(gt), ")"))
   }
+  
   if (class(gt) == "list") {
     return(lapply(gt, FUN = function(x){ SplitGt(x, survival) }))
   }
-  if (class(gt) != "matrix" ) {
-    stop("Parameter gt must be a matrix")
+  if (class(gt) != "data.frame" ) {
+    stop("Parameter gt must be a data.frame or a matrix")
   }
 
   # number of alive samples

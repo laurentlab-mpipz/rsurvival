@@ -51,31 +51,31 @@ test_that("the depth matrix is affected by omitting / censoring settings", {
 })
 
 test_that("warning is thrown when min.depth is not a positive integer", {
-  expect_warning(ExtractGt(vcf, min.depth = -1))
-  expect_warning(ExtractGt(vcf, min.depth = 0.42))
+  expect_warning(ExtractGt(vcf, min.depth = -1), "min.depth")
+  expect_warning(ExtractGt(vcf, min.depth = 0.42), "min.depth")
 })
 
 test_that("error is thrown when min.depth is not a numeric or NULL", {
-  expect_error(ExtractGt(vcf, min.depth = "tortilla"))
-  expect_error(ExtractGt(vcf, min.depth = NA))
+  expect_error(ExtractGt(vcf, min.depth = "tortilla"), "min.depth")
+  expect_error(ExtractGt(vcf, min.depth = NA), "min.depth")
 })
 
 test_that("warning is thrown when min.variant.qual is not between 0 and 1", {
-  expect_warning(ExtractGt(vcf, min.variant.qual = -1))
-  expect_warning(ExtractGt(vcf, min.variant.qual = 42))
+  expect_warning(ExtractGt(vcf, min.variant.qual = -1), "min.variant.qual")
+  expect_warning(ExtractGt(vcf, min.variant.qual = 42), "min.variant.qual")
 })
 
 test_that("error is thrown when min.variant.qual is not a numeric or NULL", {
-  expect_error(ExtractGt(vcf, min.variant.qual = "burritos"))
-  expect_error(ExtractGt(vcf, min.variant.qual = NA))
+  expect_error(ExtractGt(vcf, min.variant.qual = "burritos"), "min.variant.qual")
+  expect_error(ExtractGt(vcf, min.variant.qual = NA), "min.variant.qual")
 })
 
 test_that("warning is thrown when min.sample.qual is not between 0 and 1", {
-    expect_warning(ExtractGt(vcf, min.variant.qual = -1))
-  expect_warning(ExtractGt(vcf, min.variant.qual = 777))
+    expect_warning(ExtractGt(vcf, min.variant.qual = -1), "min.sample.qual")
+  expect_warning(ExtractGt(vcf, min.variant.qual = 777), "min.sample.qual")
 })
 
 test_that("error is thrown when min.sample.qual is not a numeric or NULL", {
-  expect_error(ExtractGt(vcf, min.variant.qual = "nachos"))
-  expect_error(ExtractGt(vcf, min.variant.qual = NA))
+  expect_error(ExtractGt(vcf, min.variant.qual = "nachos"), "min.sample.qual")
+  expect_error(ExtractGt(vcf, min.variant.qual = NA), "min.sample.qual")
 })
