@@ -11,7 +11,7 @@ RoxygenNote: 6.1.0.9000
 Imports: vcfR, stringr, BiasedUrn, stats, lubridate, dplyr, tibble
 Suggests: testthat, covr
 NeedsCompilation: no
-Packaged: 2018-09-24 14:21:49 UTC; travis
+Packaged: 2018-09-24 14:44:45 UTC; travis
 Author: Samuel Badion [aut, cre]
 Maintainer: Samuel Badion <samuel.badion@reseau.eseo.fr>
-Built: R 3.5.0; ; 2018-09-24 14:21:51 UTC; unix
+Built: R 3.5.0; ; 2018-09-24 14:44:47 UTC; unix
