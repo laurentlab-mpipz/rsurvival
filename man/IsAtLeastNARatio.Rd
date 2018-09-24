@@ -4,12 +4,15 @@
 \alias{IsAtLeastNARatio}
 \title{A function to check if the ratio of NA in a vector is over a threshold.}
 \usage{
-IsAtLeastNARatio(vect, min.ratio)
+IsAtLeastNARatio(vect, min.ratio, verbose = TRUE)
 }
 \arguments{
 \item{vect}{A vector to analyse}
 
 \item{min.ratio}{A threshold ratio of NA values in vect (from 0 to 1)}
+
+\item{verbose}{Logical. If TRUE (default), report status of the process
+along the executions}
 }
 \value{
 Logical. TRUE if the ratio of NA in vect is at least minRatio, else FALSE.
@@ -21,6 +24,6 @@ A function to check if the ratio of NA in a vector is over a threshold.
 \dontrun{
 vector.true  <- c(NA, 1:3) 
 vector.false <- c(NA, 1:5) 
-IsAboveNARatio(vector.true, 0.2)
+IsAtLeastNARatio(vector.true, 0.2)
 }
 }
