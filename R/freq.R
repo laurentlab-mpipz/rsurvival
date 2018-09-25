@@ -163,24 +163,6 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
     absolute <- rep(absolute, 2)
   }
 
-  # handle lists --------------------------------------------------------------
-  
-  # broken since gts are data frames -> variants are lists
-
-  #if (typeof(variant) == "list") {
-  #   result <- lapply(variant,
-  #                    FUN = function(x){
-  #                       CalcFreqVariant(x, genotypic = genotypic,
-  #                                       allelic = allelic, absolute = absolute,
-  #                                       percentage = percentage,
-  #                                       totals = totals,
-  #                                       min.freq.gt = min.freq.gt,
-  #                                       min.freq.al = min.freq.al)
-  #                     }
-  #                   )
-  #    return(result)
-  #}
-
   # actual counting using regex -----------------------------------------------
 
   counts <- c(sum(grepl("0.*0",variant)), sum(grepl("0.*1|1.*0",variant)),
@@ -216,11 +198,23 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
   # check minimal frequencies -------------------------------------------------
 
   if (!is.null(min.freq.al)) {
-    if (sum(freqs.al < min.freq.al) > 0) {
+    if (!is.numeric(min.freq.al)) {
+      stop("Parameter min.freq.al must be a number.")
+    }
+    if ((min.freq.al < 0) || (min.freq.al > 1)) {
+      warning("Parameter min.freq.al should be from 0 to 1.")
+    }
+    if (sum(freqs.al[1:2] < min.freq.al) > 0) {
       return.na = TRUE
     }
   } else if (!is.null(min.freq.gt)) {
-    if (sum(freqs.gt < min.freq.gt) > 0) {
+    if (!is.numeric(min.freq.gt)) {
+      stop("Parameter min.freq.gt must be a number.")
+    }
+    if ((min.freq.gt < 0) || (min.freq.gt > 1)) {
+      warning("Parameter min.freq.gt should be from 0 to 1.")
+    }
+    if (sum(freqs.gt[1:3] < min.freq.gt) > 0) {
       return.na = TRUE
     }
   }
@@ -282,8 +276,10 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
     result <- c(result.gt, result.al)
   } else if (genotypic) {
     result <- result.gt
-  } else {
+  } else if (allelic) {
     result <- result.al
+  } else {
+    result <- NULL
   }
 
   return(result)
