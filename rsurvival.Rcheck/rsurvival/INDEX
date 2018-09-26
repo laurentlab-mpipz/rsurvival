@@ -1,0 +1,67 @@
+AnalyseExpt             A function to analyse a selection experiment,
+                        including observed frequencies of genotype and
+                        probabilities that they are due to random
+                        picking and positive selection.
+AnalyseSplittedExpt     A function to analyse a selection experiment,
+                        including observed frequencies of genotype and
+                        probabilities that they are due to random
+                        picking and positive selection.
+CalcFreqGt              A function to count occurences of genotypes in
+                        a genotype matrix.
+CalcFreqVariant         A function to count occurences of genotypes in
+                        a variant vector.
+CalcOddedPick           A function to calculate the number of picked
+                        lives per categories of samples according to
+                        MWNCHypergeo model.
+CalcOddsPredation       A function to calculate odds for predation from
+                        observed selection frequencies using
+                        MWNCHHypergeo model.
+CalcProbsSelection      A function to calculate probabilities that
+                        observed frequencies are due to positive
+                        selection using MWNCHHypergeo model.
+CensorLowDepth          A function to replace genotype data with low
+                        depth by NA
+ConvertFileToLogic      A function to turn a file into a logical
+                        vector. Useful for making a survivals vector to
+                        split your data in two parts.
+CountSignSnps           A function to count snps with a low probability
+                        of being due to a neutral model
+EstimateFST             A function to estimate the FST of a variant
+                        using the Weir & Cockerham (1984) method
+ExtractGt               A function to extract a genotype from a
+                        vcfR::VCF object.
+FindIdsAlFreqs          A function to find the ids of freq.al columns
+                        in a frequency matrix.
+FindIdsGtCounts         A function to find the ids of counts.gt columns
+                        in a frequency matrix.
+IsAtLeastNARatio        A function to check if the ratio of NA in a
+                        vector is over a threshold.
+IterRandPick            A function to iterate significant snps counting
+                        in a genotype matrx with a random permutation
+                        of the survival vector
+LoadVcf                 A function to get a filtered (and possibly
+                        splitted) vcfR::VCF object from a VCF file.
+OmitPoorSamples         A function to remove columns with a high ratio
+                        of missing data from a dataframe. (e.g. samples
+                        from genotype)
+OmitPoorVariants        A function to remove rows with a high ratio of
+                        missing data from a dataframe. (e.g. variants
+                        from genotype)
+PermutRandSurv          A function to calculate probabilities of
+                        neutral model and positive selection model from
+                        a genotype matrix whit a randomly shuffled
+                        survival vector
+RmIndels                A function to remove indel variants from a
+                        vcfR::VCF object
+RmNonBiallelics         A function to remove non-biallelic variants
+                        from a vcfR::VCF object
+SliceDfColumns          A function to slice data frames without loosing
+                        column names
+SliceDfRows             A function to slice data frames without loosing
+                        row names
+SplitGt                 A function to split a genotype matrix two
+                        genotype matrix according to a logical vector
+SplitVcf                A function to split a vcfR::VCF object in two
+                        vcfR::VCF object according to a logical vector
+SplitVect               A function to split a vector into two vectors
+                        according to a survival logical vector
