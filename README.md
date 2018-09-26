@@ -1,6 +1,6 @@
 # MPIPZ R Package : rsurvival 
 
-[![GitHub version](https://badge.fury.io/gh/laurentlab-mpipz%2Frsurvival.svg)](https://github.com/Naereen/StrapDown.js)
+[![GitHub version](https://badge.fury.io/gh/laurentlab-mpipz%2Frsurvival.svg)](https://github.com/laurentlab-mpipz/rsurvival)
 [![Coverage status](https://codecov.io/gh/laurentlab-mpipz/rsurvival/branch/master/graph/badge.svg)](https://codecov.io/github/laurentlab-mpipz/rsurvival?branch=master)
 [![GitHub license](https://img.shields.io/github/license/laurentlab-mpipz/rsurvival.svg)](https://github.com/laurentlab-mpipz/rsurvival/blob/master/LICENSE)
 
@@ -12,7 +12,8 @@ You will have to provide a VCF file and a survival vector to get started with th
 This package is still under development and has not been officialy released yet. It means that you cannot use CRAN to install it. Here is different possibilities to install this package : 
 
 * Run `devtools::install_github("laurentlab-mpipz/rsurvival")` in your R console.
-* Hit the **Clone or download** green button to download the repository, then run `devtools::install("survival")` from the parent directory.
+* Hit the **Clone or download** green button to download the repository, then run `devtools::install("rsurvival")` from the parent directory.
+* You can also download the last built version of this package as an archive clicking [this link](https://github.com/laurentlab-mpipz/rsurvival/blob/build/rsurvival_0.0.0.9000.tar.gz?raw=true).
 
 **Note :** If you do not have the _devtools_ package installed, please first run `install.packages("devtools")` and select the appropriate CRAN mirror.
 
