@@ -5,7 +5,7 @@
 \title{A function to count snps with a low probability of being due to a neutral
 model}
 \usage{
-CountSignSnps(probs, max.p.neutral = 0.01)
+CountSignSnps(probs, max.p.neutral = 0.1)
 }
 \arguments{
 \item{probs}{A probability data frame}

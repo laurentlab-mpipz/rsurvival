@@ -94,7 +94,7 @@ PermutRandSurv <- function(gt, survival, odded.lives = NULL,
 #' CountSignSnps(probs, max.p.neutral = 0.05)
 #' }
 
-CountSignSnps <- function(probs, max.p.neutral = 0.01){
+CountSignSnps <- function(probs, max.p.neutral = 0.1){
 
   # bukd a list of p.neutral from probs data frame, exlcuding NAs
   p.neutral.list <- probs[, 'p.neutral'][!is.na(probs[, 'p.neutral'])]
@@ -137,7 +137,7 @@ CountSignSnps <- function(probs, max.p.neutral = 0.01){
 #' IterRandomPick(gt, survival, iter = 1000, verbose = FALSE)
 #' }
 
-IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
+IterRandPick <- function(gt, survival, max.p.neutral = 0.01, iter = 10,
                          odded.pos = NULL, verbose = TRUE){
 
   result <- c()
@@ -147,7 +147,6 @@ IterRandPick <- function(gt, survival, max.p.neutral = 0.1, iter = 10,
   if (is.character(odded.pos)) {
 
     odded.variant <- gt[odded.pos, ]
-    odded.variant <- t(data.frame(odded.variant)) # reorganise data in 1 row df
     odded.pick    <- CalcOddedPick(odded.variant, survival, n = iter,
                                    verbose = verbose)
     odded.lives   <- odded.pick$odded.lives
@@ -244,8 +243,8 @@ CalcOddedPick <- function(variant, survival, n = 10, verbose = TRUE){
     probs <- AnalyseExpt(variant, survival, genotypic = TRUE, deltas = FALSE)
     freqs.all <- probs[, c("ALL.count.gt.HOMOREF", "ALL.count.gt.HETERO",
                            "ALL.count.gt.HOMOALT")]
-    odds <- probs[, c("odd.gt.HOMOREF", "odd.gt.HETERO",
-                      "odd.gt.HOMOALT")]
+    odds <- probs[, c("sel.odd.gt.HOMOREF", "sel.odd.gt.HETERO",
+                      "sel.odd.gt.HOMOALT")]
 
     # simulate number of deaths per genotypes with the observed odds
     nb.lives <- BiasedUrn::rMWNCHypergeo(nran = n, m = unlist(freqs.all),

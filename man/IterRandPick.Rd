@@ -5,7 +5,7 @@
 \title{A function to iterate significant snps counting in a genotype matrx with a
 random permutation of the survival vector}
 \usage{
-IterRandPick(gt, survival, max.p.neutral = 0.1, iter = 10,
+IterRandPick(gt, survival, max.p.neutral = 0.01, iter = 10,
   odded.pos = NULL, verbose = TRUE)
 }
 \arguments{

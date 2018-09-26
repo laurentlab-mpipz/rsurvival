@@ -9,7 +9,7 @@ after_success:
   - Rscript -e 'library(covr); codecov()'
 deploy:
   provider: pages
-  skip-cleanup: false
+  skip-cleanup: true
   github-token: $GITHUB_PUSH_KEY
   keep-history: true
   target-branch: build
