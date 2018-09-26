@@ -48,6 +48,6 @@
 * checking examples ... OK
 * checking for unstated dependencies in ‘tests’ ... OK
 * checking tests ... OK
-  Running ‘testthat.R’ [12s/12s]
+  Running ‘testthat.R’ [18s/18s]
 * DONE
 Status: OK
