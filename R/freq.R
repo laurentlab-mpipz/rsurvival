@@ -152,21 +152,28 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                             absolute = TRUE, percentage = FALSE,
                             extrapolate.freq = TRUE, totals = TRUE,
-                            min.freq.gt = NULL, min.freq.al = NULL) {
+                            min.freq.gt = NULL, min.freq.al = NULL,
+                            include.ids = FALSE) {
 
   result.al <- NULL
   result.gt <- NULL
   result    <- NULL 
   return.na <- FALSE
 
-  if (length(absolute) == 1){
+  if (length(absolute) == 1) {
     absolute <- rep(absolute, 2)
   }
 
   # actual counting using regex -----------------------------------------------
 
-  counts <- c(sum(grepl("0.*0",variant)), sum(grepl("0.*1|1.*0",variant)),
-              sum(grepl("1.*1",variant)), sum(is.na(variant)))
+  ids <- IdentifyGt(variant)
+
+  counts <- c(length(ids$HOMOREF), length(ids$HETERO), length(ids$HOMOALT),
+              length(ids$MISSVAL))
+
+  if (!allelic && !genotypic && include.ids) {
+    return(ids)
+  }
 
   # calculate frequencies of alleles ------------------------------------------
 
@@ -186,6 +193,7 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
 
   counts.gt <- c(counts[1], counts[2], counts[3], counts[4])
   total.gt  <- sum(counts.gt)
+
   if (extrapolate.freq) {
     freqs.gt  <- c(counts.gt[1] / sum(counts.gt[1:3]),
                    counts.gt[2] / sum(counts.gt[1:3]),
@@ -282,6 +290,10 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
     result <- NULL
   }
 
+  if (include.ids) {
+    result <- list("freq" = result, "ids" = ids)
+  }
+
   return(result)
 
 }
@@ -341,6 +353,85 @@ FindIdsAlFreqs <- function(freq){
   missval  <- grep("^.*freq\\.al\\.MISSVAL$", names(freq))
 
   result <- list("ref" = ref, "alt" = alt, "missval" = missval)
+
+  return(result)
+
+}
+
+
+IdentifyGt <- function(variant){
+
+  result <- list("HOMOREF" = grep("0.*0", variant),
+           "HETERO" = grep("0.*1|1.*0", variant),
+           "HOMOALT" = grep("1.*1",variant),
+           "MISSVAL" = which(is.na(variant)))
+
+  return(result)
+
+}
+
+
+SortSamplesVariant <- function(variants, ommit.nas = FALSE){
+
+  result     <- NULL
+  n.variants <- nrow(variants)
+  names      <- names(IdentifyGt(SliceDfRows(variants, 1)))
+
+  if (n.variants == 1) {
+
+    ids   <- IdentifyGt(SliceDfRows(variants, 1))
+    names <- names(ids)
+    gt    <- lapply(ids,
+                    FUN = function(x){
+                      SliceDfColumns(variants, x)
+                    })
+
+    result <- gt
+
+  } else {
+
+    for (i in 1:n.variants) {
+
+      gt <- SortSamplesVariant(SliceDfRows(variants, i))
+      names(gt) <- paste("VAR", i, "_", names(gt), sep = "")
+
+      if (length(result)){
+
+        gt <- lapply(result,
+                     FUN = function(x){
+                       res.x <- lapply(gt,
+                                       FUN = function(y){
+                                         filter <- colnames(x) %in% colnames(y)
+                                         res.y  <- SliceDfColumns(x, filter)
+                                       })
+                     })
+
+        gt <- unlist(gt, recursive = FALSE)
+
+      }
+
+      result <- c(gt)
+
+    }
+
+  }
+
+  if (ommit.nas) {
+
+    filter <- !grepl("MISSVAL", names(result))
+    result <- result[filter]
+  
+  }
+
+  return(result)
+
+}
+
+CalcFreqMultiVariant <- function(variants, ommit.nas = FALSE){
+
+  sorted <- SortSamplesVariant(variants, ommit.nas = ommit.nas)
+  result <- unlist(lapply(sorted, FUN = length))
+  names(result) <- paste("count.gt.", names(result), sep = "")
 
   return(result)
 

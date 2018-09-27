@@ -74,11 +74,11 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
       id.all <- FindIdsGtCounts(freq.all)
     }
 
-    sel.odds = 1 / pred.odds
+    sel.odds <- 1 / pred.odds
 
     homo.odds     <- c(sel.odds[1], sel.odds[3])
     min.homo.odds <- min(homo.odds)
-    sel.odds     <- (1 / min.homo.odds) * sel.odds # set min w to 1
+    sel.odds      <- (1 / min.homo.odds) * sel.odds # set min w to 1
     homo.odds     <- c(sel.odds[1], sel.odds[3])
     max.homo.odds <- max(homo.odds)
     hetero.odd    <- sel.odds[2]
@@ -175,7 +175,45 @@ CalcOddsPredation <- function(freq.alive, freq.all, map.alive = NULL,
 
     # calculate odds
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
-                                                            m = m, n = n))
+                                                           m = m, n = n))
     return(result)
+
+}
+
+CalcProbsMultiSelection <- function(freq.alive, freq.all){
+
+  freq.dead <- freq.all - freq.alive
+
+  # distribution of dead samples
+  mu <- freq.dead
+  # distribution of original population
+  m  <- freq.all 
+  # number of dead samples with valid data
+  n  <- sum(freq.dead)
+
+  pred.odds <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
+                                                       m = m,
+                                                       n = n))
+  sel.odds <- 1 / pred.odds
+
+  # distribution in survivors population
+  x <- freq.alive
+  # distribution in original population
+  m <- freq.all
+  # nb of survivivor samples with valid data
+  n <- sum(freq.alive)
+
+  prob.sel     <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
+                                          odds = 1 / pred.odds)
+  prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
+                                              odds = rep(1, length(pred.odds)))
+
+  lrt     <- 2 * log(prob.sel / prob.neutral)
+  p.value <- 1 - stats::pchisq(q = lrt, df = 2)
+  result  <- c(sel.odds, prob.neutral, prob.sel, lrt, p.value)
+
+  names(result) <- "sel.odds"
+
+  return(result)
 
 }
