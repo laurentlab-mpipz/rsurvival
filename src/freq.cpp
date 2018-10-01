@@ -1,0 +1,222 @@
+#include <Rcpp.h>
+#include <regex>
+
+using namespace Rcpp;
+
+//' Multiply a number by two
+//' 
+//' @param x A single integer.
+//' @param y A single integer.
+//' @export
+// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::export]]
+
+NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute, 
+													bool totals = true, bool genotypic = true, bool allelic = false,
+												  bool percentage = false, bool extrapolateFreq = true,
+												  double minFreqAl = -1, double minFreqGt = -1) {
+
+	int nColumns(variant.size()); // number of samples in variant
+	std::vector<std::string> vect_variant(nColumns);
+	for (int i = 0; i < nColumns; i++) {
+		std::vector<std::string> column = variant[i];
+		vect_variant[i] = column[0]; // read the 1st row of dataframe 'variant'
+	}
+
+	std::vector<double> counts(5,0); // counts of each genotype in variant
+	std::string gt;
+
+	for (unsigned int i = 0; i < variant.size(); i++) {
+		gt = vect_variant[i];
+		if (std::regex_match(gt, std::regex("0.*0"))) {
+			counts[0]++;
+		} else if (std::regex_match(gt, std::regex("1.*0")) 
+							 || std::regex_match(gt, std::regex("0.*1"))) {
+			counts[1]++;
+		} else if (std::regex_match(gt, std::regex("1.*1"))) {
+			counts[2]++;
+		} else {
+			counts[3]++;
+		}
+	}
+
+	if (absolute.size() == 1) {
+		absolute[1] = absolute[0];
+	}  
+
+  //int const length(counts.size());
+  bool returnNas = false;
+  
+  // calculate frequencies of alleles -----------------------------------------
+
+  std::vector<double> countsAl(3);
+  int totalAl(0);
+
+  countsAl[0] = counts[0] * 2 + counts[1];
+  countsAl[1] = counts[2] * 2 + counts[1];
+  countsAl[2] = counts[3] * 2;
+  totalAl = countsAl[0] + countsAl[1] + countsAl[2];
+
+  std::vector<double> freqsAl(3);
+
+  if (extrapolateFreq) {
+
+  	int denumAl(countsAl[0] + countsAl[1]);
+ 		for (unsigned int i = 0; i < freqsAl.size() - 1; i++) {
+ 			freqsAl[i] = countsAl[i] / denumAl; // extrap. freq of REF and ALT 
+ 		}
+  	freqsAl.back() = countsAl.back() / totalAl; // freq of missing values
+
+  } else {
+
+ 		for (unsigned int i = 0; i < freqsAl.size(); i++) {
+ 			freqsAl[i] = countsAl[i] / totalAl;
+ 		}
+
+  }
+
+  // calculate frequencies of genotypes ---------------------------------------
+
+  int totalGt(counts[0] + counts[1] + counts[2] + counts[3]);
+
+  std::vector<double> freqsGt(4);
+
+  if (extrapolateFreq) {
+
+  	int denumGt(counts[0] + counts[1] + counts[2]);
+ 		for (unsigned int i = 0; i < freqsGt.size() - 1; i++) {
+ 			freqsGt[i] = counts[i] / denumGt; // extrap. freq of HREF, HETRO and HALT
+ 		}
+  	freqsGt[3] = counts[3] / totalGt; // freq of missing values
+  
+  } else {
+ 		
+ 		for (unsigned int i = 0; i < freqsGt.size(); i++) {
+ 			freqsGt[i] = counts[i] / totalGt;
+ 		}
+
+  }
+
+  // check minimal frequencies ------------------------------------------------
+
+	if (minFreqAl > 0) {
+		if (freqsAl[1] < minFreqAl || freqsAl[2] < minFreqAl) {
+			returnNas = true;
+		}
+	}
+
+	if (minFreqGt > 0) {
+	  if (freqsGt[1] < minFreqGt ||freqsGt[2] < minFreqGt) {
+	    returnNas = true;
+	  }
+	}
+
+  // build resulting frequencies ----------------------------------------------
+
+  std::string prefixGt("");
+  std::vector<double> resultGt(0);
+
+  if (!absolute[0]) { // for genotype
+  	prefixGt = "freq.";
+  	resultGt = freqsGt;
+ 		if (percentage) {
+ 			prefixGt = "perc.";
+ 			for (unsigned int i = 0; i < resultGt.size(); i++) {
+ 				resultGt[i] = resultGt[i] * 100;
+ 			}
+ 		}
+  } else {
+  	prefixGt = "count.";
+  	resultGt = counts;
+  	resultGt.pop_back();
+  }
+
+  std::string prefixAl("");
+  std::vector< double > resultAl(0);
+
+  if (!absolute[1]) { // for alleles
+  	prefixAl = "freq.";
+  	resultAl = freqsAl;
+ 		if (percentage) {
+ 			prefixAl = "perc.";
+ 			for (unsigned int i = 0; i < resultAl.size(); i++) {
+ 				resultAl[i] = resultAl[i] * 100;
+ 			}
+ 		}
+  } else {
+  	prefixAl = "count.";
+  	resultAl = countsAl;
+  }
+
+
+ 	// build titles for each frequencies returned -------------------------------
+
+ 	std::vector<std::string> namesGt;
+ 	std::vector<std::string> namesAl;
+
+ 	namesGt.push_back(prefixGt + "gt.HOMOREF");
+  namesGt.push_back(prefixGt + "gt.HETERO");
+ 	namesGt.push_back(prefixGt + "gt.HOMOALT");
+ 	namesGt.push_back(prefixGt + "gt.MISSVAL");
+
+ 	namesAl.push_back(prefixAl + "al.REF");
+ 	namesAl.push_back(prefixAl + "al.ALT");
+ 	namesAl.push_back(prefixAl + "al.MISSVAL");
+
+  // concatenate results if needed --------------------------------------------
+
+ 	if (totals) {
+
+    resultGt.push_back(totalGt);
+	 	namesGt.push_back("count.gt.TOTAL");
+
+    resultAl.push_back(totalAl);
+  	namesAl.push_back("count.al.TOTAL");
+
+  }
+
+  std::vector<double> resVal;
+  std::vector<std::string> resNames;
+
+  if (genotypic && allelic) {
+  	
+  	resVal.reserve(resultGt.size() + resultAl.size()); // preallocate memory
+    resVal.insert(resVal.end(), resultGt.begin(), resultGt.end());
+    resVal.insert(resVal.end(), resultAl.begin(), resultAl.end());
+
+    resNames.reserve(namesGt.size() + namesGt.size()); // preallocate memory
+    resNames.insert(resNames.end(), namesGt.begin(), namesGt.end());
+    resNames.insert(resNames.end(), namesAl.begin(), namesAl.end());
+
+  } else if (genotypic) {
+    resVal = resultGt;
+    resNames = namesGt;
+  } else if (allelic) {
+    resVal = resultAl;
+    resNames = namesAl;
+  } else {
+    returnNas = true;
+  }
+
+  /*
+  std::ostringstream sstream;
+	sstream << returnNas;
+	std::string val = sstream.str();
+	Rcout << val << "\n";
+  */
+
+  NumericVector result(1, NA_REAL);
+  
+  if(!returnNas && resVal.size() > 0) {
+  	result[0] = resVal[0];
+  	if (resVal.size() > 1) {
+  		for (unsigned int i = 1; i < resVal.size(); i++) {
+  			result.push_back(resVal[i]);
+  		}
+  	}
+  	result.attr("names") = resNames;
+  }
+
+  return(result);
+
+}

@@ -14,7 +14,10 @@ Imports: vcfR,
     stats,
     lubridate,
     dplyr,
-    tibble
+    tibble,
+    Rcpp
+LinkingTo: 
+	Rcpp
 Suggests: 
     testthat,
     covr
