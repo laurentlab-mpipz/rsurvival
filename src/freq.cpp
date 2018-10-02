@@ -11,34 +11,10 @@ using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 
-NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute, 
+NumericVector ShapeCountsCpp(std::vector<int> counts, std::vector<bool> absolute, 
 													bool totals = true, bool genotypic = true, bool allelic = false,
 												  bool percentage = false, bool extrapolateFreq = true,
 												  double minFreqAl = -1, double minFreqGt = -1) {
-
-	int nColumns(variant.size()); // number of samples in variant
-	std::vector<std::string> vect_variant(nColumns);
-	for (int i = 0; i < nColumns; i++) {
-		std::vector<std::string> column = variant[i];
-		vect_variant[i] = column[0]; // read the 1st row of dataframe 'variant'
-	}
-
-	std::vector<double> counts(5,0); // counts of each genotype in variant
-	std::string gt;
-
-	for (unsigned int i = 0; i < variant.size(); i++) {
-		gt = vect_variant[i];
-		if (std::regex_match(gt, std::regex("0.*0"))) {
-			counts[0]++;
-		} else if (std::regex_match(gt, std::regex("1.*0")) 
-							 || std::regex_match(gt, std::regex("0.*1"))) {
-			counts[1]++;
-		} else if (std::regex_match(gt, std::regex("1.*1"))) {
-			counts[2]++;
-		} else {
-			counts[3]++;
-		}
-	}
 
 	if (absolute.size() == 1) {
 		absolute[1] = absolute[0];
@@ -49,7 +25,7 @@ NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute,
   
   // calculate frequencies of alleles -----------------------------------------
 
-  std::vector<double> countsAl(3);
+  std::vector<int> countsAl(3);
   int totalAl(0);
 
   countsAl[0] = counts[0] * 2 + counts[1];
@@ -63,14 +39,14 @@ NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute,
 
   	int denumAl(countsAl[0] + countsAl[1]);
  		for (unsigned int i = 0; i < freqsAl.size() - 1; i++) {
- 			freqsAl[i] = countsAl[i] / denumAl; // extrap. freq of REF and ALT 
+ 			freqsAl[i] = static_cast<double>(countsAl[i]) / denumAl; // extrap. freq of REF and ALT 
  		}
-  	freqsAl.back() = countsAl.back() / totalAl; // freq of missing values
+  	freqsAl.back() = static_cast<double>(countsAl.back()) / totalAl; // freq of missing values
 
   } else {
 
  		for (unsigned int i = 0; i < freqsAl.size(); i++) {
- 			freqsAl[i] = countsAl[i] / totalAl;
+ 			freqsAl[i] = static_cast<double>(countsAl[i]) / totalAl;
  		}
 
   }
@@ -85,14 +61,14 @@ NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute,
 
   	int denumGt(counts[0] + counts[1] + counts[2]);
  		for (unsigned int i = 0; i < freqsGt.size() - 1; i++) {
- 			freqsGt[i] = counts[i] / denumGt; // extrap. freq of HREF, HETRO and HALT
+ 			freqsGt[i] = static_cast<double>(counts[i]) / denumGt; // extrap. freq of HREF, HETRO and HALT
  		}
-  	freqsGt[3] = counts[3] / totalGt; // freq of missing values
+  	freqsGt[3] = static_cast<double>(counts[3]) / totalGt; // freq of missing values
   
   } else {
  		
  		for (unsigned int i = 0; i < freqsGt.size(); i++) {
- 			freqsGt[i] = counts[i] / totalGt;
+ 			freqsGt[i] = static_cast<double>(counts[i]) / totalGt;
  		}
 
   }
@@ -127,7 +103,8 @@ NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute,
  		}
   } else {
   	prefixGt = "count.";
-  	resultGt = counts;
+  	std::vector<double> countsDouble(counts.begin(), counts.end());
+  	resultGt = countsDouble;
   	resultGt.pop_back();
   }
 
@@ -145,23 +122,21 @@ NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute,
  		}
   } else {
   	prefixAl = "count.";
-  	resultAl = countsAl;
+  	std::vector<double> countsAlDouble(countsAl.begin(), countsAl.end());
+  	resultAl = countsAlDouble;
   }
 
 
  	// build titles for each frequencies returned -------------------------------
 
- 	std::vector<std::string> namesGt;
- 	std::vector<std::string> namesAl;
+ 	std::vector<std::string> namesGt = {prefixGt + "gt.HOMOREF",
+ 																			prefixGt + "gt.HETERO",
+ 																			prefixGt + "gt.HOMOALT",
+ 																			prefixGt + "gt.MISSVAL"};
 
- 	namesGt.push_back(prefixGt + "gt.HOMOREF");
-  namesGt.push_back(prefixGt + "gt.HETERO");
- 	namesGt.push_back(prefixGt + "gt.HOMOALT");
- 	namesGt.push_back(prefixGt + "gt.MISSVAL");
-
- 	namesAl.push_back(prefixAl + "al.REF");
- 	namesAl.push_back(prefixAl + "al.ALT");
- 	namesAl.push_back(prefixAl + "al.MISSVAL");
+ 	std::vector<std::string> namesAl = {prefixAl + "al.REF",
+ 																		  prefixAl + "al.ALT",
+ 																		  prefixAl + "al.MISSVAL"};
 
   // concatenate results if needed --------------------------------------------
 
@@ -180,11 +155,11 @@ NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute,
 
   if (genotypic && allelic) {
   	
-  	resVal.reserve(resultGt.size() + resultAl.size()); // preallocate memory
+  	//resVal.reserve(resultGt.size() + resultAl.size()); // preallocate memory
     resVal.insert(resVal.end(), resultGt.begin(), resultGt.end());
     resVal.insert(resVal.end(), resultAl.begin(), resultAl.end());
 
-    resNames.reserve(namesGt.size() + namesGt.size()); // preallocate memory
+    //resNames.reserve(namesGt.size() + namesGt.size()); // preallocate memory
     resNames.insert(resNames.end(), namesGt.begin(), namesGt.end());
     resNames.insert(resNames.end(), namesAl.begin(), namesAl.end());
 

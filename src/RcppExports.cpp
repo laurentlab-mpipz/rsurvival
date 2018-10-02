@@ -5,13 +5,13 @@
 
 using namespace Rcpp;
 
-// ProcessFreq
-NumericVector ProcessFreq(DataFrame variant, std::vector<bool> absolute, bool totals, bool genotypic, bool allelic, bool percentage, bool extrapolateFreq, double minFreqAl, double minFreqGt);
-RcppExport SEXP _rsurvival_ProcessFreq(SEXP variantSEXP, SEXP absoluteSEXP, SEXP totalsSEXP, SEXP genotypicSEXP, SEXP allelicSEXP, SEXP percentageSEXP, SEXP extrapolateFreqSEXP, SEXP minFreqAlSEXP, SEXP minFreqGtSEXP) {
+// ShapeCountsCpp
+NumericVector ShapeCountsCpp(std::vector<int> counts, std::vector<bool> absolute, bool totals, bool genotypic, bool allelic, bool percentage, bool extrapolateFreq, double minFreqAl, double minFreqGt);
+RcppExport SEXP _rsurvival_ShapeCountsCpp(SEXP countsSEXP, SEXP absoluteSEXP, SEXP totalsSEXP, SEXP genotypicSEXP, SEXP allelicSEXP, SEXP percentageSEXP, SEXP extrapolateFreqSEXP, SEXP minFreqAlSEXP, SEXP minFreqGtSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< DataFrame >::type variant(variantSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type counts(countsSEXP);
     Rcpp::traits::input_parameter< std::vector<bool> >::type absolute(absoluteSEXP);
     Rcpp::traits::input_parameter< bool >::type totals(totalsSEXP);
     Rcpp::traits::input_parameter< bool >::type genotypic(genotypicSEXP);
@@ -20,13 +20,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type extrapolateFreq(extrapolateFreqSEXP);
     Rcpp::traits::input_parameter< double >::type minFreqAl(minFreqAlSEXP);
     Rcpp::traits::input_parameter< double >::type minFreqGt(minFreqGtSEXP);
-    rcpp_result_gen = Rcpp::wrap(ProcessFreq(variant, absolute, totals, genotypic, allelic, percentage, extrapolateFreq, minFreqAl, minFreqGt));
+    rcpp_result_gen = Rcpp::wrap(ShapeCountsCpp(counts, absolute, totals, genotypic, allelic, percentage, extrapolateFreq, minFreqAl, minFreqGt));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rsurvival_ProcessFreq", (DL_FUNC) &_rsurvival_ProcessFreq, 9},
+    {"_rsurvival_ShapeCountsCpp", (DL_FUNC) &_rsurvival_ShapeCountsCpp, 9},
     {NULL, NULL, 0}
 };
 
