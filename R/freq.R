@@ -81,19 +81,19 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 
   result <- t(result)
 
-  if (!is.null(min.freq.gt) || !is.null(min.freq.al)) {
-    # filter the variants without NA frequencies
-    # this appends when a freq is lower than min.freq.al or min.freq.gt
-    filter <- apply(result, MARGIN = 1,
-                    FUN = function(x) {
-                      return(!as.logical(sum(is.na(x))))
-                    }
-              )
-    if (sum(!filter) != 0){
-      result <- result[filter, ]
-    }
-    #result <- result[!as.logical(sum(is.na(result[, 1])))]
-  }
+  # if (!is.null(min.freq.gt) || !is.null(min.freq.al)) {
+  #   # filter the variants without NA frequencies
+  #   # this appends when a freq is lower than min.freq.al or min.freq.gt
+  #   filter <- apply(result, MARGIN = 1,
+  #                   FUN = function(x) {
+  #                     return(!as.logical(sum(is.na(x))))
+  #                   }
+  #             )
+  #   if (sum(!filter) != 0){
+  #     result <- result[filter, ]
+  #   }
+  #   #result <- result[!as.logical(sum(is.na(result[, 1])))]
+  # }
 
   if(is.character(backup.path)){
     utils::write.csv(result, backup.path) # write to file
@@ -154,7 +154,9 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                             extrapolate.freq = TRUE, totals = TRUE,
                             min.freq.gt = NULL, min.freq.al = NULL) {
 
-  levels.list <- list(HOMOREF = c("0/0", "0|0"), HETERO = c("1/0", "1|0", "0/1", "0|1"), HOMOALT = c("1/1", "1|1"), NA)
+  levels.list <- list(HOMOREF = c("0/0", "0|0"),
+                      HETERO = c("1/0", "1|0", "0/1", "0|1"),
+                      HOMOALT = c("1/1", "1|1"), NA)
   fact <- factor(variant, order = TRUE, exclude = NULL)
   levels(fact) <- levels.list
   counts = as.vector(table(fact))
@@ -167,7 +169,10 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
     min.freq.al = -1
   }
 
-  result <- ShapeCountsCpp(counts, absolute, genotypic = genotypic, allelic = allelic,  percentage = percentage, extrapolateFreq = extrapolate.freq, totals = totals, minFreqGt = min.freq.gt, minFreqAl = min.freq.al)
+  result <- ShapeCountsCpp(counts, absolute, genotypic = genotypic,
+                           allelic = allelic,  percentage = percentage,
+                           extrapolateFreq = extrapolate.freq, totals = totals,
+                           minFreqGt = min.freq.gt, minFreqAl = min.freq.al)
 
   return(result)
 
