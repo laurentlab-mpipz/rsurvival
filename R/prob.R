@@ -76,15 +76,9 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
 
     sel.odds <- 1 / pred.odds
 
-    homo.odds     <- c(sel.odds[1], sel.odds[3])
-    min.homo.odds <- min(homo.odds)
-    sel.odds      <- (1 / min.homo.odds) * sel.odds # set min w to 1
-    homo.odds     <- c(sel.odds[1], sel.odds[3])
-    max.homo.odds <- max(homo.odds)
-    hetero.odd    <- sel.odds[2]
-
-    s <- max.homo.odds - 1
-    h <- (hetero.odd - 1) / s
+    sel.params <- ConvertOddsToSH(sel.odds)
+    s <- sel.params$s
+    h <- sel.params$h
 
     # distribution in survivors population
     x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
@@ -172,7 +166,6 @@ CalcOddsPredation <- function(freq.alive, freq.all, map.alive = NULL,
     m  <- freq.all[c(id.all$homo.ref, id.all$hetero, id.all$homo.alt)] 
     # number of dead samples with valid data
     n  <- freq.dead[id.dead$total] - freq.dead[id.dead$missval]
-
 
     # replace 0s with non-zero values
     mu[mu == 0] <- 10^(-12)

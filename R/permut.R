@@ -64,7 +64,7 @@ PermutRandSurv <- function(gt, survival, odded.lives = NULL,
 
   } 
 
-  probs <- AnalyseExpt(gt, survival, min.freq.al = 0.1, deltas = FALSE)
+  probs  <- AnalyseExpt(gt, survival, min.freq.al = 0.1, deltas = FALSE)
   result <- probs
 
   return(result)
