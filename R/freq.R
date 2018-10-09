@@ -358,6 +358,7 @@ FindIdsAlFreqs <- function(freq){
 
 }
 
+#' @export
 
 IdentifyGt <- function(variant){
 
@@ -370,6 +371,7 @@ IdentifyGt <- function(variant){
 
 }
 
+#' @export
 
 SortSamplesVariant <- function(variants, ommit.nas = FALSE){
 
@@ -426,6 +428,8 @@ SortSamplesVariant <- function(variants, ommit.nas = FALSE){
   return(result)
 
 }
+
+#' @export
 
 CalcFreqMultiVariant <- function(variants, ommit.nas = FALSE){
 
