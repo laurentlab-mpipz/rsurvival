@@ -5,3 +5,15 @@ ShapeCountsCpp <- function(counts, absolute, totals = TRUE, genotypic = TRUE, al
     .Call('_rsurvival_ShapeCountsCpp', PACKAGE = 'rsurvival', counts, absolute, totals, genotypic, allelic, percentage, extrapolateFreq, minFreqAl, minFreqGt)
 }
 
+CheapDataFrameBuilder <- function(a) {
+    .Call('_rsurvival_CheapDataFrameBuilder', PACKAGE = 'rsurvival', a)
+}
+
+CalcFreqCpp <- function(gt, absolute, totals = TRUE, genotypic = TRUE, allelic = FALSE, percentage = FALSE, extrapolateFreq = TRUE, minFreqAl = -1, minFreqGt = -1) {
+    .Call('_rsurvival_CalcFreqCpp', PACKAGE = 'rsurvival', gt, absolute, totals, genotypic, allelic, percentage, extrapolateFreq, minFreqAl, minFreqGt)
+}
+
+CalcProbCpp <- function(counts, absolute, totals = TRUE, genotypic = TRUE, allelic = FALSE, percentage = FALSE, extrapolateFreq = TRUE, minFreqAl = -1, minFreqGt = -1) {
+    .Call('_rsurvival_CalcProbCpp', PACKAGE = 'rsurvival', counts, absolute, totals, genotypic, allelic, percentage, extrapolateFreq, minFreqAl, minFreqGt)
+}
+

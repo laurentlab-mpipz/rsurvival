@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <omp.h>
 #include <regex>
 
 using namespace Rcpp;
@@ -193,5 +194,94 @@ NumericVector ShapeCountsCpp(std::vector<int> counts, std::vector<bool> absolute
   }
 
   return(result);
+
+}
+
+
+
+
+//' Multiply a number by two
+//' 
+//' @param x A single integer.
+//' @param y A single integer.
+//' @export
+// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::export]]
+
+
+
+
+List CheapDataFrameBuilder(List a) {
+
+    List returned_frame = clone(a);
+    GenericVector sample_row = returned_frame(0);
+
+    StringVector row_names(sample_row.length());
+    for (int i = 0; i < sample_row.length(); ++i) {
+        char name[5];
+        //sprintf(&(name[0]), "%d", i);
+        row_names(i) = name;
+    }
+    returned_frame.attr("row.names") = row_names;
+
+    StringVector col_names(returned_frame.length());
+    for (int j = 0; j < returned_frame.length(); ++j) {
+        char name[6];
+        //sprintf(&(name[0]), "X.%d", j);
+        col_names(j) = name;
+    }
+    returned_frame.attr("names") = col_names;
+    returned_frame.attr("class") = "data.frame";
+
+    return returned_frame;
+
+}
+
+//' Multiply a number by two
+//' 
+//' @param x A single integer.
+//' @param y A single integer.
+//' @export
+// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::export]]
+
+DataFrame CalcFreqCpp(DataFrame gt, std::vector<bool> absolute, 
+                          bool totals = true, bool genotypic = true, bool allelic = false,
+                          bool percentage = false, bool extrapolateFreq = true,
+                          double minFreqAl = -1, double minFreqGt = -1) {
+
+  const int nbVariants(gt.nrow());
+  /*
+  const int nbSamples(gt.ncol());
+  const unsigned zero(0);
+  */
+
+  DataFrame variant;
+  CharacterVector column;
+  Function SliceDfRows("SliceDfRows");
+
+  //List emptyList(Dimension({1, nbSamples}), zero); 
+  //variant = DataFrame(emptyList);
+
+  for (int i = 0; i < nbVariants; i++) {
+
+    variant = SliceDfRows(gt, i + 1);
+  
+  /*
+  std::ostringstream sstream;
+  sstream << i;
+  std::string val = sstream.str();
+  Rcout << val << "\n";
+  
+    
+    for (int j = 0; j < nbSamples; j++) {
+      column = gt(j);
+      variant[0][j] = column(i);
+    }
+  */
+    
+  }
+
+  return(variant);
 
 }
