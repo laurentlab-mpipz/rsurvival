@@ -74,17 +74,11 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
       id.all <- FindIdsGtCounts(freq.all)
     }
 
-    sel.odds = 1 / pred.odds
+    sel.odds <- 1 / pred.odds
 
-    homo.odds     <- c(sel.odds[1], sel.odds[3])
-    min.homo.odds <- min(homo.odds)
-    sel.odds     <- (1 / min.homo.odds) * sel.odds # set min w to 1
-    homo.odds     <- c(sel.odds[1], sel.odds[3])
-    max.homo.odds <- max(homo.odds)
-    hetero.odd    <- sel.odds[2]
-
-    s <- max.homo.odds - 1
-    h <- (hetero.odd - 1) / s
+    sel.params <- ConvertOddsToSH(sel.odds)
+    s <- sel.params$s
+    h <- sel.params$h
 
     # distribution in survivors population
     x <- freq.alive[c(id.alive$homo.ref, id.alive$hetero, id.alive$homo.alt)]
@@ -173,9 +167,60 @@ CalcOddsPredation <- function(freq.alive, freq.all, map.alive = NULL,
     # number of dead samples with valid data
     n  <- freq.dead[id.dead$total] - freq.dead[id.dead$missval]
 
+    # replace 0s with non-zero values
+    mu[mu == 0] <- 10^(-12)
+    m[m == 0]   <- 10^(-12)
     # calculate odds
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
-                                                            m = m, n = n))
+                                                           m = m, n = n))
     return(result)
+
+}
+
+
+#' @export
+
+CalcProbsMultiVariant <- function(freq.alive, freq.all, map.alive, map.all){
+
+  freq.dead <- freq.all - freq.alive
+
+  # distribution of dead samples
+  mu <- freq.dead
+  # distribution of original population
+  m  <- freq.all 
+  # number of dead samples with valid data
+  n  <- sum(freq.dead)
+
+  # replace 0s with non-zero values
+  mu[mu == 0] <- 10^(-12)
+  m[m == 0]   <- 10^(-12) # .Machine$double.xmin
+    print(mu)
+  pred.odds <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
+                                                       m = m,
+                                                       n = n))
+
+  print(pred.odds)
+
+
+    sel.odds <- 1 / pred.odds
+
+    # distribution in survivors population
+    x <- freq.alive # [c(map.alive[c(-length(map.alive), -length(map.alive) + 1)])]
+    # distribution in original population
+    m <- freq.all # [c(map.all[c(-length(map.all), -length(map.all) + 1)])]
+    # nb of survivivor samples with valid data
+    n <- sum(freq.alive) # [map.alive[length(map.alive)]] - freq.alive[map.alive[length(map.alive)]]
+
+    prob.sel     <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
+                                          odds = 1 / pred.odds)
+    prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
+                                              odds = rep(1, length(pred.odds)))
+
+    lrt     <- 2 * log(prob.sel / prob.neutral)
+    p.value <- 1 - stats::pchisq(q = lrt, df = 2)
+    result  <- c(prob.neutral, prob.sel, lrt, p.value)
+
+  names(result) <- c("p.neutral", "p.select",  "lrt", "p.value")
+  return(result)
 
 }

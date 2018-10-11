@@ -152,7 +152,8 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                             absolute = TRUE, percentage = FALSE,
                             extrapolate.freq = TRUE, totals = TRUE,
-                            min.freq.gt = NULL, min.freq.al = NULL) {
+                            min.freq.gt = NULL, min.freq.al = NULL,
+                            include.ids = FALSE) {
 
   levels.list <- list(HOMOREF = c("0/0", "0|0"),
                       HETERO = c("1/0", "1|0", "0/1", "0|1"),
@@ -251,7 +252,7 @@ ShapeCountsR <- function(variant, genotypic = TRUE, allelic = FALSE,
   result    <- NULL 
   return.na <- FALSE
 
-  if (length(absolute) == 1){
+  if (length(absolute) == 1) {
     absolute <- rep(absolute, 2)
   }
 
@@ -280,6 +281,7 @@ ShapeCountsR <- function(variant, genotypic = TRUE, allelic = FALSE,
 
   counts.gt <- c(counts[1], counts[2], counts[3], counts[4])
   total.gt  <- sum(counts.gt)
+
   if (extrapolate.freq) {
     freqs.gt  <- c(counts.gt[1] / sum(counts.gt[1:3]),
                    counts.gt[2] / sum(counts.gt[1:3]),
@@ -375,6 +377,154 @@ ShapeCountsR <- function(variant, genotypic = TRUE, allelic = FALSE,
   } else {
     result <- NULL
   }
+
+  if (include.ids) {
+    result <- list("freq" = result, "ids" = ids)
+  }
+
+  return(result)
+
+}
+
+
+#' A function to find the ids of counts.gt columns in a frequency matrix.
+#'
+#' @param freq the absolute frequency matrix
+#'
+#' @return 
+#' A list of integers containing ids of specific columns. Items names are :
+#' "homo.ref", "hetero", "homo.alt", "missval", "total". The value are the 
+#' corresponding column ids.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' FindIdsGtCounts(freq)
+#' }
+
+FindIdsGtCounts <- function(freq){
+
+  # index of the frequencies of the genotypes
+  homo.ref <- grep("^.*count\\.gt\\.HOMOREF$", names(freq))
+  hetero   <- grep("^.*count\\.gt\\.HETERO$", names(freq))
+  homo.alt <- grep("^.*count\\.gt\\.HOMOALT$", names(freq))
+  missval  <- grep("^.*count\\.gt\\.MISSVAL$", names(freq))
+  total    <- grep("^.*count\\.gt\\.TOTAL$", names(freq))
+
+  result <- list("homo.ref" = homo.ref, "hetero" = hetero,
+                 "homo.alt" = homo.alt, "missval" = missval, "total"= total)
+
+  return(result)
+
+}
+
+#' A function to find the ids of freq.al columns in a frequency matrix.
+#'
+#' @param freq the realtive frequency matrix
+#'
+#' @return 
+#' A list of integers containing ids of specific columns. Items names are :
+#' "ref", "alt", "missval". The value are the corresponding column ids.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' FindIdsAlFeqs(freq)
+#' }
+
+FindIdsAlFreqs <- function(freq){
+
+  # index of the frequencies of the genotypes
+  ref <- grep("^.*freq\\.al\\.REF$", names(freq))
+  alt <- grep("^.*freq\\.al\\.ALT$", names(freq))
+  missval  <- grep("^.*freq\\.al\\.MISSVAL$", names(freq))
+
+  result <- list("ref" = ref, "alt" = alt, "missval" = missval)
+
+  return(result)
+
+}
+
+#' @export
+
+IdentifyGt <- function(variant){
+
+  result <- list("HOMOREF" = grep("0.*0", variant),
+           "HETERO" = grep("0.*1|1.*0", variant),
+           "HOMOALT" = grep("1.*1",variant),
+           "MISSVAL" = which(is.na(variant)))
+
+  return(result)
+
+}
+
+#' @export
+
+SortSamplesVariant <- function(variants, ommit.nas = FALSE){
+
+  result     <- NULL
+  n.variants <- nrow(variants)
+  names      <- names(IdentifyGt(SliceDfRows(variants, 1)))
+
+  if (n.variants == 1) {
+
+    ids   <- IdentifyGt(SliceDfRows(variants, 1))
+    names <- names(ids)
+    gt    <- lapply(ids,
+                    FUN = function(x){
+                      SliceDfColumns(variants, x)
+                    })
+
+    result <- gt
+
+  } else {
+
+    for (i in 1:n.variants) {
+
+      gt <- SortSamplesVariant(SliceDfRows(variants, i))
+      names(gt) <- paste("VAR", i, "_", names(gt), sep = "")
+
+      if (length(result)){
+
+        gt <- lapply(result,
+                     FUN = function(x){
+                       res.x <- lapply(gt,
+                                       FUN = function(y){
+                                         filter <- colnames(x) %in% colnames(y)
+                                         res.y  <- SliceDfColumns(x, filter)
+                                       })
+                     })
+
+        gt <- unlist(gt, recursive = FALSE)
+
+      }
+
+      result <- c(gt)
+
+    }
+
+  }
+
+  if (ommit.nas) {
+
+    filter <- !grepl("MISSVAL", names(result))
+    result <- result[filter]
+  
+  }
+
+  return(result)
+
+}
+
+#' @export
+
+CalcFreqMultiVariant <- function(variants, ommit.nas = FALSE){
+
+  sorted <- SortSamplesVariant(variants, ommit.nas = ommit.nas)
+  result <- unlist(lapply(sorted, FUN = length))
+  names(result) <- paste("count.gt.", names(result), sep = "")
 
   return(result)
 
