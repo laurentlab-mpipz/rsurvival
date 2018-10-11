@@ -273,7 +273,6 @@ DataFrame CalcFreqCpp(DataFrame gt, std::vector<bool> absolute,
   std::string val = sstream.str();
   Rcout << val << "\n";
   
-    
     for (int j = 0; j < nbSamples; j++) {
       column = gt(j);
       variant[0][j] = column(i);
