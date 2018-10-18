@@ -5,19 +5,32 @@
 \title{A function to find the ids of counts.gt columns in a frequency matrix.}
 \usage{
 FindIdsGtCounts(freq)
+
+FindIdsGtCounts(freq)
 }
 \arguments{
+\item{freq}{the absolute frequency matrix}
+
 \item{freq}{the absolute frequency matrix}
 }
 \value{
 A list of integers containing ids of specific columns. Items names are :
 "homo.ref", "hetero", "homo.alt", "missval", "total". The value are the 
 corresponding column ids.
+
+A list of integers containing ids of specific columns. Items names are :
+"homo.ref", "hetero", "homo.alt", "missval", "total". The value are the 
+corresponding column ids.
 }
 \description{
 A function to find the ids of counts.gt columns in a frequency matrix.
+
+A function to find the ids of counts.gt columns in a frequency matrix.
 }
 \examples{
+\dontrun{
+FindIdsGtCounts(freq)
+}
 \dontrun{
 FindIdsGtCounts(freq)
 }

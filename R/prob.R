@@ -94,6 +94,7 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
 
     lrt     <- 2 * log(prob.sel / prob.neutral)
     p.value <- 1 - stats::pchisq(q = lrt, df = 2)
+    p.value <- p.adjust(p.value, method = "fdr")
     result  <- c(sel.odds, s, h, prob.neutral, prob.sel, lrt, p.value)
 
   } else {
@@ -174,53 +175,5 @@ CalcOddsPredation <- function(freq.alive, freq.all, map.alive = NULL,
     result <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
                                                            m = m, n = n))
     return(result)
-
-}
-
-
-#' @export
-
-CalcProbsMultiVariant <- function(freq.alive, freq.all, map.alive, map.all){
-
-  freq.dead <- freq.all - freq.alive
-
-  # distribution of dead samples
-  mu <- freq.dead
-  # distribution of original population
-  m  <- freq.all 
-  # number of dead samples with valid data
-  n  <- sum(freq.dead)
-
-  # replace 0s with non-zero values
-  mu[mu == 0] <- 10^(-12)
-  m[m == 0]   <- 10^(-12) # .Machine$double.xmin
-    print(mu)
-  pred.odds <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
-                                                       m = m,
-                                                       n = n))
-
-  print(pred.odds)
-
-
-    sel.odds <- 1 / pred.odds
-
-    # distribution in survivors population
-    x <- freq.alive # [c(map.alive[c(-length(map.alive), -length(map.alive) + 1)])]
-    # distribution in original population
-    m <- freq.all # [c(map.all[c(-length(map.all), -length(map.all) + 1)])]
-    # nb of survivivor samples with valid data
-    n <- sum(freq.alive) # [map.alive[length(map.alive)]] - freq.alive[map.alive[length(map.alive)]]
-
-    prob.sel     <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
-                                          odds = 1 / pred.odds)
-    prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
-                                              odds = rep(1, length(pred.odds)))
-
-    lrt     <- 2 * log(prob.sel / prob.neutral)
-    p.value <- 1 - stats::pchisq(q = lrt, df = 2)
-    result  <- c(prob.neutral, prob.sel, lrt, p.value)
-
-  names(result) <- c("p.neutral", "p.select",  "lrt", "p.value")
-  return(result)
 
 }

@@ -6,13 +6,11 @@
 of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
-AnalyseExpt(gt, survival, population = NULL, min.freq.al = NULL,
+AnalyseExpt(lka, survival, population = NULL, min.freq.al = NULL,
   location.cols = TRUE, deltas = TRUE, p.values = TRUE,
   genotypic = FALSE, backup.path = NULL)
 }
 \arguments{
-\item{gt}{A genotype data frame of your original population}
-
 \item{survival}{A logical vector. TRUE survived the experiment, FALSE died}
 
 \item{population}{A logical vector. TRUE belong to pop1, FALSE belong to
@@ -35,6 +33,8 @@ the result, as well as frequencies}
 \item{genotypic}{If TRUE, will include counts of genotype in the result.}
 
 \item{backup.path}{Optionnal. A path where backup files can be stored}
+
+\item{gt}{A genotype data frame of your original population}
 }
 \value{
 A data frame of frequencies and probabilities from your experiment.

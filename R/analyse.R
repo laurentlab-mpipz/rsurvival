@@ -235,27 +235,28 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 #' AnalyseExpt(gt, survival, backup.path = "example.csv")
 #' }
 
-AnalyseExpt <- function(gt, survival, population = NULL, min.freq.al = NULL,
+AnalyseExpt <- function(lka, survival, population = NULL, min.freq.al = NULL,
                         location.cols = TRUE, deltas = TRUE, p.values = TRUE,
                         genotypic = FALSE, backup.path = NULL){
 
-  splitted.gt <- SplitGt(gt, survival)
-  gt.alive    <- splitted.gt$alive
-  gt.dead     <- splitted.gt$dead
-  gt.pop1     <- NULL
-  gt.pop2     <- NULL
+  # splitted.gt <- SplitGt(gt, survival)
+  # gt.alive    <- splitted.gt$alive
+  # gt.dead     <- splitted.gt$dead
+  # gt.pop1     <- NULL
+  # gt.pop2     <- NULL
 
-  if (is.logical(population)) {
-    gt.pop  <- SplitGt(gt, population)
-    gt.pop1 <- gt.pop$alive
-    gt.pop2 <- gt.pop$dead 
-  }
+  # if (is.logical(population)) {
+  #   gt.pop  <- SplitGt(gt, population)
+  #   gt.pop1 <- gt.pop$alive
+  #   gt.pop2 <- gt.pop$dead 
+  # }
 
-  result <- AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = min.freq.al,
-                                location.cols = location.cols, deltas = deltas,
-                                p.values = p.values, genotypic = genotypic,
-                                gt.pop1 = gt.pop1, gt.pop2 = gt.pop2,
-                                backup.path = backup.path)
-  return(result)
+  # result <- AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = min.freq.al,
+  #                               location.cols = location.cols, deltas = deltas,
+  #                               p.values = p.values, genotypic = genotypic,
+  #                               gt.pop1 = gt.pop1, gt.pop2 = gt.pop2,
+  #                               backup.path = backup.path)
+  # return(result)
 
+  return("hallo")
 }

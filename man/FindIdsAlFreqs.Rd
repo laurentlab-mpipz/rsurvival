@@ -5,18 +5,30 @@
 \title{A function to find the ids of freq.al columns in a frequency matrix.}
 \usage{
 FindIdsAlFreqs(freq)
+
+FindIdsAlFreqs(freq)
 }
 \arguments{
+\item{freq}{the realtive frequency matrix}
+
 \item{freq}{the realtive frequency matrix}
 }
 \value{
 A list of integers containing ids of specific columns. Items names are :
 "ref", "alt", "missval". The value are the corresponding column ids.
+
+A list of integers containing ids of specific columns. Items names are :
+"ref", "alt", "missval". The value are the corresponding column ids.
 }
 \description{
 A function to find the ids of freq.al columns in a frequency matrix.
+
+A function to find the ids of freq.al columns in a frequency matrix.
 }
 \examples{
+\dontrun{
+FindIdsAlFeqs(freq)
+}
 \dontrun{
 FindIdsAlFeqs(freq)
 }

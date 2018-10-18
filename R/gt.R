@@ -311,7 +311,7 @@ SplitGt <- function(gt, survival, verbose = TRUE){
   }
 
   if (class(gt) != "data.frame" ) {
-    stop("Parameter gt must be a data.frame or a matrix")
+    stop("Parameter gt must be a dataframe or a matrix")
   }
 
   # number of alive samples
@@ -344,6 +344,18 @@ SplitGt <- function(gt, survival, verbose = TRUE){
 
   # $alive items correspond to a TRUE in the survival vector
   result <- list("alive" = alive, "dead" = dead) 
+
+  return(result)
+
+}
+
+ConvertVariantToFactors <- function(variant){
+
+  levels.list <- list(HOMOREF = c("0/0", "0|0"),
+                      HETERO = c("1/0", "1|0", "0/1", "0|1"),
+                      HOMOALT = c("1/1", "1|1"), NA)
+  result <- factor(variant, order = TRUE, exclude = NULL)
+  levels(result) <- levels.list
 
   return(result)
 

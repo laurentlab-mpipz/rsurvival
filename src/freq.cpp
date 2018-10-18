@@ -251,36 +251,30 @@ DataFrame CalcFreqCpp(DataFrame gt, std::vector<bool> absolute,
                           double minFreqAl = -1, double minFreqGt = -1) {
 
   const int nbVariants(gt.nrow());
-  /*
   const int nbSamples(gt.ncol());
   const unsigned zero(0);
-  */
+  const List emptyList(Dimension(1, nbSamples), zero);
 
-  DataFrame variant;
-  CharacterVector column;
-  Function SliceDfRows("SliceDfRows");
-
-  //List emptyList(Dimension({1, nbSamples}), zero); 
-  //variant = DataFrame(emptyList);
+  DataFrame variant(emptyList);
+  CharacterVector column(nbVariants);
+  CharacterVector temp(1);
 
   for (int i = 0; i < nbVariants; i++) {
 
-    variant = SliceDfRows(gt, i + 1);
-  
-  /*
-  std::ostringstream sstream;
-  sstream << i;
-  std::string val = sstream.str();
-  Rcout << val << "\n";
-  
     for (int j = 0; j < nbSamples; j++) {
       column = gt(j);
-      variant[0][j] = column(i);
+      temp(0) = column(i);
+      variant(j) = temp;
     }
-  */
-    
+
+
   }
 
   return(variant);
 
 }
+
+    /*** R
+    x <- 32
+    x
+    */

@@ -7,3 +7,5 @@ NULL
 .onUnload <- function (libpath) {
   library.dynam.unload("rsurvival", libpath)
 }
+
+"%dopar%" <- foreach::"%dopar%"
