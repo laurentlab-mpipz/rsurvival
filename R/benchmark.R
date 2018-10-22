@@ -1,12 +1,12 @@
 
 #' @export
 
-Benchmark <- function(gt, variant.name, s, h, nb.dead, n, verbose = TRUE,
+Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
                       shape = TRUE, max.cores = NULL) {
 
   message("Preparing : Generate survival vectors.")
 
-  surv <- GenerateSurvVector(gt[variant.name, ] , s, h, nb.dead, n)
+  surv <- GenerateSurvVector(gt[variant.name, ] , s, h, n.dead, n)
   ordered <- list(rep(NA, n))
   variant.names <- rownames(gt)
 
@@ -119,9 +119,9 @@ Benchmark <- function(gt, variant.name, s, h, nb.dead, n, verbose = TRUE,
 
 #' @export
 
-BenchmarkSH <- function(variant, s, h, nb.dead, n){
+BenchmarkSH <- function(variant, s, h, n.dead, n){
   
-  surv <- GenerateSurvVector(variant , s, h, nb.dead, n)
+  surv <- GenerateSurvVector(variant , s, h, n.dead, n)
 
   analysis <- apply(surv, MARGIN = 2,
                     FUN = function(x){
@@ -264,7 +264,7 @@ BenchmarkScan <- function(gt, variant.name, surv.ratio = 0.5, s = 2, h = 0.5, n.
     stop("Only one parameter can variate during a scan.")
   }
 
-  n.surv <- round(ncol(gt) * surv.ratio)
+  n.dead <- round(ncol(gt) * (1 / surv.ratio))
   result <- list(rep(NA, n.iter))
 
   if (len.r > 1) {
@@ -282,18 +282,22 @@ BenchmarkScan <- function(gt, variant.name, surv.ratio = 0.5, s = 2, h = 0.5, n.
 
   for (variation in variations) {
 
-    message("\n########## SITUATION ", i, " OUT OF ", length(variations), " ##########")
+    message("\n########## SITUATION ", i, " OUT OF ", length(variations),
+            " ##########")
 
 
     if (len.r > 1) {
-      result[i] <- list(Benchmark(gt, variant.name, s, h, variation, n.iter,
-                                shape = shape, max.cores = max.cores))
+      result[i] <- list(Benchmark(gt, variant.name, s = s, h = h,
+                                  surv.ratio = variation, n = n.iter,
+                                  shape = shape, max.cores = max.cores))
     } else if (len.s > 1) {
-      result[i] <- list(Benchmark(gt, variant.name, variation, h, n.surv, n.iter,
-                                shape = shape, max.cores = max.cores))
+      result[i] <- list(Benchmark(gt, variant.name, s = variation, h = h,
+                                  n.dead = n.dead, n = n.iter, shape = shape,
+                                  max.cores = max.cores))
     } else if (len.h > 1) {
-      result[i] <- list(Benchmark(gt, variant.name, s, variation, n.surv, n.iter,
-                                shape = shape, max.cores = max.cores))
+      result[i] <- list(Benchmark(gt, variant.name, s = s, h = variation,
+                                  n.dead = n.dead, n = n.iter, shape = shape,
+                                  max.cores = max.cores))
     } else {
       warning("No variations has been detected. Aborting.")
       return(NA)
