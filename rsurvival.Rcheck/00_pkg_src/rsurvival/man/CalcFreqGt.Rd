@@ -5,8 +5,8 @@
 \title{A function to count occurences of genotypes in a genotype matrix.}
 \usage{
 CalcFreqGt(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
-  percentage = FALSE, extrapolate.freq = TRUE, totals = TRUE,
-  backup.path = NULL, min.freq.gt = NULL, min.freq.al = NULL)
+  percentage = FALSE, totals = TRUE, backup.path = NULL,
+  min.freq.gt = NULL, min.freq.al = NULL)
 }
 \arguments{
 \item{gt}{The genotype matrix to analyse}
@@ -23,10 +23,6 @@ relative frequencies}
 \item{percentage}{If TRUE and absolute is FALSE, show the relative
 frequencies in percentage. Default is FALSE.}
 
-\item{extrapolate.freq}{If TRUE (default), the relative frequencies of the 
-signinficant data will be extrapolated. (i.e. freq.al.REF + freq.al.ALT = 1,
-even if there are missing datas}
-
 \item{totals}{If TRUE (default), returned vector will include totals.}
 
 \item{backup.path}{Optional. Path to the CSV backup file the result must be
@@ -42,7 +38,7 @@ condition will be omitted. Default is NULL (disabled).}
 }
 \value{
 A data frame of frequencies.
-Each row is a variant and each column is a calculated frequency. 
+Each row is a variant and each column is a calculated frequency.
 Column names depend on provided parameters.
 Typical column names would be "count_gt_HomoREF" (absolute frequency of homo
 REF genotype) or "freq_al_ALT" (relative frequency of ALT alleles).

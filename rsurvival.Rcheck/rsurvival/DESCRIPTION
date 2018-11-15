@@ -7,11 +7,11 @@ Depends: R (>= 3.4.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0.9000
+RoxygenNote: 6.1.1
 Imports: vcfR, stringr, BiasedUrn, stats, lubridate, dplyr, tibble
 Suggests: testthat, covr
 NeedsCompilation: no
-Packaged: 2018-09-26 09:29:06 UTC; travis
+Packaged: 2018-11-15 16:24:10 UTC; travis
 Author: Samuel Badion [aut, cre]
 Maintainer: Samuel Badion <samuel.badion@reseau.eseo.fr>
-Built: R 3.5.0; ; 2018-09-26 09:29:09 UTC; unix
+Built: R 3.5.1; ; 2018-11-15 16:24:12 UTC; unix

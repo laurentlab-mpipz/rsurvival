@@ -1,5 +1,5 @@
 
-R version 3.5.0 (2017-01-27) -- "Joy in Playing"
+R version 3.5.1 (2017-01-27) -- "Feather Spray"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -680,7 +680,7 @@ Type 'q()' to quit R.
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  0.232 0.024 0.256 0 0 
+Time elapsed:  0.247 0.02 0.268 0 0 
 > grDevices::dev.off()
 null device 
           1 

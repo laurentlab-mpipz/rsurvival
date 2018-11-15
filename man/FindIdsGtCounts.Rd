@@ -11,7 +11,7 @@ FindIdsGtCounts(freq)
 }
 \value{
 A list of integers containing ids of specific columns. Items names are :
-"homo.ref", "hetero", "homo.alt", "missval", "total". The value are the 
+"homo.ref", "hetero", "homo.alt", "missval", "total". The value are the
 corresponding column ids.
 }
 \description{

@@ -16,11 +16,9 @@ freq.allel.rel  <- CalcFreqVariant(gt[1, ], genotypic = FALSE, allelic = TRUE,
                                     absolute = FALSE)
 freq.allel.perc <- CalcFreqVariant(gt[1, ], genotypic = FALSE, allelic = TRUE,
                                     absolute = FALSE, percentage = TRUE)
-freq.al.noextra <- CalcFreqVariant(gt[1, ], genotypic = FALSE, allelic = TRUE,
-                                    absolute = FALSE, extrapolate = FALSE)
 
 CountMatchName <- function(freq, regex){
-  result <- sum(as.numeric(grepl(regex, names(freq))))   
+  result <- sum(as.numeric(grepl(regex, names(freq))))
 }
 
 test_that("CalcFreqVariant returns a vector", {
@@ -100,16 +98,7 @@ test_that("percentage values are correct", {
 
 })
 
-test_that("frequency values without extrapolation are correct", {
 
-  expect_equal(as.numeric(freq.al.noextra["freq.al.REF"]), 0.2111,
-               tolerance = tol)
-  expect_equal(as.numeric(freq.al.noextra["freq.al.ALT"]), 0.734,
-               tolerance = tol)
-  expect_equal(as.numeric(freq.al.noextra["freq.al.MISSVAL"]), 0.055,
-               tolerance = tol)
-
-})
 
 test_that("min.freq.gt option works", {
 
@@ -117,7 +106,7 @@ test_that("min.freq.gt option works", {
   full.of.values <- CalcFreqVariant(gt[1, ], min.freq.gt = 0.081)
 
   expect_equal(sum(is.na(full.of.nas)), length(full.of.nas))
-  expect_equal(sum(is.na(full.of.values)), 0) 
+  expect_equal(sum(is.na(full.of.values)), 0)
 
 })
 
@@ -127,7 +116,7 @@ test_that("min.freq.al option works", {
   full.of.values <- CalcFreqVariant(gt[1, ], min.freq.al = 0.21)
 
   expect_equal(sum(is.na(full.of.nas)), length(full.of.nas))
-  expect_equal(sum(is.na(full.of.values)), 0) 
+  expect_equal(sum(is.na(full.of.values)), 0)
 
 })
 

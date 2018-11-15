@@ -1,5 +1,5 @@
 
-R version 3.5.0 (2017-01-27) -- "Joy in Playing"
+R version 3.5.1 (2017-01-27) -- "Feather Spray"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -24,8 +24,8 @@ Read 3 items
 Read 0 items
 Read 3 items
 ══ testthat results  ═══════════════════════════════════════════════════════════
-OK: 194 SKIPPED: 0 FAILED: 0
+OK: 191 SKIPPED: 0 FAILED: 0
 > 
 > proc.time()
    user  system elapsed 
- 17.468   0.252  17.708 
+ 14.607   0.211  14.809 

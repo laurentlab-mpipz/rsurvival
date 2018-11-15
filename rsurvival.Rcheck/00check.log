@@ -1,5 +1,5 @@
 * using log directory ‘/home/travis/build/laurentlab-mpipz/rsurvival/rsurvival.Rcheck’
-* using R version 3.5.0 (2017-01-27)
+* using R version 3.5.1 (2017-01-27)
 * using platform: x86_64-pc-linux-gnu (64-bit)
 * using session charset: UTF-8
 * using options ‘--no-manual --as-cran’
@@ -48,6 +48,6 @@
 * checking examples ... OK
 * checking for unstated dependencies in ‘tests’ ... OK
 * checking tests ... OK
-  Running ‘testthat.R’ [18s/18s]
+  Running ‘testthat.R’ [15s/15s]
 * DONE
 Status: OK
