@@ -5,8 +5,8 @@
 \title{A function to count occurences of genotypes in a variant vector.}
 \usage{
 CalcFreqVariant(variant, genotypic = TRUE, allelic = FALSE,
-  absolute = TRUE, percentage = FALSE, extrapolate.freq = TRUE,
-  totals = TRUE, min.freq.gt = NULL, min.freq.al = NULL)
+  absolute = TRUE, percentage = FALSE, totals = TRUE,
+  min.freq.gt = NULL, min.freq.al = NULL)
 }
 \arguments{
 \item{variant}{The genotype matrix to analyse}
@@ -23,10 +23,6 @@ relative frequencies}
 \item{percentage}{If TRUE and absolute is FALSE, show the relative
 frequencies in percentage}
 
-\item{extrapolate.freq}{If TRUE (default), the relative frequencies of the 
-signinficant data will be extrapolated. (i.e. freq.al.REF + freq.al.ALT = 1,
-even if there are missing datas)}
-
 \item{totals}{If TRUE (default), returned vector will include totals.}
 
 \item{min.freq.gt}{Optional. Minimal value of relative frequency for each
@@ -39,7 +35,7 @@ condition, return NULL. Default is NULL (disabled).}
 }
 \value{
 A vector of frequencies.
-Each Item is a calculated frequency for this variant. 
+Each Item is a calculated frequency for this variant.
 Item names depend on provided parameters.
 Typical item names would be "count_gt_HomoREF" (absolute frequency of homo
 REF genotype) or "freq_al_ALT" (relative frequency of ALT alleles).
