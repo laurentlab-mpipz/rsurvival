@@ -6,7 +6,7 @@
 \usage{
 CalcFreqVariant(variant, genotypic = TRUE, allelic = FALSE,
   absolute = TRUE, percentage = FALSE, extrapolate.freq = TRUE,
-  totals = TRUE, min.freq.gt = NULL, min.freq.al = NULL,
+  totals = TRUE, min.freq.gt = 0, min.freq.al = 0,
   include.ids = FALSE)
 }
 \arguments{

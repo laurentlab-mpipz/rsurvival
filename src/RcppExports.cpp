@@ -25,32 +25,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // CheapDataFrameBuilder
-List CheapDataFrameBuilder(List a);
-RcppExport SEXP _rsurvival_CheapDataFrameBuilder(SEXP aSEXP) {
+List CheapDataFrameBuilder(List list);
+RcppExport SEXP _rsurvival_CheapDataFrameBuilder(SEXP listSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type a(aSEXP);
-    rcpp_result_gen = Rcpp::wrap(CheapDataFrameBuilder(a));
-    return rcpp_result_gen;
-END_RCPP
-}
-// CalcFreqCpp
-DataFrame CalcFreqCpp(DataFrame gt, std::vector<bool> absolute, bool totals, bool genotypic, bool allelic, bool percentage, bool extrapolateFreq, double minFreqAl, double minFreqGt);
-RcppExport SEXP _rsurvival_CalcFreqCpp(SEXP gtSEXP, SEXP absoluteSEXP, SEXP totalsSEXP, SEXP genotypicSEXP, SEXP allelicSEXP, SEXP percentageSEXP, SEXP extrapolateFreqSEXP, SEXP minFreqAlSEXP, SEXP minFreqGtSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< DataFrame >::type gt(gtSEXP);
-    Rcpp::traits::input_parameter< std::vector<bool> >::type absolute(absoluteSEXP);
-    Rcpp::traits::input_parameter< bool >::type totals(totalsSEXP);
-    Rcpp::traits::input_parameter< bool >::type genotypic(genotypicSEXP);
-    Rcpp::traits::input_parameter< bool >::type allelic(allelicSEXP);
-    Rcpp::traits::input_parameter< bool >::type percentage(percentageSEXP);
-    Rcpp::traits::input_parameter< bool >::type extrapolateFreq(extrapolateFreqSEXP);
-    Rcpp::traits::input_parameter< double >::type minFreqAl(minFreqAlSEXP);
-    Rcpp::traits::input_parameter< double >::type minFreqGt(minFreqGtSEXP);
-    rcpp_result_gen = Rcpp::wrap(CalcFreqCpp(gt, absolute, totals, genotypic, allelic, percentage, extrapolateFreq, minFreqAl, minFreqGt));
+    Rcpp::traits::input_parameter< List >::type list(listSEXP);
+    rcpp_result_gen = Rcpp::wrap(CheapDataFrameBuilder(list));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -77,7 +58,6 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_rsurvival_ShapeCountsCpp", (DL_FUNC) &_rsurvival_ShapeCountsCpp, 9},
     {"_rsurvival_CheapDataFrameBuilder", (DL_FUNC) &_rsurvival_CheapDataFrameBuilder, 1},
-    {"_rsurvival_CalcFreqCpp", (DL_FUNC) &_rsurvival_CalcFreqCpp, 9},
     {"_rsurvival_CalcProbCpp", (DL_FUNC) &_rsurvival_CalcProbCpp, 9},
     {NULL, NULL, 0}
 };

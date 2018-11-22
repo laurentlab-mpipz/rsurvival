@@ -8,32 +8,32 @@ test_that("ExtractGt returns a data frame", {
   expect_is(gt, "data.frame")
 })
 
-test_that("returned data frame contains strings", {
-  expect_is(gt[1,1], "character")
-  expect_is(gt[dim(gt)[1], dim(gt)[2]], "character")
+test_that("returned data frame contains factors", {
+  expect_is(gt[1,1], "factor")
+  expect_is(gt[dim(gt)[1], dim(gt)[2]], "factor")
 })
 
 test_that("dimensions of returned data frame are correct", {
   expect_equal(dim(gt), c(3109, 109))
-  expect_equal(sum(is.na(gt)), 23028)
+  expect_true(table(unlist(gt))["NA"] == 23028)
 })
 
 test_that("the min.depth setting works", {
   censored.gt <- ExtractGt(vcf, min.depth = 5)
   expect_equal(dim(censored.gt), c(3109, 109))
-  expect_equal(sum(is.na(censored.gt)), 162520)
+  expect_true(table(unlist(censored.gt))["NA"] == 162520)
 })
 
 test_that("the min.sample.qual setting works", {
   omitted.gt <- ExtractGt(vcf, min.sample.qual = 0.8)
   expect_equal(dim(omitted.gt), c(3109, 96))
-  expect_equal(sum(is.na(omitted.gt)), 11467)
+  expect_true(table(unlist(omited.gt))["NA"] == 11467)
 })
 
 test_that("the min.variant.qual setting works", {
   omitted.gt <- ExtractGt(vcf, min.variant.qual = 0.9)
   expect_equal(dim(omitted.gt), c(2264, 109))
-  expect_equal(sum(is.na(omitted.gt)), 10536)
+  expect_true(table(unlist(omited.gt))["NA"] == 10536)
 })
 
 test_that("the include.depth option include the depth matrix", {
@@ -71,7 +71,7 @@ test_that("error is thrown when min.variant.qual is not a numeric or NULL", {
 })
 
 test_that("warning is thrown when min.sample.qual is not between 0 and 1", {
-    expect_warning(ExtractGt(vcf, min.sample.qual = -1), "min.sample.qual")
+  expect_warning(ExtractGt(vcf, min.sample.qual = -1), "min.sample.qual")
   expect_warning(ExtractGt(vcf, min.sample.qual = 777), "min.sample.qual")
 })
 

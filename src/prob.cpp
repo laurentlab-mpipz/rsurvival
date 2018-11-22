@@ -3,11 +3,14 @@
 
 using namespace Rcpp;
 
-//' Multiply a number by two
+//' Calculate probabilities from frequencies.
+//' NOT WORKING YET.
 //' 
 //' @param x A single integer.
 //' @param y A single integer.
+//'
 //' @export
+//'
 // [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 

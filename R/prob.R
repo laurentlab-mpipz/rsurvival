@@ -88,23 +88,34 @@ CalcProbsSelection <- function(freq.alive, freq.all, map.alive = NULL,
     n <- freq.alive[id.alive$total] - freq.alive[id.alive$missval]
 
     prob.sel     <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
-                                          odds = 1 / pred.odds)
+                                             odds = 1 / pred.odds)
     prob.neutral <- BiasedUrn::dMWNCHypergeo(x = x, m = m, n = n,
-                                              odds = c(1,1,1))
+                                             odds = c(1,1,1))
 
     lrt     <- 2 * log(prob.sel / prob.neutral)
     p.value <- 1 - stats::pchisq(q = lrt, df = 2)
-    p.value <- p.adjust(p.value, method = "fdr")
     result  <- c(sel.odds, s, h, prob.neutral, prob.sel, lrt, p.value)
 
   } else {
-    result <- rep(NA, 9) # to ensure that the result always has the same length
+    result <- rep(NA, 9) # ensure that the result always has the same length
   }
-
   names(result) <- c("sel.odd.gt.HOMOREF", "sel.odd.gt.HETERO",
                       "sel.odd.gt.HOMOALT", "s", "h", "p.neutral", "p.select",  "lrt",
                       "p.value")
+  
   return(result)
+
+}
+
+#' ALREADY IMPLEMENTED IN rsurvival::AnalyseExpt() and rsurvival::AnalyseSplittedExpt() 
+#' @export
+AdjustPValue <- function(probs){
+
+  p.value <- probs[, "p.value"]
+  p.value <- stats::p.adjust(p.value, method = "fdr")
+  probs[, "p.value"] <- p.value
+
+  return(probs)
 
 }
 

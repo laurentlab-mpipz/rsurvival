@@ -93,7 +93,8 @@ ExtractGt <- function(vcf, min.depth = NULL, min.sample.qual = NULL,
   }
 
   gt <- data.frame(gt, stringsAsFactors = FALSE)
-  dp <- data.frame(gt, stringsAsFactors = FALSE)
+  dp <- data.frame(dp, stringsAsFactors = FALSE) 
+  gt <- ConvertGtToFactors(gt)
   
   if (include.depth) {
     result <- list("gt" = gt, "dp" = dp)
@@ -349,14 +350,69 @@ SplitGt <- function(gt, survival, verbose = TRUE){
 
 }
 
+
+#' A function to convert variant character data frame to variant factor data
+#' frame.
+#'
+#' @param variant a variant character data frame.
+#'
+#' @return 
+#' A variant data frame in which each genotype is a factor level.
+#' Supported codes are: "0/0", "0|0", "1/0", "1|0", "0/1", "0|1", "1/1", "1|1".
+#' 
+#' @seealso For a whole genotype data frame see
+#' \code{\link{ConvertGtToFactors}}
+#' 
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'  ConvertVariantToFactors (variant)
+#' }
+
 ConvertVariantToFactors <- function(variant){
 
   levels.list <- list(HOMOREF = c("0/0", "0|0"),
                       HETERO = c("1/0", "1|0", "0/1", "0|1"),
-                      HOMOALT = c("1/1", "1|1"), NA)
+                      HOMOALT = c("1/1", "1|1"))
   result <- factor(variant, order = TRUE, exclude = NULL)
   levels(result) <- levels.list
 
   return(result)
+
+}
+
+#' A function to convert genotype character data frame to variant factor data
+#' frame.
+#'
+#' @param gt a genotype character data frame.
+#'
+#' @return 
+#' A genotype data frame in which each genotype is a factor level.
+#' Supported codes are: "0/0", "0|0", "1/0", "1|0", "0/1", "0|1", "1/1", "1|1".
+#' 
+#' @seealso For a single variant data frame see
+#' \code{\link{ConvertVariantToFactors}}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'  ConvertGtToFactors(gt)
+#' }
+
+ConvertGtToFactors <- function(gt){
+  
+  factored.gt <- gt
+  levels.list <- list(HOMOREF = c("0/0", "0|0"),
+                      HETERO = c("1/0", "1|0", "0/1", "0|1"),
+                      HOMOALT = c("1/1", "1|1"), "NA" = NA)
+
+  for (i in 1:ncol(gt)) {
+    factored.gt[, i] <- factor(factored.gt[, i], order = TRUE, exclude = NULL)
+    levels(factored.gt[, i]) <- levels.list
+  }
+
+  return(factored.gt)
 
 }

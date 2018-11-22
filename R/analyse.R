@@ -15,7 +15,6 @@
 # Rsurvival. If not, see <https://www.gnu.org/licenses/>
 # -----------------------------------------------------------------------------
 
-
 #' A function to analyse a selection experiment, including observed frequencies
 #' of genotype and probabilities that they are due to random picking and
 #' positive selection.
@@ -30,7 +29,7 @@
 #' relative allelic frequencies after selection and before selection in the
 #' result. Positive value means that the allele is more common in the survivers
 #' population.
-#' @param p.values If TRUE (default), some probabilities will be included in
+#' @param prob If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
 #' @param genotypic If TRUE, will include counts of genotype in the result.
 #' @param gt.pop1 Optional. A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
@@ -56,13 +55,16 @@
 #' AnalyseSplittedExpt(gt.alive, gt.dead, backup.path = "example.csv")
 #' }
 
-AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
+AnalyseSplittedExpt <- function(gt.alive, gt.dead, max.p.value = 0.05,
+                                min.freq.al = 0,
                                 location.cols = TRUE, deltas = TRUE,
-                                p.values = TRUE, genotypic = FALSE,
+                                genotypic = FALSE,
+                                prob = TRUE,
                                 gt.pop1 = NULL, gt.pop2 = NULL,
                                 backup.path = NULL){
 
   # Calculate frequencies -----------------------------------------------------
+
   freq.alive <- CalcFreqGt(gt.alive, genotypic = TRUE, allelic = TRUE,
                             absolute = c(TRUE, FALSE))
   freq.all   <- CalcFreqGt(cbind(gt.alive, gt.dead), genotypic = TRUE,
@@ -71,11 +73,12 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
   freq.all   <- data.frame(freq.all)
 
   # Only keep rows in common --------------------------------------------------
-  filter.alive <- rownames(freq.alive) %in% rownames(freq.all)
+
+  filter.alive <- (rownames(freq.alive) %in% rownames(freq.all)) & !is.na(freq.alive[,1])
   if (sum(!filter.alive) > 0) {
     freq.alive <- freq.alive[filter.alive, ]
   }
-  filter.all <- rownames(freq.all) %in% rownames(freq.alive)
+  filter.all <- (rownames(freq.all) %in% rownames(freq.alive)) & !is.na(freq.all[,1])
   if (sum(!filter.all) > 0) {
     freq.all <- freq.all[filter.all, ]
   }
@@ -99,7 +102,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 
   # Remove variants with low allelic frequencies ------------------------------
 
-  if (is.numeric(min.freq.al)) {
+  if (min.freq.al > 0) {
 
       freq.al.ids <- c(map.al.all$ref, map.al.all$alt)
       filter <- !as.logical(rowSums(freq.all[, freq.al.ids] < min.freq.al,
@@ -148,7 +151,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 
   # Calculate probabilities ---------------------------------------------------
 
-  if (p.values) {
+  if (prob) {
 
     col.all  <- ncol(freq.alive) + 1
     col.end  <- ncol(freq.alive) + ncol(freq.all)
@@ -160,7 +163,9 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
                                             map.all = map.gt.all)
                       }
                 )
+    probs <- AdjustPValue
     freqs <- cbind(freqs, t(probs))
+    freqs <- AdjustPValue(freqs)
 
   }
 
@@ -214,7 +219,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 #' relative allelic frequencies after selection and before selection in the
 #' result. Positive value means that the allele is more common in the survivers
 #' population.
-#' @param p.values If TRUE (default), some probabilities will be included in
+#' @param prob If TRUE (default), some probabilities will be included in
 #' the result, as well as frequencies
 #' @param genotypic If TRUE, will include counts of genotype in the result.
 #' @param backup.path Optionnal. A path where backup files can be stored
@@ -235,28 +240,27 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, min.freq.al = NULL,
 #' AnalyseExpt(gt, survival, backup.path = "example.csv")
 #' }
 
-AnalyseExpt <- function(lka, survival, population = NULL, min.freq.al = NULL,
-                        location.cols = TRUE, deltas = TRUE, p.values = TRUE,
+AnalyseExpt <- function(gt, survival, population = NULL, min.freq.al = 0,
+                        location.cols = TRUE, deltas = TRUE, prob = TRUE,
                         genotypic = FALSE, backup.path = NULL){
 
-  # splitted.gt <- SplitGt(gt, survival)
-  # gt.alive    <- splitted.gt$alive
-  # gt.dead     <- splitted.gt$dead
-  # gt.pop1     <- NULL
-  # gt.pop2     <- NULL
+  splitted.gt <- SplitGt(gt, survival)
+  gt.alive    <- splitted.gt$alive
+  gt.dead     <- splitted.gt$dead
+  gt.pop1     <- NULL
+  gt.pop2     <- NULL
 
-  # if (is.logical(population)) {
-  #   gt.pop  <- SplitGt(gt, population)
-  #   gt.pop1 <- gt.pop$alive
-  #   gt.pop2 <- gt.pop$dead 
-  # }
+  if (is.logical(population)) {
+   gt.pop  <- SplitGt(gt, population)
+   gt.pop1 <- gt.pop$alive
+   gt.pop2 <- gt.pop$dead 
+  }
 
-  # result <- AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = min.freq.al,
-  #                               location.cols = location.cols, deltas = deltas,
-  #                               p.values = p.values, genotypic = genotypic,
-  #                               gt.pop1 = gt.pop1, gt.pop2 = gt.pop2,
-  #                               backup.path = backup.path)
-  # return(result)
+  result <- AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = min.freq.al,
+                               location.cols = location.cols, deltas = deltas,
+                               prob = prob, genotypic = genotypic,
+                               gt.pop1 = gt.pop1, gt.pop2 = gt.pop2,
+                               backup.path = backup.path)
+  return(result)
 
-  return("hallo")
 }

@@ -6,10 +6,9 @@
 of genotype and probabilities that they are due to random picking and
 positive selection.}
 \usage{
-AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = NULL,
-  location.cols = TRUE, deltas = TRUE, p.values = TRUE,
-  genotypic = FALSE, gt.pop1 = NULL, gt.pop2 = NULL,
-  backup.path = NULL)
+AnalyseSplittedExpt(gt.alive, gt.dead, min.freq.al = 0,
+  location.cols = TRUE, deltas = TRUE, genotypic = FALSE,
+  prob = TRUE, gt.pop1 = NULL, gt.pop2 = NULL, backup.path = NULL)
 }
 \arguments{
 \item{gt.alive}{A genotype data frame of the alive population}
@@ -27,10 +26,10 @@ relative allelic frequencies after selection and before selection in the
 result. Positive value means that the allele is more common in the survivers
 population.}
 
-\item{p.values}{If TRUE (default), some probabilities will be included in
-the result, as well as frequencies}
-
 \item{genotypic}{If TRUE, will include counts of genotype in the result.}
+
+\item{prob}{If TRUE (default), some probabilities will be included in
+the result, as well as frequencies}
 
 \item{gt.pop1}{Optional. A genotype matrix. If both \code{gt.pop1} and \code{gt.pop2}
 are set, will include the W&C FST estimation to the result.}

@@ -9,3 +9,11 @@ NULL
 }
 
 "%dopar%" <- foreach::"%dopar%"
+"%do%" <- foreach::"%do%"
+
+# Print when pocakge loads
+.onLoad <- function(...) {
+  packageStartupMessage("Welcome to rsurvival, enjoy your stay!")
+  packageStartupMessage("Can't believe it works...")
+  packageStartupMessage("Have you ever noticed Samuel is awesome?")
+}

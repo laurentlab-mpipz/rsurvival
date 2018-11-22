@@ -15,7 +15,27 @@
 # Rsurvival. If not, see <https://www.gnu.org/licenses/>
 # -----------------------------------------------------------------------------
 
+#' A function to count occurences of genotypes in multiple combined variant
+#' vectors. 
+#'
+#' @param variants A vector of variants, subset of a genotype matrix.
+#' @param group.nas If FALSE (default), each combinations with missing values
+#' will be considered on its own. Else, combinations with missing values will
+#' be grouped as one category.
+#'
+#' @return 
+#' A vector of frequencies.
+#' Each Item is a calculated frequency for this combination of variants.
+#'
+#' @seealso \code{\link{CalcFreqGt}} which calculate frequencies for a 
+#' genotype matrix.
+#'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' CalcFreqMultiVariant(variants, group.nas = TRUE)
+#' }
 
 CalcFreqMultiVariant <- function(variants, group.nas = FALSE){
 
@@ -29,7 +49,25 @@ CalcFreqMultiVariant <- function(variants, group.nas = FALSE){
 }
 
 
+#' A function to sort occurences of genotypes in multiple combined variant
+#' vectors.
+#'
+#' @param variants A vector of variants, subset of a genotype matrix.
+#' @param group.nas If FALSE (default), each combinations with missing values
+#' will be considered on its own. Else, combinations with missing values will
+#' be grouped as one category.
+#'
+#' @return 
+#' A list of vectors which contains the ids of categorized samples.
+#'
+#' @seealso \code{\link{CalcFreqMultiVariant}} which binds this function
+#'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' SortSamplesMultiVariant(variants, group.nas = TRUE)
+#' }
 
 SortSamplesVariant <- function(variants, group.nas = FALSE){
 
@@ -56,7 +94,6 @@ SortSamplesVariant <- function(variants, group.nas = FALSE){
       names(gt) <- paste("VAR", i, "_", names(gt), sep = "")
 
       if (length(result)){
-
         gt <- lapply(result,
                      FUN = function(x){
                        res.x <- lapply(gt,
@@ -65,9 +102,7 @@ SortSamplesVariant <- function(variants, group.nas = FALSE){
                                          res.y  <- SliceDfColumns(x, filter)
                                        })
                      })
-
         gt <- unlist(gt, recursive = FALSE)
-
       }
 
       result <- c(gt)
@@ -106,14 +141,16 @@ CalcProbsMultiVariant <- function(freq.alive, freq.all, map.alive, map.all){
 
   # replace 0s with non-zero values
   mu[mu == 0] <- 10^(-12)
-  m[m == 0]   <- 10^(-12) # .Machine$double.xmin
+  m[m == 0]   <- 10^(-12) # .Machine$double.xmin is to low
 
   pred.odds <- suppressWarnings(BiasedUrn::oddsMWNCHypergeo(mu = mu,
                                                        		m = m,
-                                                       		n = n))
+                                                       		n = n))  
 
-  print(pred.odds)
-
+  if (sum(is.na(pred.odds)) != 0) {
+    stop("Enable to calculate probabilities for these frequencies.")
+  }
+  
   sel.odds <- 1 / pred.odds
 
   # distribution in survivors population

@@ -152,19 +152,19 @@ CalcFreqGt <- function(gt, genotypic = TRUE, allelic = FALSE, absolute = TRUE,
 CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
                             absolute = TRUE, percentage = FALSE,
                             extrapolate.freq = TRUE, totals = TRUE,
-                            min.freq.gt = NULL, min.freq.al = NULL,
+                            min.freq.gt = 0, min.freq.al = 0,
                             include.ids = FALSE) {
 
-  fact <- ConvertVariantToFactors(variant)
+  # fact <- ConvertVariantToFactors(variant)
+  
   ids  <- NA
 
   if (include.ids) {
 
-    fact.char <- as.character(fact)
-    ids <- list("HOMOREF" = which(fact.char == "HOMOREF"),
-                "HETERO"  = which(fact.char == "HETERO"),
-                "HOMOALT" = which(fact.char == "HOMOALT"),
-                "NA"      = which(fact.char == ""))
+    ids <- list("HOMOREF" = which(variant == "HOMOREF"),
+                "HETERO"  = which(variant == "HETERO"),
+                "HOMOALT" = which(variant == "HOMOALT"),
+                "NA"      = which(variant == "NA"))
 
     if (!genotypic && !allelic) {
       return(ids)
@@ -172,22 +172,44 @@ CalcFreqVariant <- function(variant, genotypic = TRUE, allelic = FALSE,
 
   }
 
-  counts    <- as.vector(table(fact))
+  counts    <- as.vector(table(unlist(variant)))
   counts[5] <- sum(counts)
 
-  if (is.null(min.freq.gt)) {
-    min.freq.gt <- -1
-  }
-  if (is.null(min.freq.al)) {
-    min.freq.al <- -1
+  if (genotypic || allelic) {
+
+    if (!is.null(min.freq.al)) {
+      if (!is.numeric(min.freq.al)) {
+        stop("Parameter min.freq.al must be a number.")
+      }
+    } else {
+      min.freq.al <- 0
+    }
+
+    if (!is.null(min.freq.gt)) {
+      if (!is.numeric(min.freq.gt)) {
+        stop("Parameter min.freq.gt must be a number.")
+      }
+    } else {
+      min.freq.gt <- 0
+    }
+
+    freqs <- ShapeCountsCpp(counts, absolute, genotypic = genotypic[1],
+                             allelic = allelic[1], percentage = percentage[1],
+                             extrapolateFreq = extrapolate.freq[1],
+                             totals = totals[1], minFreqGt = min.freq.gt[1],
+                             minFreqAl = min.freq.al[1])
+    freqs[freqs < 0] <- 0
+
+  } else {
+
+    freqs <- c()
+
   }
 
-  result <- ShapeCountsCpp(counts, absolute, genotypic = genotypic,
-                           allelic = allelic,  percentage = percentage,
-                           extrapolateFreq = extrapolate.freq, totals = totals,
-                           minFreqGt = min.freq.gt, minFreqAl = min.freq.al)
   if (include.ids) {
-    result <- list("freqs" = result, "ids" = ids)
+    result <- list("freqs" = freqs, "ids" = ids)
+  } else {
+    result <- freqs
   }
 
   return(result)
@@ -316,14 +338,27 @@ FindIdsAlFreqs <- function(freq){
 
 }
 
+#' A function to classify samples by genotypes for a single variant, use regex.
+#' NOT USED ANYMORE.
+#'
+#' @param variant a variant character data frame.
+#'
+#' @return 
+#' A list of vectors which contain the ids of samples for each genotype.
+#'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#'  IdentifyGt(variant)
+#' }
 
 IdentifyGt <- function(variant){
 
   result <- list("HOMOREF" = grep("0.*0", variant),
-           "HETERO" = grep("0.*1|1.*0", variant),
-           "HOMOALT" = grep("1.*1",variant),
-           "MISSVAL" = which(is.na(variant)))
+                 "HETERO" = grep("0.*1|1.*0", variant),
+                 "HOMOALT" = grep("1.*1",variant),
+                 "MISSVAL" = which(is.na(variant)))
 
   return(result)
 

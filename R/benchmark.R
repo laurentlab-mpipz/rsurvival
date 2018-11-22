@@ -1,8 +1,51 @@
+# -----------------------------------------------------------------------------
+# Copyright © 2018 Samuel Badion, Stefan Laurent. 
+#
+# This file is part of Rsurvival.
+#
+# Rsurvival is free software: you can redistribute it and/or modify it under 
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or any later version.
+#
+# Rsurvival is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Rsurvival. If not, see <https://www.gnu.org/licenses/>
+# -----------------------------------------------------------------------------
 
+#' A function to perform multiple analysis using the same parameters.
+#'
+#' @param gt A genotype matrix.
+#' @param variant.name Name of odded variant (e.g. scaffolf123.987654).
+#' @param s Fitness parameter s for \code{variant.name}.
+#' @param h Fitness parameter h for \code{variant.name}.
+#' @param n.dead Number of dead samples for each iteration.
+#' @param n Number of iterations. \code{n} analysis will be performed with the
+#' same parameters.
+#' @param max.p.value Threshold to identify significant SNPs. Default is 0.05.
+#' @param min.freq.al OPTIONAL. Numeric from 0 to 1. Variants with MAF under
+#' this threshold will be ommited.
+#' @param verbose If TRUE (default), info on progression will be printed.
+#' @param shape If TRUE (default), variants ranking will be returned. Else,
+#' variants will be ordered and returned.
+#' @param include.all If FALSE (default), only names of the variants will be
+#' returned. Else, all the calculated frequencies and probs will be returned.
+#' @param max.cores OPTIONAL. Number of cores from the CPU that R can use for
+#' this job. If NULL, all detected cores will be used. 
+#' 
+#' @return 
+#' Ordered variants names or a vector of variants rank. Will return this 
+#' \code{n} times.
+#'
+#' @seealso \code{\link{BenchmarkScan}} which binds this function.
+#'
 #' @export
 
-Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
-                      shape = TRUE, max.cores = NULL) {
+Benchmark <- function(gt, variant.name, s, h, n.dead, n, min.freq.al = 0,
+                      verbose = TRUE, shape = TRUE, include.all = FALSE,
+                      max.cores = NULL) {
 
   message("Preparing : Generate survival vectors.")
 
@@ -13,7 +56,7 @@ Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
   # Handle multiple cores processing ------------------------------------------
 
   if (is.null(max.cores)) {
-    n.cores <- parallel::detectCores()
+    n.cores <- max(1, parallel::detectCores() - 1)
   } else {
     n.cores <- min(max.cores, parallel::detectCores())
   } 
@@ -30,7 +73,7 @@ Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
   
   message("Iterating : Iterations start.")
 
-  progress.bar <- txtTimerBar(n = n)
+  progress.bar <- TxtTimerBar(n = n)
   progress <- function(i) setTxtProgressBar(progress.bar, i)
   options <- c("progress" = progress)
 
@@ -44,7 +87,6 @@ Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
     # Binding is made in file [/R/config.R].
     
     # Split data --------------------------------------------------------------
-
     if (class(gt) == "matrix") {
       gt <- data.frame(gt, stringsAsFactors = FALSE)
     } else if (class(gt) == "list") {
@@ -71,19 +113,24 @@ Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
 
     # Analyse and order variants ----------------------------------------------
 
-    analysis <- AnalyseSplittedExpt(alive, dead, min.freq.al = 0.1)
-
+    analysis <- AnalyseSplittedExpt(alive, dead, min.freq.al = min.freq.al,
+                                    location.cols = FALSE, deltas = FALSE)
+    
     ord.analysis <- analysis[order(analysis[, "p.value"]), ]
     ord.analysis <- ord.analysis[!is.na(ord.analysis[, "p.value"]), ]
-    ord.analysis <- ord.analysis[ord.analysis[, "p.value"] < 0.05, ]
+    ord.analysis <- ord.analysis[ord.analysis[, "p.value"] < max.p.value, ]
 
-    rownames(ord.analysis)
+    if (include.all) {
+      ord.analysis
+    } else {
+      rownames(ord.analysis)
+    }
 
   }
 
   # End multiple cores processing and progress bar ----------------------------
 
-  close(progress.bar)
+  close(progress.bar)     
   parallel::stopCluster(cluster)
 
   if (verbose) {
@@ -97,9 +144,21 @@ Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
   message("Ending : Data shaper launch.")
 
   if (shape) {
+
+    if (sum(unlist(lapply(ordered.variants, # if items from list have rownames
+                          FUN = function(x){
+                            !is.null(rownames(x))
+                          })))) {
+      ordered.variants <- rownames(ordered.variants) # only keep rownames
+    }
+
+    print(length(ordered.variants))
     result <- ShapeAsVariantPos(ordered.variants, variant.name)
+
   } else {
+
     result <- ordered.variants
+
   }
 
   message("Ending : DONE.")
@@ -116,36 +175,44 @@ Benchmark <- function(gt, variant.name, s, h, n.dead, n, verbose = TRUE,
 
 
 
-
-#' @export
-
-BenchmarkSH <- function(variant, s, h, n.dead, n){
+# BenchmarkSHL <- function(variant, s, h, n.dead, n){
   
-  surv <- GenerateSurvVector(variant , s, h, n.dead, n)
+#   surv <- GenerateSurvVector(variant , s, h, n.dead, n)
 
-  analysis <- apply(surv, MARGIN = 2,
-                    FUN = function(x){
-                      AnalyseExpt(variant, x)
-                    })
+#   analysis <- apply(surv, MARGIN = 2,
+#                     FUN = function(x){
+#                       AnalyseExpt(variant, x)
+#                     })
   
-  s <- unlist(lapply(analysis,
-                     FUN = function(x){
-                      x$s
-                     }))
+#   s <- unlist(lapply(analysis,
+#                      FUN = function(x){
+#                       x$s
+#                      }))
 
   
-  h <- unlist(lapply(analysis,
-                   FUN = function(x){
-                    x$h
-                   }))
+#   h <- unlist(lapply(analysis,
+#                      FUN = function(x){
+#                        x$h
+#                      }))
 
-  return(list("s" = s, "h" = h))
-}
+#   l <- unlist(lapply(analysis,
+#                      FUN = function(x){
+#                       x$LOCUS
+#                      }))
+
+#   return(list("s" = s, "h" = h, "l" = l))
+#}
 
 
-
-
-#' @export
+#' A function to retrieve s and h fitness parameters from benchmark results.
+#'
+#' @param benchmark Results of \code{link{Benchmark}}
+#' 
+#' @return 
+#' Return the mod of estimated s and h fitness parameters from benchmark
+#' results.
+#'
+#' @seealso \code{\link{Benchmark}} needed for \code{benchmark} parameter.
 
 FindSH <- function(benchmark){
 
@@ -169,27 +236,14 @@ FindSH <- function(benchmark){
 
 }
 
-
-#' @export
-
-TestPb <- function(n){
-  progress.bar <- txtProgressBar(max = n, style = 3)
-  progress <- function(i) setTxtProgressBar(progress.bar, i)
-
-  for (i in 1:n) {
-    progress(i)
-  }
-  close(progress.bar)
-}
-
-#' Text progress bar with time.
+#' A function to create a text progress bar.
 #'
-#' A textual progress bar that estimates time remaining. It displays the
-#' estimated time remaining and, when finished, total duration.  Lifted from the
-#' plyr package.  Update with \code{setTxtProgressBar}
-#'
-#' @export
-txtTimerBar <- function(n = 1) {
+#' @param n Maximum value of progression.
+#' 
+#' @return 
+#' Print a progress bar, use .update(progress) to update and .kill() to kill.
+
+TxtTimerBar <- function(n = 1) {
   start <- .last_update_time <- proc.time()[3]
   times <- numeric(n)
   value <- NULL
@@ -252,9 +306,35 @@ str_rep <- function(x, i) {
 
 
 
+#' A function to perform statistical bencharking for a range of parameters.
+#' Launch multiple \code{link{Benchmark}}.
+#'
+#' @param gt A genotype matrix.
+#' @param variant.name Name of odded variant (e.g. scaffolf123.987654).
+#' @param surv.ratio Survival ratio from 0 to 1. Could be a vector.
+#' @param s Fitness parameter s for \code{variant.name}. Could be a vector.
+#' @param h Fitness parameter h for \code{variant.name}. Could be a vector.
+#' @param n.dead Number of dead samples for each iteration.
+#' @param n.iter Number of iterations. \code{n} analysis will be performed for
+#' each combinations of parameters.
+#' @param include.all If FALSE (default), only names of the variants will be
+#' returned. Else, all the calculated frequencies and probs will be returned.
+#' @param max.cores OPTIONAL. Number of cores from the CPU that R can use for
+#' this job. If NULL, all detected cores will be used. 
+#' 
+#' @return 
+#' Ordered variants names, calculated \code{n.iter} times for each combinations of
+#' parameters. Only one parameter can variate during a scan. For multiple
+#' values of multiple parameters, please make a loop on top of
+#' \code{link{BenchmarkScan}}.
+#'
+#' @seealso \code{\link{BenchmarkScan}} which this function binds.
+#'
 #' @export
 
-BenchmarkScan <- function(gt, variant.name, surv.ratio = 0.5, s = 2, h = 0.5, n.iter = 100, shape = TRUE, max.cores = NULL){
+BenchmarkScan <- function(gt, variant.name, surv.ratio = 0.5, s = 2, h = 0.5,
+                          n.iter = 100, shape = TRUE, include.all = FALSE,
+                          max.cores = NULL){
 
   len.s <- length(s)
   len.h <- length(h)
@@ -264,11 +344,11 @@ BenchmarkScan <- function(gt, variant.name, surv.ratio = 0.5, s = 2, h = 0.5, n.
     stop("Only one parameter can variate during a scan.")
   }
 
-  n.dead <- round(ncol(gt) * (1 / surv.ratio))
+  n.dead <- round(ncol(gt) * (1 - surv.ratio))
   result <- list(rep(NA, n.iter))
 
   if (len.r > 1) {
-    variations <- n.surv
+    variations <- n.dead
   } else if (len.s > 1) {
     variations <- s
   } else if (len.h > 1) {
@@ -285,19 +365,21 @@ BenchmarkScan <- function(gt, variant.name, surv.ratio = 0.5, s = 2, h = 0.5, n.
     message("\n########## SITUATION ", i, " OUT OF ", length(variations),
             " ##########")
 
-
     if (len.r > 1) {
       result[i] <- list(Benchmark(gt, variant.name, s = s, h = h,
-                                  surv.ratio = variation, n = n.iter,
-                                  shape = shape, max.cores = max.cores))
+                                  n.dead = variation, n = n.iter,
+                                  shape = shape, max.cores = max.cores,
+                                  include.all = include.all))
     } else if (len.s > 1) {
       result[i] <- list(Benchmark(gt, variant.name, s = variation, h = h,
                                   n.dead = n.dead, n = n.iter, shape = shape,
-                                  max.cores = max.cores))
+                                  max.cores = max.cores,
+                                  include.all = include.all))
     } else if (len.h > 1) {
       result[i] <- list(Benchmark(gt, variant.name, s = s, h = variation,
                                   n.dead = n.dead, n = n.iter, shape = shape,
-                                  max.cores = max.cores))
+                                  max.cores = max.cores,
+                                  include.all = include.all))
     } else {
       warning("No variations has been detected. Aborting.")
       return(NA)
@@ -315,7 +397,15 @@ BenchmarkScan <- function(gt, variant.name, surv.ratio = 0.5, s = 2, h = 0.5, n.
 
 
 
-#' @export
+#' A function to find the ranking of a variant in a list of ordered variants.
+#'
+#' @param ordered.variants A list of ordered variants name.
+#' @param variant.name The name of a variant to look for.
+#' 
+#' @return 
+#' The rank of \code{variant.name} in \code{ordered.variant}.
+#'
+#' @seealso \code{\link{Benchmark}} which binds this function.
 
 ShapeAsVariantPos <- function(ordered.variants, variant.name){
 
