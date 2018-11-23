@@ -163,7 +163,7 @@ AnalyseSplittedExpt <- function(gt.alive, gt.dead, max.p.value = 0.05,
                                             map.all = map.gt.all)
                       }
                 )
-    probs <- AdjustPValue
+
     freqs <- cbind(freqs, t(probs))
     freqs <- AdjustPValue(freqs)
 
